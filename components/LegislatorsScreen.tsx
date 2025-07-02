@@ -1,0 +1,309 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Modal, ActivityIndicator, StyleSheet } from 'react-native';
+import { supabase } from '../app/lib/supabase';
+import LegislatorProfile from './LegislatorProfile';
+
+// Corrected interface to match the database table name 'legbio'
+interface LegBio {
+  Biography?: string;
+  OfficeAddress?: string;
+  OfficePhone?: string;
+}
+
+// Updated Legislator interface to use the correct property name
+interface Legislator {
+  RosterKey: number;
+  Firstname: string;
+  LastName: string;
+  MidName?: string;
+  Suffix?: string;
+  Party: string;
+  House: string;
+  District: number;
+  Title?: string;
+  LegPos?: string;
+  Email?: string;
+  Phone?: string;
+  legbio: LegBio | null; // Corrected from 'legisbio' to 'legbio'
+}
+
+export function LegislatorsScreen() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterParty, setFilterParty] = useState('all');
+  const [filterChamber, setFilterChamber] = useState('all');
+  const [legislators, setLegislators] = useState<Legislator[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedLegislator, setSelectedLegislator] = useState<Legislator | null>(null);
+
+  useEffect(() => {
+    loadLegislators();
+  }, []);
+
+  const loadLegislators = async () => {
+    setLoading(true);
+    try {
+      // Corrected the Supabase query from 'legisbio' to 'legbio'
+      const { data, error } = await supabase
+        .from('legislators')
+        .select('*, legbio!inner(*)')
+        .order('LastName');
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(error.message);
+      }
+
+      setLegislators(data || []);
+
+    } catch (error) {
+      console.error('Error loading legislators:', error);
+      Alert.alert('Error', 'Failed to load legislators. Please check your network connection and Supabase RLS policies.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getFullName = (legislator: Legislator) => {
+    const parts = [legislator.Firstname, legislator.MidName, legislator.LastName, legislator.Suffix].filter(Boolean);
+    return parts.join(' ');
+  };
+
+  const getPartyColor = (party: string) => {
+    if (party?.toLowerCase().includes('democrat')) return '#059669';
+    if (party?.toLowerCase().includes('republican')) return '#7c3aed';
+    return '#64748b';
+  };
+
+  const filteredLegislators = legislators.filter(legislator => {
+    const fullName = getFullName(legislator);
+    const matchesSearch = fullName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesParty = filterParty === 'all' || (legislator.Party && legislator.Party.toLowerCase().includes(filterParty.toLowerCase()));
+    const matchesChamber = filterChamber === 'all' || (legislator.House && legislator.House.toLowerCase() === filterChamber.toLowerCase());
+    return matchesSearch && matchesParty && matchesChamber;
+  });
+
+  // Corrected renderContent function
+  const renderContent = () => {
+    if (loading) {
+      return <ActivityIndicator size="large" color="#0f172a" style={{ marginTop: 20 }} />;
+    }
+
+    if (legislators.length === 0) {
+      return (
+        <Text style={styles.infoText}>
+          No legislators found. There might be an issue with the data source or RLS policies.
+        </Text>
+      );
+    }
+
+    if (filteredLegislators.length === 0) {
+      return (
+        <Text style={styles.infoText}>
+          No legislators match your search criteria.
+        </Text>
+      );
+    }
+
+    return filteredLegislators.map(legislator => (
+      <TouchableOpacity
+        key={legislator.RosterKey}
+        onPress={() => setSelectedLegislator(legislator)}
+        style={styles.legislatorCard}
+      >
+        <View style={styles.legislatorHeader}>
+          <Text style={styles.legislatorName}>
+            {getFullName(legislator)}
+          </Text>
+          <View style={[styles.partyBadge, { backgroundColor: getPartyColor(legislator.Party) }]}>
+            <Text style={styles.partyText}>
+              {legislator.Party?.charAt(0) || 'I'}
+            </Text>
+          </View>
+        </View>
+        <Text style={styles.legislatorInfo}>
+          {legislator.House} - District {legislator.District}
+        </Text>
+        {legislator.LegPos && (
+          <Text style={styles.leadershipPosition}>
+            {legislator.LegPos}
+          </Text>
+        )}
+      </TouchableOpacity>
+    ));
+  };
+
+
+  return (
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.header}>
+          <Text style={styles.title}>
+            All Legislators
+          </Text>
+
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search legislators..."
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            placeholderTextColor="#94a3b8"
+          />
+
+          <View style={{ marginBottom: 8 }}>
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+              {['all', 'senate', 'assembly'].map(chamber => (
+                <TouchableOpacity
+                  key={chamber}
+                  style={[styles.filterButton, filterChamber === chamber && styles.activeFilter]}
+                  onPress={() => setFilterChamber(chamber)}
+                >
+                  <Text style={[styles.filterText, filterChamber === chamber && styles.activeFilterText]}>
+                    {chamber.charAt(0).toUpperCase() + chamber.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {['all', 'democrat', 'republican'].map(party => (
+                <TouchableOpacity
+                  key={party}
+                  style={[styles.filterButton, filterParty === party && styles.activeFilter]}
+                  onPress={() => setFilterParty(party)}
+                >
+                  <Text style={[styles.filterText, filterParty === party && styles.activeFilterText]}>
+                    {party.charAt(0).toUpperCase() + party.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.content}>{renderContent()}</View>
+
+      </ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={selectedLegislator !== null}
+        onRequestClose={() => {
+          setSelectedLegislator(null);
+        }}
+      >
+        {selectedLegislator && (
+          <LegislatorProfile
+            legislator={selectedLegislator}
+            onClose={() => setSelectedLegislator(null)}
+          />
+        )}
+      </Modal>
+    </View>
+  );
+}
+
+// Added StyleSheet for better organization
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#f1f5f9'
+  },
+  header: {
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0'
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 16
+  },
+  searchInput: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  filterButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: '#e2e8f0',
+  },
+  activeFilter: {
+    backgroundColor: '#0f172a',
+  },
+  filterText: {
+    color: '#64748b',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  activeFilterText: {
+    color: '#ffffff',
+  },
+  content: {
+    padding: 16,
+  },
+  infoText: {
+    textAlign: 'center',
+    color: '#64748b',
+    fontSize: 16,
+    marginTop: 20
+  },
+  legislatorCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  legislatorHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  legislatorName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    flex: 1
+  },
+  partyBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  partyText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  legislatorInfo: {
+    color: '#64748b',
+    fontSize: 16,
+    marginBottom: 4
+  },
+  leadershipPosition: {
+    color: '#059669',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4
+  },
+});
+
+export default LegislatorsScreen;
