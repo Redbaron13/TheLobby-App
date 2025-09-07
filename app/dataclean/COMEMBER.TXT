@@ -1,0 +1,338 @@
+"Code","Member","Position_on_Committee","Assignment_to_Committee","ModDate"
+"AAP","Auth, Robert",,"P",1/23/2024 0:00:00
+"AAP","Haider, Shama A.",,"P",1/23/2024 0:00:00
+"AAP","Kane, Melinda",,"P",2/3/2025 0:00:00
+"AAP","Lampitt, Pamela R.",,"R",1/8/2025 0:00:00
+"AAP","McClellan, Antwan L.",,"P",1/23/2024 0:00:00
+"AAP","McCoy, Tennille R.",,"P",1/23/2024 0:00:00
+"AAP","Myhre, Gregory E.",,"P",1/23/2024 0:00:00
+"AAP","Pintor Marin, Eliana",,"P",1/23/2024 0:00:00
+"AAP","Reynolds-Jackson, Verlina","V","P",1/23/2024 0:00:00
+"AAP","Schaer, Gary S.",,"P",1/23/2024 0:00:00
+"AAP","Swain, Lisa","C","P",1/23/2024 0:00:00
+"AAP","Webber, Jay",,"P",1/23/2024 0:00:00
+"ABD","Barlas, Al","O","P",10/28/2024 0:00:00
+"ABD","Hutchison, Dan",,"P",10/28/2024 0:00:00
+"ABD","Inganamort, Michael",,"P",10/28/2024 0:00:00
+"ABD","Matsikoudis, Michele",,"P",10/28/2024 0:00:00
+"ABD","McClellan, Antwan L.",,"P",10/28/2024 0:00:00
+"ABD","Park, Ellen J.",,"P",10/28/2024 0:00:00
+"ABD","Pintor Marin, Eliana",,"P",10/28/2024 0:00:00
+"ABD","Reynolds-Jackson, Verlina","Q","P",10/28/2024 0:00:00
+"ABD","Rodriguez, Gabriel",,"P",10/28/2024 0:00:00
+"ABD","Rumpf, Brian E.","Q","P",10/28/2024 0:00:00
+"ABD","Scharfenberger, Gerry",,"P",10/28/2024 0:00:00
+"ABD","Wimberly, Benjie E.","O","R",1/17/2025 0:00:00
+"ABU","Barlas, Al",,"P",1/23/2024 0:00:00
+"ABU","Conaway, Herb",,"R",1/8/2025 0:00:00
+"ABU","Dunn, Aura K.",,"P",1/23/2024 0:00:00
+"ABU","Freiman, Roy",,"P",1/23/2024 0:00:00
+"ABU","Lopez, Yvonne",,"P",2/3/2025 0:00:00
+"ABU","Muñoz, Nancy F.",,"P",1/23/2024 0:00:00
+"ABU","Murphy, Carol A.",,"P",1/23/2024 0:00:00
+"ABU","Park, Ellen J.","V","P",2/3/2025 0:00:00
+"ABU","Pintor Marin, Eliana","C","P",1/23/2024 0:00:00
+"ABU","Reynolds-Jackson, Verlina",,"P",1/23/2024 0:00:00
+"ABU","Rodriguez, Gabriel",,"P",1/23/2024 0:00:00
+"ABU","Rumpf, Brian E.",,"P",1/23/2024 0:00:00
+"ABU","Schaer, Gary S.",,"P",1/23/2024 0:00:00
+"ABU","Scharfenberger, Gerry",,"P",1/23/2024 0:00:00
+"ABU","Spearman, William W.",,"P",2/3/2025 0:00:00
+"ABU","Venezia, Michael",,"P",1/23/2024 0:00:00
+"ABU","Wimberly, Benjie E.","V","R",1/17/2025 0:00:00
+"ACE","Bergen, Brian",,"P",1/23/2024 0:00:00
+"ACE","Fantasia, Dawn",,"P",1/23/2024 0:00:00
+"ACE","Karabinchak, Robert J.",,"P",1/23/2024 0:00:00
+"ACE","Katz, Andrea",,"P",1/23/2024 0:00:00
+"ACE","Matsikoudis, Michele",,"P",1/23/2024 0:00:00
+"ACE","Morales, Carmen Theresa",,"P",1/23/2024 0:00:00
+"ACE","Park, Ellen J.",,"P",1/23/2024 0:00:00
+"ACE","Peterpaul, Luanne M.",,"P",1/23/2024 0:00:00
+"ACE","Sauickie, Alex",,"P",1/23/2024 0:00:00
+"ACE","Simmons, Heather",,"P",1/23/2024 0:00:00
+"ACE","Spearman, William W.","C","P",1/23/2024 0:00:00
+"ACE","Tully, Chris","V","P",1/23/2024 0:00:00
+"ACF","Collazos-Gill, Alixon",,"P",1/23/2024 0:00:00
+"ACF","Dunn, Aura K.",,"P",1/23/2024 0:00:00
+"ACF","Haider, Shama A.","C","P",1/23/2024 0:00:00
+"ACF","Kanitra, Paul",,"P",1/23/2024 0:00:00
+"ACF","Reynolds-Jackson, Verlina",,"R",2/3/2025 0:00:00
+"ACF","Singh, Balvir",,"P",2/3/2025 0:00:00
+"ACF","Spearman, William W.","V","P",1/23/2024 0:00:00
+"ACO","Egan, Kevin P.",,"P",1/23/2024 0:00:00
+"ACO","Hall, Garnet R.",,"P",1/23/2024 0:00:00
+"ACO","Kean, Sean T.",,"P",1/23/2024 0:00:00
+"ACO","Quijano, Annette","V","P",1/23/2024 0:00:00
+"ACO","Sampson, William B.","C","P",1/23/2024 0:00:00
+"ACO","Torrissi, Michael",,"P",1/23/2024 0:00:00
+"ACW","Barlas, Al",,"P",1/23/2024 0:00:00
+"ACW","Lopez, Yvonne","V","P",1/23/2024 0:00:00
+"ACW","McCann Stamato, Barbara",,"P",1/23/2024 0:00:00
+"ACW","Ramirez, Jessica",,"P",1/23/2024 0:00:00
+"ACW","Simonsen, Erik K.",,"P",1/23/2024 0:00:00
+"ACW","Sumter, Shavonda E.","C","P",1/23/2024 0:00:00
+"AED","Abdelaziz, Al",,"P",2/3/2025 0:00:00
+"AED","Bagolie, Rosaura",,"P",1/23/2024 0:00:00
+"AED","Fantasia, Dawn",,"P",1/23/2024 0:00:00
+"AED","Lampitt, Pamela R.","C","R",1/8/2025 0:00:00
+"AED","Matsikoudis, Michele",,"P",1/23/2024 0:00:00
+"AED","Morales, Carmen Theresa",,"R",2/3/2025 0:00:00
+"AED","Reynolds-Jackson, Verlina","C","P",1/23/2025 0:00:00
+"AED","Schnall, Alexander",,"P",1/23/2024 0:00:00
+"AED","Simonsen, Erik K.",,"P",1/23/2024 0:00:00
+"AED","Stanley, Sterley S.","V","P",1/23/2024 0:00:00
+"AED","Swain, Lisa",,"P",1/23/2024 0:00:00
+"AEN","Collazos-Gill, Alixon",,"P",1/23/2024 0:00:00
+"AEN","Hall, Garnet R.",,"P",1/23/2024 0:00:00
+"AEN","Inganamort, Michael",,"P",1/23/2024 0:00:00
+"AEN","Katz, Andrea",,"P",1/23/2024 0:00:00
+"AEN","Kennedy, James J.","C","P",1/23/2024 0:00:00
+"AEN","Scharfenberger, Gerry",,"P",1/23/2024 0:00:00
+"AEN","Sumter, Shavonda E.","V","P",1/23/2024 0:00:00
+"AFI","Allen, John",,"P",1/23/2024 0:00:00
+"AFI","Auth, Robert",,"P",1/23/2024 0:00:00
+"AFI","Bagolie, Rosaura",,"P",1/23/2024 0:00:00
+"AFI","Clifton, Robert D.",,"P",1/23/2024 0:00:00
+"AFI","Flynn, Victoria A.",,"P",1/23/2024 0:00:00
+"AFI","Freiman, Roy","C","P",1/23/2024 0:00:00
+"AFI","Hutchison, Dan",,"P",1/23/2024 0:00:00
+"AFI","Moen, William F.",,"R",2/3/2025 0:00:00
+"AFI","Myhre, Gregory E.",,"P",1/23/2024 0:00:00
+"AFI","Peterpaul, Luanne M.",,"P",2/3/2025 0:00:00
+"AFI","Schaer, Gary S.","V","P",1/23/2024 0:00:00
+"AFI","Schnall, Alexander",,"P",2/3/2025 0:00:00
+"AFI","Spearman, William W.",,"R",2/3/2025 0:00:00
+"AFI","Stanley, Sterley S.",,"P",1/23/2024 0:00:00
+"AFI","Webber, Jay",,"P",1/23/2024 0:00:00
+"AHE","Azzariti Jr., John V.",,"P",1/23/2024 0:00:00
+"AHE","Conaway, Herb","C","R",1/8/2025 0:00:00
+"AHE","Donlon, Margie",,"P",1/23/2024 0:00:00
+"AHE","Haider, Shama A.",,"P",1/23/2024 0:00:00
+"AHE","Kane, Melinda",,"P",2/3/2025 0:00:00
+"AHE","Lampitt, Pamela R.","V","R",1/8/2025 0:00:00
+"AHE","Muñoz, Nancy F.",,"P",1/23/2024 0:00:00
+"AHE","Murphy, Carol A.","C","P",1/23/2025 0:00:00
+"AHE","Peterson, Erik",,"P",1/23/2024 0:00:00
+"AHE","Rumpf, Brian E.",,"P",1/23/2024 0:00:00
+"AHE","Speight, Shanique","V","P",2/3/2025 0:00:00
+"AHE","Tully, Chris",,"P",1/23/2024 0:00:00
+"AHE","Verrelli, Anthony S.",,"P",1/23/2024 0:00:00
+"AHI","Abdelaziz, Al",,"P",2/3/2025 0:00:00
+"AHI","Atkins, Reginald W.","V","P",1/23/2024 0:00:00
+"AHI","Carter, Linda S.","C","P",1/23/2024 0:00:00
+"AHI","Matsikoudis, Michele",,"P",1/23/2024 0:00:00
+"AHI","Miller, Cody D.",,"P",1/23/2024 0:00:00
+"AHI","Scharfenberger, Gerry",,"P",1/23/2024 0:00:00
+"AHI","Simmons, Heather",,"P",1/23/2024 0:00:00
+"AHI","Wimberly, Benjie E.",,"R",1/17/2025 0:00:00
+"AHO","Abdelaziz, Al",,"P",2/3/2025 0:00:00
+"AHO","Allen, John",,"P",1/23/2024 0:00:00
+"AHO","Clifton, Robert D.",,"P",1/23/2024 0:00:00
+"AHO","Flynn, Victoria A.",,"P",1/23/2024 0:00:00
+"AHO","Lopez, Yvonne","C","P",1/23/2024 0:00:00
+"AHO","Moen, William F.","V","P",1/23/2024 0:00:00
+"AHO","Quijano, Annette",,"P",1/23/2024 0:00:00
+"AHO","Wimberly, Benjie E.",,"R",1/17/2025 0:00:00
+"AHU","Atkins, Reginald W.",,"P",1/23/2024 0:00:00
+"AHU","Azzariti Jr., John V.",,"P",1/23/2024 0:00:00
+"AHU","Fantasia, Dawn",,"P",1/23/2024 0:00:00
+"AHU","Peterpaul, Luanne M.",,"P",1/23/2024 0:00:00
+"AHU","Speight, Shanique","C","P",1/23/2024 0:00:00
+"AHU","Tucker, Cleopatra G.","V","P",1/23/2024 0:00:00
+"AJU","Auth, Robert",,"P",1/23/2024 0:00:00
+"AJU","Flynn, Victoria A.",,"P",1/23/2024 0:00:00
+"AJU","Hutchison, Dan",,"P",1/23/2024 0:00:00
+"AJU","Murphy, Carol A.","V","P",1/23/2024 0:00:00
+"AJU","Park, Ellen J.","C","P",1/23/2024 0:00:00
+"AJU","Venezia, Michael",,"P",1/23/2024 0:00:00
+"ALA","Barlas, Al",,"P",1/23/2024 0:00:00
+"ALA","Bergen, Brian",,"P",1/23/2024 0:00:00
+"ALA","Danielsen, Joe",,"P",1/23/2024 0:00:00
+"ALA","Drulis, Mitchelle",,"P",1/23/2024 0:00:00
+"ALA","Guardian, Donald A.",,"P",1/23/2024 0:00:00
+"ALA","Hall, Garnet R.",,"P",1/23/2024 0:00:00
+"ALA","Morales, Carmen Theresa",,"P",2/3/2025 0:00:00
+"ALA","Quijano, Annette",,"P",1/23/2024 0:00:00
+"ALA","Sampson, William B.","V","P",1/23/2024 0:00:00
+"ALA","Sumter, Shavonda E.",,"P",1/23/2024 0:00:00
+"ALA","Swift, Claire S.",,"P",1/23/2024 0:00:00
+"ALA","Verrelli, Anthony S.","C","P",1/23/2024 0:00:00
+"AMV","Conaway, Herb",,"R",1/8/2025 0:00:00
+"AMV","DeAngelo, Wayne P.","V","P",1/23/2024 0:00:00
+"AMV","Kane, Melinda",,"P",2/3/2025 0:00:00
+"AMV","Ramirez, Jessica",,"P",1/23/2024 0:00:00
+"AMV","Rumpf, Brian E.",,"P",1/23/2024 0:00:00
+"AMV","Sauickie, Alex",,"P",1/23/2024 0:00:00
+"AMV","Tucker, Cleopatra G.","C","P",1/23/2024 0:00:00
+"AOF","Atkins, Reginald W.","C","P",1/23/2024 0:00:00
+"AOF","Egan, Kevin P.",,"P",1/23/2024 0:00:00
+"AOF","Freiman, Roy","V","P",1/23/2024 0:00:00
+"AOF","Inganamort, Michael",,"P",1/23/2024 0:00:00
+"AOF","Miller, Cody D.",,"P",1/23/2024 0:00:00
+"AOF","Torrissi, Michael",,"P",1/23/2024 0:00:00
+"APS","Danielsen, Joe","C","P",1/23/2024 0:00:00
+"APS","Drulis, Mitchelle",,"P",1/23/2024 0:00:00
+"APS","Kanitra, Paul",,"P",1/23/2024 0:00:00
+"APS","Marenco, Julio",,"P",1/23/2024 0:00:00
+"APS","McClellan, Antwan L.",,"P",1/23/2024 0:00:00
+"APS","Murphy, Carol A.",,"R",2/3/2025 0:00:00
+"APS","Peterson, Erik",,"P",1/23/2024 0:00:00
+"APS","Rodriguez, Gabriel",,"P",1/23/2024 0:00:00
+"APS","Singh, Balvir",,"P",2/3/2025 0:00:00
+"APS","Verrelli, Anthony S.","V","P",1/23/2024 0:00:00
+"ARP","Collazos-Gill, Alixon",,"P",1/23/2024 0:00:00
+"ARP","Hutchison, Dan",,"P",1/23/2024 0:00:00
+"ARP","Kean, Sean T.",,"P",1/23/2024 0:00:00
+"ARP","McCann Stamato, Barbara",,"P",2/21/2024 0:00:00
+"ARP","Scharfenberger, Gerry",,"P",1/23/2024 0:00:00
+"ARP","Speight, Shanique","V","P",1/23/2024 0:00:00
+"ARP","Stanley, Sterley S.","C","P",1/23/2024 0:00:00
+"ASL","Drulis, Mitchelle",,"P",1/23/2024 0:00:00
+"ASL","Karabinchak, Robert J.","C","P",1/23/2024 0:00:00
+"ASL","McCoy, Tennille R.",,"P",1/23/2024 0:00:00
+"ASL","Schnall, Alexander",,"P",1/23/2024 0:00:00
+"ASL","Simonsen, Erik K.",,"P",1/23/2024 0:00:00
+"ASL","Swain, Lisa","V","P",1/23/2024 0:00:00
+"ASL","Swift, Claire S.",,"P",1/23/2024 0:00:00
+"AST","Danielsen, Joe","V","P",1/23/2024 0:00:00
+"AST","DePhillips, Christopher P.",,"P",1/23/2024 0:00:00
+"AST","Marenco, Julio",,"P",1/23/2024 0:00:00
+"AST","McGuckin, Gregory P.",,"P",1/23/2024 0:00:00
+"AST","Miller, Cody D.",,"P",1/23/2024 0:00:00
+"AST","Simmons, Heather",,"P",1/23/2024 0:00:00
+"AST","Tully, Chris","C","P",1/23/2024 0:00:00
+"ATG","Allen, John",,"P",1/23/2024 0:00:00
+"ATG","Calabrese, Clinton","V","P",1/23/2024 0:00:00
+"ATG","Donlon, Margie",,"P",1/23/2024 0:00:00
+"ATG","Guardian, Donald A.",,"P",1/23/2024 0:00:00
+"ATG","McClellan, Antwan L.",,"P",1/23/2024 0:00:00
+"ATG","Moen, William F.","C","P",1/23/2024 0:00:00
+"ATR","Bailey, David",,"P",1/23/2024 0:00:00
+"ATR","Barranco, Christian E.",,"P",1/23/2024 0:00:00
+"ATR","Calabrese, Clinton","C","P",1/23/2024 0:00:00
+"ATR","Carter, Linda S.","V","P",1/23/2024 0:00:00
+"ATR","Clifton, Robert D.",,"P",1/23/2024 0:00:00
+"ATR","DePhillips, Christopher P.",,"P",1/23/2024 0:00:00
+"ATR","Inganamort, Michael",,"P",1/23/2024 0:00:00
+"ATR","Karabinchak, Robert J.",,"P",1/23/2024 0:00:00
+"ATR","Katz, Andrea",,"P",1/23/2024 0:00:00
+"ATR","Kennedy, James J.",,"P",1/23/2024 0:00:00
+"ATR","Lopez, Yvonne",,"R",2/3/2025 0:00:00
+"ATR","McCann Stamato, Barbara",,"P",1/23/2024 0:00:00
+"ATR","McGuckin, Gregory P.",,"P",1/23/2024 0:00:00
+"ATR","Moen, William F.",,"P",2/3/2025 0:00:00
+"ATU","Bailey, David",,"P",1/23/2024 0:00:00
+"ATU","Barranco, Christian E.",,"P",1/23/2024 0:00:00
+"ATU","DeAngelo, Wayne P.","C","P",1/23/2024 0:00:00
+"ATU","Kanitra, Paul",,"P",1/23/2024 0:00:00
+"ATU","Kennedy, James J.","V","P",1/23/2024 0:00:00
+"ATU","Marenco, Julio",,"P",1/23/2024 0:00:00
+"ATU","McCoy, Tennille R.",,"P",1/23/2024 0:00:00
+"ATU","Sauickie, Alex",,"P",1/23/2024 0:00:00
+"SBA","Amato, Carmen F.",,"P",1/11/2024 0:00:00
+"SBA","Burgess, Renee C.",,"P",1/11/2024 0:00:00
+"SBA","Burzichelli, John J.",,"P",1/11/2024 0:00:00
+"SBA","Cruz-Perez, Nilsa I.",,"P",1/11/2024 0:00:00
+"SBA","Diegnan, Patrick J.",,"P",1/11/2024 0:00:00
+"SBA","Greenstein, Linda R.","V","P",1/11/2024 0:00:00
+"SBA","Johnson, Gordon M.",,"P",1/11/2024 0:00:00
+"SBA","O'Scanlon, Declan J.",,"P",1/11/2024 0:00:00
+"SBA","Ruiz, M. Teresa",,"P",1/11/2024 0:00:00
+"SBA","Sarlo, Paul A.","C","P",1/11/2024 0:00:00
+"SBA","Steinhardt, Douglas J.",,"P",1/11/2024 0:00:00
+"SBA","Testa, Michael L.",,"P",1/11/2024 0:00:00
+"SBA","Zwicker, Andrew",,"P",1/11/2024 0:00:00
+"SCM","Bramnick, Jon M.",,"P",1/11/2024 0:00:00
+"SCM","Cryan, Joseph P.","V","P",1/11/2024 0:00:00
+"SCM","Johnson, Gordon M.",,"P",1/11/2024 0:00:00
+"SCM","Lagana, Joseph A.","C","P",1/16/2025 0:00:00
+"SCM","Pou, Nellie","C","R",1/13/2025 0:00:00
+"SCM","Singer, Robert W.",,"P",1/11/2024 0:00:00
+"SCU","Amato, Carmen F.",,"P",1/11/2024 0:00:00
+"SCU","Burgess, Renee C.",,"R",2/10/2025 0:00:00
+"SCU","Schepisi, Holly T.",,"P",1/11/2024 0:00:00
+"SCU","Singleton, Troy","C","P",1/11/2024 0:00:00
+"SCU","Stack, Brian P.","V","P",1/11/2024 0:00:00
+"SCU","Wimberly, Benjie E.",,"P",2/10/2025 0:00:00
+"SED","Corrado, Kristin M.",,"P",1/11/2024 0:00:00
+"SED","Gopal, Vin","C","P",1/11/2024 0:00:00
+"SED","Henry, Owen",,"P",1/11/2024 0:00:00
+"SED","McKnight, Angela V.",,"P",1/11/2024 0:00:00
+"SED","Turner, Shirley K.","V","P",1/11/2024 0:00:00
+"SEG","Corrado, Kristin M.",,"P",1/11/2024 0:00:00
+"SEG","Cruz-Perez, Nilsa I.","C","P",1/11/2024 0:00:00
+"SEG","Pennacchio, Joseph",,"P",1/11/2024 0:00:00
+"SEG","Timberlake, Britnee N.",,"P",1/11/2024 0:00:00
+"SEG","Turner, Shirley K.","V","P",1/11/2024 0:00:00
+"SEN","Greenstein, Linda R.","V","P",1/11/2024 0:00:00
+"SEN","McKeon, John F.",,"P",1/11/2024 0:00:00
+"SEN","Smith, Bob","C","P",1/11/2024 0:00:00
+"SEN","Space, Parker",,"P",1/11/2024 0:00:00
+"SEN","Tiver, Latham",,"P",1/11/2024 0:00:00
+"SHH","Burgess, Renee C.",,"P",1/11/2024 0:00:00
+"SHH","Henry, Owen",,"P",1/11/2024 0:00:00
+"SHH","McKeon, John F.",,"P",3/7/2024 0:00:00
+"SHH","McKnight, Angela V.",,"P",1/11/2024 0:00:00
+"SHH","Mukherji, Raj",,"P",1/11/2024 0:00:00
+"SHH","Schepisi, Holly T.",,"P",1/11/2024 0:00:00
+"SHH","Singer, Robert W.",,"P",1/11/2024 0:00:00
+"SHH","Vitale, Joseph F.","C","P",1/11/2024 0:00:00
+"SHI","Amato, Carmen F.",,"P",1/11/2024 0:00:00
+"SHI","Cryan, Joseph P.","C","P",1/11/2024 0:00:00
+"SHI","Moriarty, Paul D.",,"P",1/11/2024 0:00:00
+"SHI","Singer, Robert W.",,"P",1/11/2024 0:00:00
+"SHI","Zwicker, Andrew","V","P",1/11/2024 0:00:00
+"SJU","Bramnick, Jon M.",,"P",1/11/2024 0:00:00
+"SJU","Bucco, Anthony M.",,"P",1/11/2024 0:00:00
+"SJU","Burgess, Renee C.",,"P",1/16/2025 0:00:00
+"SJU","Corrado, Kristin M.",,"P",1/11/2024 0:00:00
+"SJU","Gopal, Vin",,"P",1/11/2024 0:00:00
+"SJU","Lagana, Joseph A.",,"P",1/11/2024 0:00:00
+"SJU","Pou, Nellie","V","R",1/13/2025 0:00:00
+"SJU","Sarlo, Paul A.",,"P",1/11/2024 0:00:00
+"SJU","Singleton, Troy","V","P",1/16/2025 0:00:00
+"SJU","Smith, Bob",,"P",1/11/2024 0:00:00
+"SJU","Stack, Brian P.","C","P",1/11/2024 0:00:00
+"SJU","Testa, Michael L.",,"P",1/11/2024 0:00:00
+"SLA","Johnson, Gordon M.","C","P",1/16/2025 0:00:00
+"SLA","Lagana, Joseph A.",,"R",1/17/2025 0:00:00
+"SLA","Moriarty, Paul D.",,"P",1/11/2024 0:00:00
+"SLA","Polistina, Vincent J.",,"P",1/11/2024 0:00:00
+"SLA","Steinhardt, Douglas J.",,"P",1/11/2024 0:00:00
+"SLA","Zwicker, Andrew","V","P",1/11/2024 0:00:00
+"SLO","Burzichelli, John J.",,"P",1/11/2024 0:00:00
+"SLO","Pennacchio, Joseph",,"P",1/11/2024 0:00:00
+"SLO","Ruiz, M. Teresa","V","P",1/11/2024 0:00:00
+"SLO","Singer, Robert W.",,"P",1/11/2024 0:00:00
+"SLO","Zwicker, Andrew","C","P",1/11/2024 0:00:00
+"SLP","Greenstein, Linda R.","C","P",1/11/2024 0:00:00
+"SLP","Henry, Owen",,"P",1/11/2024 0:00:00
+"SLP","McKnight, Angela V.",,"P",1/11/2024 0:00:00
+"SLP","Moriarty, Paul D.","V","P",1/11/2024 0:00:00
+"SLP","O'Scanlon, Declan J.",,"P",1/11/2024 0:00:00
+"SMV","Cruz-Perez, Nilsa I.","V","P",1/11/2024 0:00:00
+"SMV","Johnson, Gordon M.",,"R",2/10/2025 0:00:00
+"SMV","Mukherji, Raj","C","P",1/16/2025 0:00:00
+"SMV","Space, Parker",,"P",1/11/2024 0:00:00
+"SMV","Tiver, Latham",,"P",1/11/2024 0:00:00
+"SMV","Wimberly, Benjie E.",,"P",2/10/2025 0:00:00
+"SSC","Bucco, Anthony M.",,"P",3/20/2025 0:00:00
+"SSC","Burzichelli, John J.",,"P",3/20/2025 0:00:00
+"SSC","Cruz-Perez, Nilsa I.",,"P",3/20/2025 0:00:00
+"SSC","Greenstein, Linda R.","V","P",3/20/2025 0:00:00
+"SSC","Ruiz, M. Teresa",,"P",3/20/2025 0:00:00
+"SSC","Sarlo, Paul A.","C","P",3/20/2025 0:00:00
+"SSC","Smith, Bob",,"P",3/20/2025 0:00:00
+"SSC","Testa, Michael L.",,"P",3/20/2025 0:00:00
+"SSC","Zwicker, Andrew",,"P",3/20/2025 0:00:00
+"SSG","Beach, James","C","P",1/11/2024 0:00:00
+"SSG","Holzapfel, James W.",,"P",1/11/2024 0:00:00
+"SSG","McKeon, John F.","V","P",1/11/2024 0:00:00
+"SSG","Polistina, Vincent J.",,"P",1/11/2024 0:00:00
+"SSG","Turner, Shirley K.",,"P",1/11/2024 0:00:00
+"STR","Burzichelli, John J.",,"P",1/11/2024 0:00:00
+"STR","Diegnan, Patrick J.","C","P",1/11/2024 0:00:00
+"STR","Holzapfel, James W.",,"P",1/11/2024 0:00:00
+"STR","Mukherji, Raj","V","P",1/11/2024 0:00:00
+"STR","Timberlake, Britnee N.",,"P",1/11/2024 0:00:00
+"STR","Tiver, Latham",,"P",1/11/2024 0:00:00

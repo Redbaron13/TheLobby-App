@@ -1,0 +1,125 @@
+"District","House","LastName","Firstname","MidName","Suffix","Sex","Title","LegPos","LegStatus","Party","Race","Address","City","State","Zipcode","Phone","Email","Roster Key"
+1,"S","Testa","Michael","L.","Jr.","M",,"Republican Whip","Active","R",,"610 East Landis Avenue","Vineland","NJ","08360","(609) 778-2012",,424
+1,"A","McClellan","Antwan","L.",,"M",,"Deputy Minority Leader","Active","R",,"School House Office Park, 211 South Main Street, Suite 104","Cape May Court House","NJ","08210","(609) 778-2012",,425
+1,"A","Simonsen","Erik","K.",,"M",,,"Active","R",,"School House Office Park, 211 South Main Street, Suite 104","Cape May Court House","NJ","08210","(609) 778-2012",,426
+2,"S","Polistina","Vincent","J.",,"M",,"Deputy Conference Leader","Active","R",,"3100 Hingston Avenue, Suite 101","Egg Harbor Township","NJ","08234","(609) 677-8266",,432
+2,"A","Guardian","Donald","A.",,"M",,"Assistant Minority Whip","Active","R",,"3100 Hingston Avenue, Suite 101","Egg Harbor Township","NJ","08234","(609) 677-8266",,437
+2,"A","Swift","Claire","S.",,"F",,,"Active","R",,"3100 Hingston Avenue, Suite 101","Egg Harbor Township","NJ","08234","(609) 677-8266",,438
+3,"S","Burzichelli","John","J.",,"M",,,"Active","D",,"711 North Main Street","Glassboro","NJ","08028","(856) 226-3530",,458
+3,"A","Bailey","David",,"Jr.","M",,,"Active","D",,"711 North Main Street","Glassboro","NJ","08028","(856) 226-3530",,459
+3,"A","Simmons","Heather",,,"F",,,"Active","D",,"711 North Main Street","Glassboro","NJ","08028","(856) 226-3530",,460
+4,"S","Moriarty","Paul","D.",,"M",,,"Active","D",,"129 Johnson Road, Suite 1","Turnersville","NJ","08012","(856) 232-6700",,461
+4,"A","Hutchison","Dan",,,"M",,,"Active","D",,"1379 Chews Landing Road","Laurel Springs","NJ","08021","(856) 401-3073",,462
+4,"A","Miller","Cody","D.",,"M",,,"Active","D",,"129 Johnson Road, Suite 1","Turnersville","NJ","08012","(856) 232-6700",,463
+5,"S","Cruz-Perez","Nilsa","I.",,"F",,,"Active","D",,"231-L Market Street","Camden","NJ","08102","(856) 541-1251",,371
+5,"A","Spearman","William","W.",,"M",,,"Active","D",,"608 North Broad Street, Suite 200","Woodbury","NJ","08096","(856) 853-2960",,415
+5,"A","Moen","William","F.","Jr.","M",,"Deputy Majority Leader","Active","D",,"208 White Horse Pike, Suite 13","Barrington","NJ","08007","(856) 547-4800",,420
+6,"S","Beach","James",,,"M",,"Deputy Majority Whip","Active","D",,"221 Laurel Road, Suite 105","Voorhees","NJ","08043","(856) 429-1572",,310
+6,"A","Greenwald","Louis","D.",,"M",,"Majority Leader","Active","D",,"1101 Laurel Oak Road, Suite 150","Voorhees","NJ","08043","(856) 435-1247",,155
+6,"A","Lampitt","Pamela","R.",,"F",,"Deputy Speaker","Resigned","D",,"1101 Laurel Oak Road, Suite 150","Voorhees","NJ","08043","(856) 435-1247",,251
+6,"A","Kane","Melinda",,,"F",,,"Active","D",,"1101 Laurel Oak Road, Suite 150","Voorhees","NJ","08043","(856) 435-1247",,497
+7,"S","Singleton","Troy",,,"M",,"Majority Caucus Chair","Active","D",,"400 North Church Street, Suite 260","Moorestown","NJ","08057","(856) 234-2790",,395
+7,"A","Murphy","Carol","A.",,"F",,"Majority Whip","Active","D",,"750 Centerton Road","Mount Laurel","NJ","08054","(856) 242-2018",,397
+7,"A","Conaway","Herb",,"Jr.","M",,"Deputy Speaker","Resigned","D",,"Delran Professional Center, 8008 Route 130 North, Building C, Suite 450","Delran","NJ","08075","(856) 461-3997",,186
+7,"A","Singh","Balvir",,,"M",,,"Active","D",,"Delran Professional Center, 8008 Route 130 North, Building C, Suite 450","Delran","NJ","08075","(856) 461-3997",,500
+8,"S","Tiver","Latham",,,"M",,,"Active","R",,"Elmwood Business Park, Suite B-101","Evesham","NJ","08053","(856) 817-2143",,464
+8,"A","Katz","Andrea",,,"F",,,"Active","D",,"100 High Street, Suite 101","Mount Holly","NJ","08060","(609) 850-2397",,496
+8,"A","Torrissi","Michael",,"Jr.","M",,,"Active","R",,"Elmwood Business Park, Suite B-101","Evesham","NJ","08053","(856) 817-2143",,442
+9,"S","Amato","Carmen","F.","Jr.","M",,,"Active","R",,"400 North Main Street, Building 1, Suites 1 and 2","Manahawkin","NJ","08050","(609) 693-6700",,465
+9,"A","Myhre","Gregory","E.",,"M",,,"Active","R",,"400 North Main Street, Building 1, Suites 1 and 2","Manahawkin","NJ","08050","(609) 693-6700",,466
+9,"A","Rumpf","Brian","E.",,"M",,"Minority Parliamentarian","Active","R",,"400 North Main Street, Building 1, Suites 1 and 2","Manahawkin","NJ","08050","(609) 693-6700",,228
+10,"S","Holzapfel","James","W.",,"M",,,"Active","R",,"852 Highway 70","Brick","NJ","08724","(732) 840-9028",,334
+10,"A","McGuckin","Gregory","P.",,"M",,,"Active","R",,"852 Highway 70","Brick","NJ","08724","(732) 840-9028",,341
+10,"A","Kanitra","Paul",,,"M",,,"Active","R",,"852 Highway 70","Brick","NJ","08724","(732) 840-9028",,467
+11,"S","Gopal","Vin",,,"M",,"Majority Whip","Active","D",,"766 Shrewsbury Avenue, West Building, Suite 202, (Temporary Location)","Tinton Falls","NJ","07724","(732) 704-3808",,405
+11,"A","Donlon","Margie",,"M.D.","F",,,"Active","D",,"766 Shrewsbury Avenue, West Building, Suite 202, (Temporary Location)","Tinton Falls","NJ","07724","(732) 704-3808",,468
+11,"A","Peterpaul","Luanne","M.","Esq.","F",,,"Active","D",,"766 Shrewsbury Avenue, West Building, Suite 202, (Temporary Location)","Tinton Falls","NJ","07724","(732) 704-3808",,469
+12,"S","Henry","Owen",,,"M",,,"Active","R",,"2501 Highway 516","Old Bridge","NJ","08857","(732) 607-7580",,470
+12,"A","Sauickie","Alex",,,"M",,,"Active","R",,"405 Route 539","Cream Ridge","NJ","08514","(609) 758-0205",,454
+12,"A","Clifton","Robert","D.",,"M",,"Assistant Minority Leader","Active","R",,"14 Cliffwood Avenue, Suite 240","Matawan","NJ","07747","(732) 970-6386",,342
+13,"S","O'Scanlon","Declan","J.","Jr.","M",,"Republican Budget Officer","Active","R",,"101 Crawfords Corner Road, Suite 4332","Holmdel","NJ","07733","(732) 444-1838",,394
+13,"A","Flynn","Victoria","A.",,"F",,"Deputy Minority Conference Lea","Active","R",,"1715 Highway 35 North, Suite 307","Middletown","NJ","07748","(732) 856-9833",,446
+13,"A","Scharfenberger","Gerry",,,"M",,"Minority Policy Chair","Active","R",,"1715 Highway 35 North., Suite 306","Middletown","NJ","07748","(732) 856-9294",,422
+14,"S","Greenstein","Linda","R.",,"F",,"Assistant Majority Leader","Active","D",,"1249 South River Road, Suite 105","Cranbury","NJ","08512","(609) 395-9911",,329
+14,"A","DeAngelo","Wayne","P.",,"M",,"Deputy Speaker","Active","D",,"4621A Nottingham Way","Hamilton Square","NJ","08690","(609) 631-7501",,279
+14,"A","McCoy","Tennille","R.",,"F",,"Deputy Conference Leader","Active","D",,"3691A Nottingham Way","Hamilton Square","NJ","08690","(609) 631-0198",,471
+15,"S","Turner","Shirley","K.",,"F",,"Senate President Pro Tempore","Active","D",,"850 Bear Tavern Road, Suite 101","Ewing Township","NJ","08628","(609) 323-7239",,47
+15,"A","Verrelli","Anthony","S.",,"M",,"Deputy Majority Leader","Active","D",,"144 West State Street","Trenton","NJ","08608","(609) 292-0500",,416
+15,"A","Reynolds-Jackson","Verlina",,,"F",,"Constituent Outreach Chair","Active","D",,"144 West State Street","Trenton","NJ","08608","(609) 571-9638",,409
+16,"S","Zwicker","Andrew",,,"M",,,"Active","D",,"2 Clerico Lane, Building 1","Hillsborough","NJ","08844","(908) 308-8672",,436
+16,"A","Drulis","Mitchelle",,,"F",,,"Active","D",,"50 Main Street, Second Floor","Flemington","NJ","08822","(908) 968-4329",,472
+16,"A","Freiman","Roy",,,"M",,"Deputy Majority Leader","Active","D",,"390 Amwell Road, Suite 301","Hillsborough","NJ","08844","(908) 829-4191",,400
+17,"S","Smith","Bob",,,"M",,,"Active","D",,"216 Stelton Road, Suite E-5","Piscataway","NJ","08854","(732) 752-0770",,53
+17,"A","Danielsen","Joe",,,"M",,"Deputy Whip","Active","D",,"334 Elizabeth Avenue","Somerset","NJ","08873","(732) 247-3999",,370
+17,"A","Egan","Kevin","P.",,"M",,,"Active","D",,"144 Livingston Avenue, Second Floor","New Brunswick","NJ","08901","(732) 249-4550",,495
+18,"S","Diegnan","Patrick","J.","Jr.","M",,,"Active","D",,"908 Oak Tree Avenue, Unit P","South Plainfield","NJ","07080","(908) 757-1677",,387
+18,"A","Karabinchak","Robert","J.",,"M",,,"Active","D",,"3 Stephenville Parkway, Suite 2D","Edison","NJ","08820","(732) 548-1406",,388
+18,"A","Stanley","Sterley","S.",,"M",,"Deputy Parliamentarian","Active","D",,"197 State Highway 18, Suite 102 North","East Brunswick","NJ","08816","(732) 875-3833",,429
+19,"S","Vitale","Joseph","F.",,"M",,,"Active","D",,"569 Rahway Avenue","Woodbridge","NJ","07095","(732) 855-7441",,175
+19,"A","Coughlin","Craig","J.",,"M",,"Assembly Speaker","Active","D",,"569 Rahway Avenue","Woodbridge","NJ","07095","(732) 855-7441",,319
+19,"A","Lopez","Yvonne",,,"F",,"Deputy Speaker","Active","D",,"211 Front Street","Perth Amboy","NJ","08861","(732) 638-5057",,401
+20,"S","Cryan","Joseph","P.",,"M",,,"Active","D",,"985 Stuyvesant Avenue","Union","NJ","07083","(908) 624-0880",,406
+20,"A","Atkins","Reginald","W.",,"M",,"Deputy Majority Leader","Active","D",,"129 East First Avenue","Roselle","NJ","07203","(908) 445-7154",,448
+20,"A","Quijano","Annette",,,"F",,"Speaker Pro Tempore","Active","D",,"30 Union Street, Suite 41","Elizabeth","NJ","07202","(908) 327-9119, (908",,309
+21,"S","Bramnick","Jon","M.",,"M",,,"Active","R",,"251 North Avenue West, Second Floor","Westfield","NJ","07090","(908) 232-2073",,433
+21,"A","Muñoz","Nancy","F.",,"F",,"Minority Budget Officer","Active","R",,"57 Union Place, Suite 310","Summit","NJ","07901","(908) 918-0414",,314
+21,"A","Matsikoudis","Michele",,,"F",,"Assistant Minority Conference ","Active","R",,"180 South Street, Suite 202","New Providence","NJ","07974","(908) 679-8889",,449
+22,"S","Scutari","Nicholas","P.",,"M",,"Senate President","Active","D",,"67 Walnut Avenue, Suite 406","Clark","NJ","07066","(732) 827-7480",,237
+22,"A","Kennedy","James","J.",,"M",,,"Active","D",,"1445 Main Street","Rahway","NJ","07065","(732) 943-2660",,381
+22,"A","Carter","Linda","S.",,"F",,"Majority Conference Leader","Active","D",,"200 West Second Street, Suite 102","Plainfield","NJ","07060","(908) 561-5757",,414
+23,"S","Steinhardt","Douglas","J.",,"M",,,"Active","R",,"127 Belvidere Avenue, Second Floor","Washington","NJ","07882","(908) 835-0552",,456
+23,"A","DiMaio","John",,,"M",,"Minority Leader","Active","R",,"208 Mountain Avenue, Suite 3","Hackettstown","NJ","07840","(908) 684-9550",,313
+23,"A","Peterson","Erik",,,"M",,"Deputy Minority Whip","Active","R",,"28 Center Street","Clinton","NJ","08809","(908) 238-0251",,320
+24,"S","Space","Parker",,,"M",,,"Active","R",,"One Wilson Drive, Suite 2B","Sparta","NJ","07871","(973) 300-0200",,473
+24,"A","Fantasia","Dawn",,,"F",,,"Active","R",,"One Wilson Drive, Suite 2B","Sparta","NJ","07871","(973) 300-0200",,474
+24,"A","Inganamort","Michael",,,"M",,,"Active","R",,"One Wilson Drive, Suite 2B","Sparta","NJ","07871","(973) 300-0200",,475
+25,"S","Bucco","Anthony","M.",,"M",,"Republican Leader","Active","R",,"75 Bloomfield Avenue, Suite 302, Third Floor","Denville","NJ","07834","(973) 627-9700",,419
+25,"A","Dunn","Aura","K.",,"F",,"Assistant Minority Whip","Active","R",,"60 Washington Street, Suite 303","Morristown","NJ","07960","(973) 206-1876",,428
+25,"A","Barranco","Christian","E.",,"M",,"Assistant Minority Conference ","Active","R",,"762 Route 15 South, Suite 1A","Lake Hopatcong","NJ","07849","(973) 810-2695",,450
+26,"S","Pennacchio","Joseph",,,"M",,"Deputy Republican Leader","Active","R",,"170 Changebridge Road, Unit A1","Montville","NJ","07045","(973) 227-4012",,305
+26,"A","Webber","Jay",,,"M",,"Minority Appropriations Office","Active","R",,"160 Littleton Road, Suite 204","Parsippany","NJ","07054","(973) 917-3420",,283
+26,"A","Bergen","Brian",,,"M",,"Minority Whip","Active","R",,"5 East Main Street, Suite 22B","Denville","NJ","07834","(973) 539-8113",,423
+27,"S","McKeon","John","F.",,"M",,,"Active","D",,"555 Northfield Avenue, Suite C","West Orange","NJ","07052","(862) 930-7071",,478
+27,"A","Bagolie","Rosaura",,,"F",,,"Active","D",,"651 Old Mount Pleasant Avenue","Livingston","NJ","07039","(973) 535-5017",,479
+27,"A","Collazos-Gill","Alixon",,,"F",,,"Active","D",,"39 South Fullerton Avenue, Second Floor, Suite 3","Montclair","NJ","07042","(973) 509-0388",,480
+28,"S","Burgess","Renee","C.",,"F",,,"Active","D",,"660 Stuyvesant Avenue","Irvington","NJ","07111","(862) 231-6577",,455
+28,"A","Hall","Garnet","R.",,"F",,,"Active","D",,"111 Dunnel Road, Suite 100","Maplewood","NJ","07054","(973) 762-1886",,481
+28,"A","Tucker","Cleopatra","G.",,"F",,,"Active","D",,"1079 Bergen Street","Newark","NJ","07112","(973) 926-4320",,285
+29,"S","Ruiz","M.","Teresa",,"F",,"Senate Majority Leader","Active","D",,"475 Bloomfield Avenue","Newark","NJ","07107","(973) 484-1000",,287
+29,"A","Pintor Marin","Eliana",,,"F",,"Assembly Budget Chair","Active","D",,"263 Lafayette Street, First Floor","Newark","NJ","07105","(973) 589-0713",,362
+29,"A","Speight","Shanique",,,"F",,"Deputy Speaker","Active","D",,"50 Park Place, Lobby 5","Newark","NJ","07102","(862) 237-9752",,403
+30,"S","Singer","Robert","W.",,"M",,"Deputy Republican Leader","Active","R",,"1771 Madison Avenue, Suite 202","Lakewood","NJ","08701","(732) 987-5669",,93
+30,"A","Kean","Sean","T.",,"M",,,"Active","R",,"1967 Highway 34, Building C, Suite 202","Wall Township","NJ","07719","(732) 974-0400",,333
+30,"A","Schnall","Alexander",,,"M",,,"Active","D",,"500 River Avenue, Suite 220","Lakewood","NJ","08701","(848) 245-9486",,482
+31,"S","McKnight","Angela","V.",,"F",,,"Active","D",,"2324 John F. Kennedy Boulevard","Jersey City","NJ","07304","(201) 360-2502",,483
+31,"A","McCann Stamato","Barbara",,,"F",,,"Active","D",,"39 Kearney Avenue, Annex 4","Jersey City","NJ","07305","(201) 451-5100",,484
+31,"A","Sampson","William","B.","IV","M",,"Deputy Speaker","Active","D",,"25 West Eighth Street","Bayonne","NJ","07002","(201) 455-2966",,451
+32,"S","Mukherji","Raj",,,"M",,,"Active","D",,"433 Palisade Avenue","Jersey City","NJ","07307","(201) 626-4000",,485
+32,"A","Allen","John",,,"M",,,"Active","D",,"80 River Street, Second Floor","Hoboken","NJ","07030","(201) 683-7917",,486
+32,"A","Ramirez","Jessica",,,"F",,,"Active","D",,"80 River Street, Second Floor","Hoboken","NJ","07030","(201) 683-7917",,487
+33,"S","Stack","Brian","P.",,"M",,,"Active","D",,"323 60th Street","West New York","NJ","07093","(201) 721-5263",,306
+33,"A","Marenco","Julio",,,"M",,,"Active","D",,"9060 Palisade Avenue","North Bergen","NJ","07047","(201) 295-0200",,488
+33,"A","Rodriguez","Gabriel",,,"M",,,"Active","D",,"5600 Kennedy Boulevard, Suite 103","West New York","NJ","07093","(201) 223-4247",,489
+34,"S","Timberlake","Britnee","N.",,"F",,,"Active","D",,"520 Main Street, Suite 1","East Orange","NJ","07018","(973) 395-1166",,490
+34,"A","Morales","Carmen","Theresa",,"F",,,"Active","D",,"152 Franklin Street","Belleville","NJ","07109","(973) 450-0484",,491
+34,"A","Venezia","Michael",,,"M",,,"Active","D",,"299 Glenwood Avenue","Bloomfield","NJ","07003","(973) 893-5869",,492
+35,"S","Wimberly","Benjie","E.",,"M",,,"Active","D",,"301 Main Street, Suite 360","Paterson","NJ","07505","(973) 925-7061",,499
+35,"S","Pou","Nellie",,,"F",,"Resigned (1/1/25)Majority Cauc","Resigned","D",,"100 Hamilton Plaza, Suite 1405","Paterson","NJ","07505","(973) 247-1555",,335
+35,"A","Sumter","Shavonda","E.",,"F",,,"Active","D",,"21 Mill Street, Suite 5","Paterson","NJ","07501","(973) 925-7063",,346
+35,"A","Wimberly","Benjie","E.",,"M",,"Speaker Pro Tempore","Resigned","D",,"301 Main Street, Suite 360","Paterson","NJ","07505","(973) 925-7061",,347
+35,"A","Abdelaziz","Al",,,"M",,,"Active","D",,"680 Broadway, Suite 2DA","Paterson","NJ","07514","(862) 264-2540",,498
+36,"S","Sarlo","Paul","A.",,"M",,"Deputy Majority Leader","Active","D",,"496 Columbia Boulevard, First Floor","Wood-Ridge","NJ","07075","(201) 804-8118",,223
+36,"A","Schaer","Gary","S.",,"M",,"Policy Chair/Deputy Speaker","Active","D",,"1 Howe Avenue, Suite 401","Passaic","NJ","07055","(973) 249-3665",,258
+36,"A","Calabrese","Clinton",,,"M",,"Deputy Whip","Active","D",,"613 Bergen Boulevard","Ridgefield","NJ","07657","(201) 943-0615",,408
+37,"S","Johnson","Gordon","M.",,"M",,"Assistant Majority Leader","Active","D",,"96 Engle Street","Englewood","NJ","07631","(201) 308-7060",,434
+37,"A","Haider","Shama","A.",,"F",,"Deputy Majority Leader/Deputy ","Active","D",,"96 Engle Street","Englewood","NJ","07631","(201) 308-7061",,452
+37,"A","Park","Ellen","J.",,"F",,"Parliamentarian","Active","D",,"96 Engle Street","Englewood","NJ","07631","(201) 308-7062",,453
+38,"S","Lagana","Joseph","A.",,"M",,,"Active","D",,"205 Robin Road, Suite 122","Paramus","NJ","07652","(201) 576-9199",,411
+38,"A","Tully","Chris",,,"M",,"Deputy Majority Leader","Active","D",,"205 Robin Road, Suite 122","Paramus","NJ","07652","(201) 576-9199",,412
+38,"A","Swain","Lisa",,,"F",,"Assembly Appropriations Chair","Active","D",,"205 Robin Road, Suite 122","Paramus","NJ","07652","(201) 576-9199",,413
+39,"S","Schepisi","Holly","T.",,"F",,"Conference Leader","Active","R",,"28 West Grand Avenue, Suite 15","Montvale","NJ","07645","(201) 666-0881",,430
+39,"A","Azzariti Jr.","John","V.","M.D.","M",,,"Active","R",,"28 West Grand Avenue, Suite 15","Montvale","NJ","07645","(201) 666-0881",,493
+39,"A","Auth","Robert",,,"M",,,"Active","R",,"84 Herbert Avenue, Building A, Suite 103","Closter","NJ","07624-1344","(201) 564-7420",,366
+40,"S","Corrado","Kristin","M.",,"F",,"Ranking Member Judiciary Commi","Active","R",,"999 Riverview Drive, Suite 350","Totowa","NJ","07512","(973) 237-1360",,392
+40,"A","DePhillips","Christopher","P.",,"M",,"Minority Conference Leader","Active","R",,"841 Franklin Avenue, Unit 4","Franklin Lakes","NJ","07417","(201) 444-9719",,404
+40,"A","Barlas","Al",,,"M",,,"Active","R",,"100 Passaic Avenue, Suite 155","Fairfield","NJ","07004","(862) 702-8458",,494
