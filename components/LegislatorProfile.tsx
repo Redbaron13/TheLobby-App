@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 
 // Corrected interface to match the database table name 'legbio'
 interface LegBio {
@@ -30,26 +31,58 @@ interface LegislatorProfileProps {
   onClose: () => void;
 }
 
+interface SponsoredBill {
+  billuuid: string;
+  ActualBillNumber: string;
+  Synopsis?: string;
+  CurrentStatus?: string;
+}
+
 export default function LegislatorProfile({ legislator, onClose }: LegislatorProfileProps) {
+  const [sponsoredBills, setSponsoredBills] = useState<SponsoredBill[]>([]);
+  const [loadingSponsored, setLoadingSponsored] = useState(false);
+  const [sponsoredError, setSponsoredError] = useState<string | null>(null);
+
   const getFullName = () => {
     const parts = [legislator.Firstname, legislator.MidName, legislator.LastName, legislator.Suffix].filter(Boolean);
     return parts.join(' ');
   };
 
-  const mockVotingRecord = [
-    { bill: 'A1234 - Renewable Energy Act', vote: 'Yes', date: '2024-01-15' },
-    { bill: 'S567 - Education Funding Reform', vote: 'Yes', date: '2024-01-12' },
-    { bill: 'A890 - Healthcare Access Bill', vote: 'No', date: '2024-01-10' }
-  ];
+  useEffect(() => {
+    const fetchSponsoredBills = async () => {
+      const sponsorName = [legislator.LastName, legislator.Firstname].filter(Boolean).join(', ');
+      if (!sponsorName) {
+        setSponsoredBills([]);
+        return;
+      }
 
-  const mockSponsoredBills = [
-    { id: 'A1111', title: 'Clean Water Protection Act', status: 'Committee Review' },
-    { id: 'A2222', title: 'Small Business Tax Relief', status: 'Passed Assembly' }
-  ];
+      if (!isSupabaseConfigured || !supabase) {
+        setSponsoredError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        return;
+      }
 
-  const getVoteColor = (vote: string) => {
-    return vote === 'Yes' ? '#059669' : '#dc2626';
-  };
+      setLoadingSponsored(true);
+      setSponsoredError(null);
+
+      const { data, error } = await supabase
+        .from('bills')
+        .select('billuuid, "ActualBillNumber", "Synopsis", "CurrentStatus"')
+        .ilike('FirstPrime', `%${sponsorName}%`)
+        .order('IntroDate', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error('Error loading sponsored bills:', error);
+        setSponsoredError('Unable to load sponsored bills.');
+      } else {
+        setSponsoredBills(data || []);
+      }
+
+      setLoadingSponsored(false);
+    };
+
+    fetchSponsoredBills();
+  }, [legislator]);
 
   return (
     <View style={styles.container}>
@@ -97,26 +130,29 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Voting Record</Text>
-          {mockVotingRecord.map((record) => (
-            <View key={record.bill} style={styles.voteItem}>
-              <View style={styles.voteHeader}>
-                <Text style={styles.billTitle}>{record.bill}</Text>
-                <View style={[styles.voteBadge, { backgroundColor: getVoteColor(record.vote) }]}>
-                  <Text style={styles.voteText}>{record.vote}</Text>
-                </View>
-              </View>
-              <Text style={styles.voteDate}>{record.date}</Text>
-            </View>
-          ))}
+          <Text style={styles.emptyStateText}>
+            Voting records are not yet connected. Provide a vote data source and we can surface recent roll-call votes here.
+          </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sponsored Bills</Text>
-          {mockSponsoredBills.map((bill) => (
-            <TouchableOpacity key={bill.id} style={styles.billItem}>
-              <Text style={styles.billId}>{bill.id}</Text>
-              <Text style={styles.billTitle}>{bill.title}</Text>
-              <Text style={styles.billStatus}>Status: {bill.status}</Text>
+          {loadingSponsored && (
+            <Text style={styles.loadingText}>Loading sponsored bills...</Text>
+          )}
+          {sponsoredError && (
+            <Text style={styles.errorText}>{sponsoredError}</Text>
+          )}
+          {!loadingSponsored && !sponsoredError && sponsoredBills.length === 0 && (
+            <Text style={styles.emptyStateText}>
+              No sponsored bills found yet.
+            </Text>
+          )}
+          {!loadingSponsored && !sponsoredError && sponsoredBills.map((bill) => (
+            <TouchableOpacity key={bill.billuuid} style={styles.billItem}>
+              <Text style={styles.billId}>{bill.ActualBillNumber || 'Unknown bill'}</Text>
+              <Text style={styles.billTitle}>{bill.Synopsis || 'No synopsis available'}</Text>
+              <Text style={styles.billStatus}>Status: {bill.CurrentStatus || 'Unknown'}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -226,6 +262,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
     marginTop: 4,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#dc2626',
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: '#6b7280',
   },
   contactItem: {
     marginBottom: 8,

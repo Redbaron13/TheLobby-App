@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { supabase } from '@/app/lib/supabase';
+import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 import { styles as BillsScreenStyles } from './BillsScreenStyles'; // Corrected import
 
 interface Bill {
@@ -31,6 +31,11 @@ export function BillsScreen() {
 
       console.log('Fetching bills from Supabase...');
 
+      if (!isSupabaseConfigured || !supabase) {
+        setError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('bills')
         .select(`
@@ -43,7 +48,7 @@ export function BillsScreen() {
           "IntroDate",
           "FirstPrime"
         `)
-        .order('"BillNumber"', { ascending: false })
+        .order('BillNumber', { ascending: false })
         .limit(50);
 
       if (error) {
@@ -119,6 +124,7 @@ export function BillsScreen() {
         placeholder="Search bills..."
         value={searchTerm}
         onChangeText={setSearchTerm}
+        placeholderTextColor="#e2e8f0"
       />
 
       <Text style={BillsScreenStyles.resultCount}>
@@ -131,6 +137,11 @@ export function BillsScreen() {
         keyExtractor={(item) => item.billuuid}
         style={BillsScreenStyles.billsList}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <Text style={BillsScreenStyles.emptyStateText}>
+            No bills match your search right now.
+          </Text>
+        }
       />
     </View>
   );

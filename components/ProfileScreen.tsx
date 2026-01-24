@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { supabase } from '@/app/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 
 export function ProfileScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<{ email?: string } | null>(null);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const signUp = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!isSupabaseConfigured || !supabase) {
+      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
       return;
     }
 
@@ -36,6 +59,11 @@ export function ProfileScreen() {
       return;
     }
 
+    if (!isSupabaseConfigured || !supabase) {
+      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+      return;
+    }
+
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -55,6 +83,11 @@ export function ProfileScreen() {
 
   const signOut = async () => {
     try {
+      if (!isSupabaseConfigured || !supabase) {
+        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+        return;
+      }
+
       await supabase.auth.signOut();
       setUser(null);
       Alert.alert('Success', 'Signed out successfully!');
@@ -70,6 +103,13 @@ export function ProfileScreen() {
       </View>
 
       <View style={{ padding: 20 }}>
+        {!isSupabaseConfigured && (
+          <View style={{ backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 16 }}>
+            <Text style={{ color: '#991b1b', fontSize: 14 }}>
+              Supabase is not configured. Add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to enable sign in.
+            </Text>
+          </View>
+        )}
         {user ? (
           <View>
             <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e40af', marginBottom: 10 }}>

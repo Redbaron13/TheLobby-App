@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Modal, ActivityIndicator, StyleSheet } from 'react-native';
-import { supabase } from '../app/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 import LegislatorProfile from './LegislatorProfile';
 
 // Corrected interface to match the database table name 'legbio'
@@ -34,6 +34,7 @@ export function LegislatorsScreen() {
   const [legislators, setLegislators] = useState<Legislator[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLegislator, setSelectedLegislator] = useState<Legislator | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     loadLegislators();
@@ -42,10 +43,15 @@ export function LegislatorsScreen() {
   const loadLegislators = async () => {
     setLoading(true);
     try {
-      // Corrected the Supabase query from 'legisbio' to 'legbio'
+      if (!isSupabaseConfigured || !supabase) {
+        setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        return;
+      }
+
+      // Load bios when available, but do not exclude legislators without bios.
       const { data, error } = await supabase
         .from('legislators')
-        .select('*, legbio!inner(*)')
+        .select('*, legbio(*)')
         .order('LastName');
 
       if (error) {
@@ -54,10 +60,12 @@ export function LegislatorsScreen() {
       }
 
       setLegislators(data || []);
+      setErrorMessage(null);
 
     } catch (error) {
       console.error('Error loading legislators:', error);
       Alert.alert('Error', 'Failed to load legislators. Please check your network connection and Supabase RLS policies.');
+      setErrorMessage('Failed to load legislators. Please check your network connection and Supabase policies.');
     } finally {
       setLoading(false);
     }
@@ -86,6 +94,14 @@ export function LegislatorsScreen() {
   const renderContent = () => {
     if (loading) {
       return <ActivityIndicator size="large" color="#0f172a" style={{ marginTop: 20 }} />;
+    }
+
+    if (errorMessage) {
+      return (
+        <Text style={styles.infoText}>
+          {errorMessage}
+        </Text>
+      );
     }
 
     if (legislators.length === 0) {
