@@ -1,5 +1,6 @@
 -- Core NJ Legislature tables for Supabase
 create extension if not exists pgcrypto;
+create extension if not exists postgis;
 
 create table if not exists public.legislators (
   roster_key integer primary key,
@@ -108,6 +109,19 @@ create table if not exists public.districts (
   properties jsonb,
   geometry_json jsonb,
   updated_at timestamptz default now()
+);
+
+create table if not exists public.legislative_districts (
+  id uuid primary key default gen_random_uuid(),
+  chamber text not null check (chamber in ('A','S')),
+  district_number int not null,
+  geom geometry(MultiPolygon, 4326) not null,
+  source_sr int not null,
+  source_objectid int not null,
+  valid_from date not null default current_date,
+  valid_to date,
+  created_at timestamptz not null default now(),
+  unique (chamber, district_number, valid_to)
 );
 
 create table if not exists public.data_validation_issues (
