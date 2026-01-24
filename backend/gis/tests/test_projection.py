@@ -1,6 +1,3 @@
-import pytest
-
-shapely = pytest.importorskip("shapely")
 from shapely.geometry import Polygon
 
 from backend.gis.geometry import geometries_equal, normalize_geometry

@@ -4,16 +4,11 @@ import json
 import os
 import sys
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
-from backend.gis.setup_env import ensure_dependencies
-from backend.gis.validation import (
-    ValidationError,
-    discover_fields,
-    extract_int,
-    infer_chamber,
-    validate_feature,
-)
+from backend.gis.arcgis_client import fetch_all_features, fetch_layer_metadata
+from backend.gis.geometry import normalize_geometry
+from backend.gis.repository import upsert_district
 
 
 @dataclass(frozen=True)
@@ -34,6 +29,8 @@ REQUIRED_ENV = [
     "ARCGIS_QUERY_PAGE_SIZE",
     "ARCGIS_TARGET_SRID",
     "GIS_INGESTION_ENABLED",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
 ]
 
 
@@ -47,12 +44,6 @@ def _parse_bool(value: str) -> bool:
 
 def _validate_env() -> IngestConfig:
     missing = [key for key in REQUIRED_ENV if not os.getenv(key)]
-    if not os.getenv("DATABASE_URL"):
-        missing.extend(
-            key
-            for key in ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY")
-            if not os.getenv(key)
-        )
     if missing:
         raise IngestError(f"Missing required environment variables: {', '.join(missing)}")
     target_srid = int(os.environ["ARCGIS_TARGET_SRID"])
@@ -70,17 +61,45 @@ def _validate_env() -> IngestConfig:
     )
 
 
-def _import_runtime() -> tuple[
-    Callable[[], dict[str, Any]],
-    Callable[[], list[dict[str, Any]]],
-    Callable[[dict[str, Any], int], Any],
-    Callable[..., Any],
-]:
-    from backend.gis.arcgis_client import fetch_all_features, fetch_layer_metadata
-    from backend.gis.geometry import normalize_geometry
-    from backend.gis.repository import upsert_district
+def _find_field(fields: list[dict[str, Any]], candidates: set[str]) -> str:
+    for field in fields:
+        name = field.get("name")
+        if name and name.upper() in candidates:
+            return name
+    for field in fields:
+        name = field.get("name")
+        if name and any(candidate in name.upper() for candidate in candidates):
+            return name
+    raise IngestError(f"Unable to locate field from candidates: {sorted(candidates)}")
 
-    return fetch_layer_metadata, fetch_all_features, normalize_geometry, upsert_district
+
+def _infer_chamber(attributes: dict[str, Any], layer_name: str | None) -> str:
+    for key, value in attributes.items():
+        if value is None:
+            continue
+        key_upper = key.upper()
+        if key_upper in {"CHAMBER", "HOUSE", "LEGISLATIVE_BODY", "BODY"}:
+            value_upper = str(value).strip().upper()
+            if value_upper.startswith("A") or "ASSEMB" in value_upper:
+                return "A"
+            if value_upper.startswith("S") or "SEN" in value_upper:
+                return "S"
+    if layer_name:
+        layer_upper = layer_name.upper()
+        if "ASSEMB" in layer_upper:
+            return "A"
+        if "SENATE" in layer_upper:
+            return "S"
+    raise IngestError("Unable to infer chamber from feature attributes")
+
+
+def _extract_int(attributes: dict[str, Any], field_name: str) -> int:
+    if field_name not in attributes:
+        raise IngestError(f"Missing field {field_name} in feature properties")
+    try:
+        return int(attributes[field_name])
+    except (TypeError, ValueError) as exc:
+        raise IngestError(f"Invalid value for {field_name}: {attributes[field_name]}") from exc
 
 
 def _log(payload: dict[str, Any]) -> None:
@@ -89,27 +108,23 @@ def _log(payload: dict[str, Any]) -> None:
 
 def main() -> int:
     try:
-        ensure_dependencies()
         config = _validate_env()
         if not config.gis_ingestion_enabled:
             _log({"action": "skipped", "reason": "GIS_INGESTION_ENABLED=false"})
             return 0
-        fetch_layer_metadata, fetch_all_features, normalize_geometry, upsert_district = (
-            _import_runtime()
-        )
         metadata = fetch_layer_metadata()
         source_srid = metadata["spatialReference"]["wkid"]
         fields = metadata.get("fields") or []
-        field_names = discover_fields(fields)
+        district_field = _find_field(fields, {"DISTRICT", "DISTRICT_NUMBER", "DIST_NO"})
+        objectid_field = _find_field(fields, {"OBJECTID", "OBJECT_ID"})
         layer_name = metadata.get("name")
         features = fetch_all_features()
         counts = {"inserted": 0, "updated": 0, "unchanged": 0}
         for feature in features:
-            validate_feature(feature, field_names.district_field, field_names.objectid_field)
             attributes = feature.get("properties") or {}
-            district_number = extract_int(attributes, field_names.district_field)
-            chamber = infer_chamber(attributes, layer_name, field_names.chamber_field)
-            objectid = extract_int(attributes, field_names.objectid_field)
+            district_number = _extract_int(attributes, district_field)
+            chamber = _infer_chamber(attributes, layer_name)
+            objectid = _extract_int(attributes, objectid_field)
             geom = normalize_geometry(feature, source_srid)
             result = upsert_district(
                 chamber=chamber,
@@ -134,9 +149,6 @@ def main() -> int:
         }
         _log(summary)
         return 0
-    except (IngestError, ValidationError) as exc:
-        _log({"action": "error", "error": str(exc)})
-        return 1
     except Exception as exc:  # noqa: BLE001
         _log({"action": "error", "error": str(exc)})
         return 1
