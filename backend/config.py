@@ -22,6 +22,8 @@ class PipelineConfig:
     files_to_download: tuple[str, ...]
     session_lookback_count: int
     session_length_years: int
+    legdb_base_url: str
+    legdb_years: tuple[int, ...]
 
 
 def load_config() -> PipelineConfig:
