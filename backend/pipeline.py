@@ -64,24 +64,16 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
 
     run_date = date_str or datetime.utcnow().strftime("%Y-%m-%d")
     raw_dir = config.data_dir / "raw" / run_date
+    download_files(config.base_url, config.files_to_download, raw_dir)
     download_text_file(config.legdb_readme_url, raw_dir)
     votes_dir = config.data_dir / "raw" / run_date / "votes"
     vote_files = download_votes(config.votes_base_url, config.votes_readme_urls, votes_dir)
     feature_collection = fetch_all_features(config.gis_service_url)
 
-    bills: list[dict] = []
-    legislators: list[dict] = []
-    bill_sponsors: list[dict] = []
-    committee_members: list[dict] = []
-
-    for session_year in config.sessions:
-        session_dir = raw_dir / "sessions" / str(session_year)
-        session_base = f"https://pub.njleg.state.nj.us/leg-databases/{session_year}data"
-        download_files(session_base, config.files_to_download, session_dir)
-        bills.extend(parse_mainbill(session_dir / "MAINBILL.TXT", session_year=session_year))
-        legislators.extend(parse_roster(session_dir / "ROSTER.TXT", session_year=session_year))
-        bill_sponsors.extend(parse_bill_sponsors(session_dir / "BILLSPON.TXT", session_year=session_year))
-        committee_members.extend(parse_committee_members(session_dir / "COMEMBER.TXT", session_year=session_year))
+    bills = parse_mainbill(raw_dir / "MAINBILL.TXT")
+    legislators = parse_roster(raw_dir / "ROSTER.TXT")
+    bill_sponsors = parse_bill_sponsors(raw_dir / "BILLSPON.TXT")
+    committee_members = parse_committee_members(raw_dir / "COMEMBER.TXT")
     vote_records = []
     for vote_file in vote_files:
         vote_records.extend(parse_vote_file(vote_file))

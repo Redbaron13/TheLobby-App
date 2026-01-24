@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
-import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 
 interface Legislator {
-  roster_key: number;
-  first_name: string;
-  last_name: string;
-  party: string;
-  house: string;
-  district: number;
-  leg_pos?: string;
-  leg_status?: string;
+  RosterKey: number;
+  Firstname: string;
+  LastName: string;
+  Party: string;
+  House: string;
+  District: number;
+  LegPos?: string;
 }
 
 export function FindLegislatorScreen() {
@@ -55,7 +54,7 @@ export function FindLegislatorScreen() {
       return;
     }
 
-    if (!isSupabaseConfigured()) {
+    if (!isSupabaseConfigured || !supabase) {
       setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
       return;
     }
@@ -64,18 +63,11 @@ export function FindLegislatorScreen() {
     setErrorMessage(null);
     setDistrictReps([]);
 
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
-      setDistrictLoading(false);
-      return;
-    }
-
     const { data, error } = await supabase
       .from('legislators')
-      .select('roster_key, first_name, last_name, party, house, district, leg_pos, leg_status')
-      .eq('district', districtNumber)
-      .order('house');
+      .select('RosterKey, Firstname, LastName, Party, House, District, LegPos')
+      .eq('District', districtNumber)
+      .order('House');
 
     if (error) {
       console.error('District lookup error:', error);
@@ -146,7 +138,7 @@ export function FindLegislatorScreen() {
               </Text>
             )}
             <Text style={{ color: '#059669', marginTop: 8 }}>
-              Automatic district matching uses NJ GIS boundaries in the backend.
+              Automatic district matching needs a district boundary data source.
             </Text>
           </View>
         )}
@@ -188,7 +180,7 @@ export function FindLegislatorScreen() {
           {!districtLoading && districtReps.length > 0 && (
             <View>
               {districtReps.map(rep => (
-                <View key={rep.roster_key} style={{
+                <View key={rep.RosterKey} style={{
                   backgroundColor: '#ffffff',
                   borderRadius: 12,
                   padding: 12,
@@ -200,19 +192,14 @@ export function FindLegislatorScreen() {
                   elevation: 2,
                 }}>
                   <Text style={{ fontSize: 16, fontWeight: '600', color: '#1e293b' }}>
-                    {rep.first_name} {rep.last_name}
+                    {rep.Firstname} {rep.LastName}
                   </Text>
                   <Text style={{ color: '#64748b' }}>
-                    {rep.house} • District {rep.district} • {rep.party}
+                    {rep.House} • District {rep.District} • {rep.Party}
                   </Text>
-                  {rep.leg_pos && (
+                  {rep.LegPos && (
                     <Text style={{ color: '#059669', marginTop: 4 }}>
-                      {rep.leg_pos}
-                    </Text>
-                  )}
-                  {rep.leg_status && (
-                    <Text style={{ color: '#94a3b8', marginTop: 4 }}>
-                      Status: {rep.leg_status}
+                      {rep.LegPos}
                     </Text>
                   )}
                 </View>

@@ -107,11 +107,6 @@ export const styles = StyleSheet.create({
     color: '#64748b',
     marginTop: 24,
   },
-  actionMessage: {
-    textAlign: 'center',
-    color: '#059669',
-    marginBottom: 12,
-  },
   billCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
@@ -174,16 +169,5 @@ export const styles = StyleSheet.create({
     color: '#475569',
     lineHeight: 20,
     fontStyle: 'italic',
-  },
-  saveButton: {
-    marginTop: 12,
-    backgroundColor: '#059669',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: '#ffffff',
-    fontWeight: '600',
   },
 });

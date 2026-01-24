@@ -7,15 +7,9 @@ from typing import Iterable
 
 import urllib.parse
 
-DEFAULT_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; LobbyTrackBot/1.0; +https://www.njleg.state.nj.us/)",
-    "Accept": "*/*",
-}
-
 
 def fetch_index_html(base_url: str) -> str:
-    request = urllib.request.Request(base_url, headers=DEFAULT_HEADERS)
-    with urllib.request.urlopen(request) as response:
+    with urllib.request.urlopen(base_url) as response:
         return response.read().decode("utf-8", errors="ignore")
 
 
@@ -39,8 +33,7 @@ def download_files(base_url: str, filenames: Iterable[str], destination: Path) -
     for filename in filenames:
         url = resolve_download_url(base_url, index_html, filename)
         target_path = destination / filename
-        request = urllib.request.Request(url, headers=DEFAULT_HEADERS)
-        with urllib.request.urlopen(request) as response, target_path.open("wb") as f:
+        with urllib.request.urlopen(url) as response, target_path.open("wb") as f:
             f.write(response.read())
         downloaded_paths.append(target_path)
 
@@ -51,7 +44,6 @@ def download_text_file(url: str, destination: Path) -> Path:
     destination.mkdir(parents=True, exist_ok=True)
     filename = Path(urllib.parse.urlparse(url).path).name
     target_path = destination / filename
-    request = urllib.request.Request(url, headers=DEFAULT_HEADERS)
-    with urllib.request.urlopen(request) as response, target_path.open("wb") as f:
+    with urllib.request.urlopen(url) as response, target_path.open("wb") as f:
         f.write(response.read())
     return target_path

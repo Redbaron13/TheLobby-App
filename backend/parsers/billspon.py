@@ -6,7 +6,7 @@ from pathlib import Path
 from .utils import normalize_string, parse_date
 
 
-def parse_bill_sponsors(path: Path, session_year: int | None = None) -> list[dict]:
+def parse_bill_sponsors(path: Path) -> list[dict]:
     records: list[dict] = []
     with path.open("r", encoding="latin1", newline="") as file:
         reader = csv.DictReader(file)
@@ -22,8 +22,7 @@ def parse_bill_sponsors(path: Path, session_year: int | None = None) -> list[dic
             except ValueError:
                 continue
 
-            session_prefix = f"{session_year}-" if session_year else ""
-            bill_key = f"{session_prefix}{bill_type.strip()}-{bill_number_int}"
+            bill_key = f"{bill_type.strip()}-{bill_number_int}"
             sponsor = normalize_string(row.get("Sponsor"))
             bill_sponsor_key = f"{bill_key}-{sequence_int}"
 
@@ -31,7 +30,6 @@ def parse_bill_sponsors(path: Path, session_year: int | None = None) -> list[dic
                 {
                     "bill_sponsor_key": bill_sponsor_key,
                     "bill_key": bill_key,
-                    "session_year": session_year,
                     "bill_type": bill_type.strip(),
                     "bill_number": bill_number_int,
                     "sequence": sequence_int,

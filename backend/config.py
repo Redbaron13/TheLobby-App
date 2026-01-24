@@ -12,7 +12,6 @@ class PipelineConfig:
     votes_readme_urls: tuple[str, ...]
     gis_service_url: str
     legdb_readme_url: str
-    sessions: tuple[int, ...]
     data_dir: Path
     supabase_url: str
     supabase_service_key: str
@@ -38,8 +37,6 @@ def load_config() -> PipelineConfig:
         "NJLEG_LEGDB_README_URL",
         "https://pub.njleg.state.nj.us/leg-databases/2024data/Readme.txt",
     )
-    sessions_env = os.getenv("NJLEG_SESSIONS", "2024,2022,2020")
-    sessions = tuple(int(item.strip()) for item in sessions_env.split(",") if item.strip().isdigit())
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
     supabase_url = os.getenv("SUPABASE_URL", "").strip()
     supabase_service_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
@@ -61,7 +58,6 @@ def load_config() -> PipelineConfig:
         votes_readme_urls=tuple(url for url in votes_readme_urls if url),
         gis_service_url=gis_service_url,
         legdb_readme_url=legdb_readme_url,
-        sessions=sessions,
         data_dir=data_dir,
         supabase_url=supabase_url,
         supabase_service_key=supabase_service_key,

@@ -6,7 +6,7 @@ from pathlib import Path
 from .utils import normalize_string, parse_date
 
 
-def parse_mainbill(path: Path, session_year: int | None = None) -> list[dict]:
+def parse_mainbill(path: Path) -> list[dict]:
     records: list[dict] = []
     with path.open("r", encoding="latin1", newline="") as file:
         reader = csv.DictReader(file)
@@ -21,12 +21,10 @@ def parse_mainbill(path: Path, session_year: int | None = None) -> list[dict]:
             except ValueError:
                 continue
 
-            session_prefix = f"{session_year}-" if session_year else ""
-            bill_key = f"{session_prefix}{bill_type.strip()}-{bill_number_int}"
+            bill_key = f"{bill_type.strip()}-{bill_number_int}"
             records.append(
                 {
                     "bill_key": bill_key,
-                    "session_year": session_year,
                     "bill_type": bill_type.strip(),
                     "bill_number": bill_number_int,
                     "actual_bill_number": normalize_string(row.get("ActualBillNumber")),

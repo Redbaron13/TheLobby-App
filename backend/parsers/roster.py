@@ -12,7 +12,7 @@ HOUSE_MAP = {
 }
 
 
-def parse_roster(path: Path, session_year: int | None = None) -> list[dict]:
+def parse_roster(path: Path) -> list[dict]:
     records: list[dict] = []
     with path.open("r", encoding="latin1", newline="") as file:
         reader = csv.DictReader(file)
@@ -33,7 +33,6 @@ def parse_roster(path: Path, session_year: int | None = None) -> list[dict]:
             records.append(
                 {
                     "roster_key": roster_key_int,
-                    "session_year": session_year,
                     "district": district_int,
                     "house": house,
                     "last_name": normalize_string(row.get("LastName")),

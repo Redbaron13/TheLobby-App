@@ -2,7 +2,6 @@
 
 create table if not exists public.legislators (
   roster_key integer primary key,
-  session_year integer,
   district integer,
   house text,
   last_name text,
@@ -26,7 +25,6 @@ create table if not exists public.legislators (
 
 create table if not exists public.bills (
   bill_key text primary key,
-  session_year integer,
   bill_type text,
   bill_number integer,
   actual_bill_number text,
@@ -50,7 +48,6 @@ create table if not exists public.bills (
 create table if not exists public.bill_sponsors (
   bill_sponsor_key text primary key,
   bill_key text references public.bills(bill_key),
-  session_year integer,
   bill_type text,
   bill_number integer,
   sequence integer,
@@ -65,7 +62,6 @@ create table if not exists public.bill_sponsors (
 
 create table if not exists public.committee_members (
   committee_member_key text primary key,
-  session_year integer,
   committee_code text,
   member text,
   position_on_committee text,
@@ -90,26 +86,8 @@ create table if not exists public.districts (
   updated_at timestamptz default now()
 );
 
-create table if not exists public.user_saved_bills (
-  user_id uuid references auth.users(id),
-  bill_key text references public.bills(bill_key),
-  created_at timestamptz default now(),
-  primary key (user_id, bill_key)
-);
-
-create table if not exists public.user_saved_legislators (
-  user_id uuid references auth.users(id),
-  legislator_roster_key integer references public.legislators(roster_key),
-  created_at timestamptz default now(),
-  primary key (user_id, legislator_roster_key)
-);
-
 create index if not exists idx_bills_bill_number on public.bills(bill_number);
-create index if not exists idx_bills_session_year on public.bills(session_year);
 create index if not exists idx_legislators_district on public.legislators(district);
-create index if not exists idx_legislators_session_year on public.legislators(session_year);
 create index if not exists idx_bill_sponsors_bill_key on public.bill_sponsors(bill_key);
-create index if not exists idx_bill_sponsors_session_year on public.bill_sponsors(session_year);
-create index if not exists idx_committee_members_session_year on public.committee_members(session_year);
 create index if not exists idx_vote_records_source_file on public.vote_records(source_file);
 create index if not exists idx_districts_number on public.districts(district_number);

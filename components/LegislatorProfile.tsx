@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 
 interface Legislator {
   roster_key: number;
@@ -25,18 +25,16 @@ interface LegislatorProfileProps {
 }
 
 interface SponsoredBill {
-  bill_key: string;
-  actual_bill_number: string;
-  synopsis?: string;
-  current_status?: string;
+  billuuid: string;
+  ActualBillNumber: string;
+  Synopsis?: string;
+  CurrentStatus?: string;
 }
 
 export default function LegislatorProfile({ legislator, onClose }: LegislatorProfileProps) {
   const [sponsoredBills, setSponsoredBills] = useState<SponsoredBill[]>([]);
   const [loadingSponsored, setLoadingSponsored] = useState(false);
   const [sponsoredError, setSponsoredError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [savedMessage, setSavedMessage] = useState<string | null>(null);
 
   const getFullName = () => {
     const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
@@ -45,13 +43,13 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
 
   useEffect(() => {
     const fetchSponsoredBills = async () => {
-      const sponsorName = [legislator.last_name, legislator.first_name].filter(Boolean).join(', ');
+      const sponsorName = [legislator.LastName, legislator.Firstname].filter(Boolean).join(', ');
       if (!sponsorName) {
         setSponsoredBills([]);
         return;
       }
 
-      if (!isSupabaseConfigured()) {
+      if (!isSupabaseConfigured || !supabase) {
         setSponsoredError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
         return;
       }
@@ -59,18 +57,11 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
       setLoadingSponsored(true);
       setSponsoredError(null);
 
-      const supabase = getSupabaseClient();
-      if (!supabase) {
-        setSponsoredError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
-        setLoadingSponsored(false);
-        return;
-      }
-
       const { data, error } = await supabase
         .from('bills')
-        .select('bill_key, actual_bill_number, synopsis, current_status')
-        .ilike('first_prime', `%${sponsorName}%`)
-        .order('intro_date', { ascending: false })
+        .select('billuuid, "ActualBillNumber", "Synopsis", "CurrentStatus"')
+        .ilike('FirstPrime', `%${sponsorName}%`)
+        .order('IntroDate', { ascending: false })
         .limit(5);
 
       if (error) {
@@ -85,37 +76,6 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
 
     fetchSponsoredBills();
   }, [legislator]);
-
-  const saveLegislator = async () => {
-    if (!isSupabaseConfigured()) {
-      setSavedMessage('Supabase is not configured.');
-      return;
-    }
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      setSavedMessage('Supabase is not configured.');
-      return;
-    }
-    setSaving(true);
-    setSavedMessage(null);
-    const { data: authData } = await supabase.auth.getUser();
-    const user = authData.user;
-    if (!user) {
-      setSavedMessage('Sign in to save legislators.');
-      setSaving(false);
-      return;
-    }
-    const { error } = await supabase.from('user_saved_legislators').upsert({
-      user_id: user.id,
-      legislator_roster_key: legislator.roster_key,
-    });
-    if (error) {
-      setSavedMessage('Unable to save legislator.');
-    } else {
-      setSavedMessage('Saved to your profile.');
-    }
-    setSaving(false);
-  };
 
   return (
     <View style={styles.container}>
@@ -182,10 +142,10 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
             </Text>
           )}
           {!loadingSponsored && !sponsoredError && sponsoredBills.map((bill) => (
-            <TouchableOpacity key={bill.bill_key} style={styles.billItem}>
-              <Text style={styles.billId}>{bill.actual_bill_number || bill.bill_key}</Text>
-              <Text style={styles.billTitle}>{bill.synopsis || 'No synopsis available'}</Text>
-              <Text style={styles.billStatus}>Status: {bill.current_status || 'Unknown'}</Text>
+            <TouchableOpacity key={bill.billuuid} style={styles.billItem}>
+              <Text style={styles.billId}>{bill.ActualBillNumber || 'Unknown bill'}</Text>
+              <Text style={styles.billTitle}>{bill.Synopsis || 'No synopsis available'}</Text>
+              <Text style={styles.billStatus}>Status: {bill.CurrentStatus || 'Unknown'}</Text>
             </TouchableOpacity>
           ))}
         </View>
