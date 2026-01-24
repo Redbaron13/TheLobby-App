@@ -47,3 +47,7 @@ def download_text_file(url: str, destination: Path) -> Path:
     with urllib.request.urlopen(url) as response, target_path.open("wb") as f:
         f.write(response.read())
     return target_path
+
+
+def download_binary_file(url: str, destination: Path) -> Path:
+    return download_text_file(url, destination)

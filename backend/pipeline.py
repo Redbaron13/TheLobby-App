@@ -9,7 +9,12 @@ import urllib.error
 from backend.config import PRIMARY_KEYS, PipelineConfig, draft_table_name
 from backend.downloader import download_files, download_text_file
 from backend.data_merge import merge_rows_by_key
+from backend.legdb_readme import ensure_required_tables
 from backend.legdb_downloader import download_legdb_session
+from backend.legislative_downloads import (
+    LegislativeDownloadError,
+    download_bill_tracking_session,
+)
 from backend.arcgis import fetch_all_features
 from backend.parsers import (
     parse_bill_sponsors,
@@ -31,6 +36,7 @@ from backend.snapshot import (
 from backend.supabase_loader import SupabaseClient
 from backend.votes_downloader import download_votes
 from backend.session_filter import build_session_window
+from backend.roster_split import split_legislators
 from backend.validation import (
     filter_to_recent_sessions,
     validate_bill_sponsors,
@@ -80,15 +86,21 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     run_date = date_str or datetime.utcnow().strftime("%Y-%m-%d")
     raw_dir = config.data_dir / "raw" / run_date
     downloads_dir = raw_dir / "downloads"
-    download_files(config.base_url, config.files_to_download, downloads_dir)
-    download_text_file(config.legdb_readme_url, downloads_dir)
-    legdb_dirs = _download_legdb_sessions(config, raw_dir / "legdb")
+    readme_path = download_text_file(config.legdb_readme_url, downloads_dir)
+    readme_text = readme_path.read_text(encoding="latin1", errors="ignore")
+    ensure_required_tables(
+        readme_text,
+        ("MainBill", "Roster", "BillSpon", "COMember"),
+    )
+    _download_bill_tracking(config, downloads_dir)
+    _download_legdb_sessions(config, raw_dir / "legdb")
     votes_dir = raw_dir / "votes"
     vote_files = download_votes(config.votes_base_url, config.votes_readme_urls, votes_dir)
     feature_collection = fetch_all_features(config.gis_service_url)
 
     bills = parse_mainbill(downloads_dir / "MAINBILL.TXT")
     legislators = parse_roster(downloads_dir / "ROSTER.TXT")
+    active_legislators, former_legislators = split_legislators(legislators)
     bill_sponsors = parse_bill_sponsors(downloads_dir / "BILLSPON.TXT")
     committee_members = parse_committee_members(downloads_dir / "COMEMBER.TXT")
     vote_records = []
@@ -172,6 +184,30 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         districts=len(districts_result.valid_rows),
         validation_issues=len(validation_issues),
     )
+
+
+def _download_bill_tracking(config: PipelineConfig, downloads_dir: Path) -> None:
+    session_year = max(config.bill_tracking_years)
+    try:
+        download_bill_tracking_session(
+            base_url="https://www.njleg.state.nj.us",
+            pub_base_url="https://pub.njleg.state.nj.us",
+            download_type=config.download_type,
+            session_year=session_year,
+            destination=downloads_dir,
+            required_files=config.files_to_download,
+        )
+    except LegislativeDownloadError:
+        download_files(config.base_url, config.files_to_download, downloads_dir)
+
+
+def _download_legdb_sessions(config: PipelineConfig, destination: Path) -> list[Path]:
+    downloaded: list[Path] = []
+    for year in config.legdb_years:
+        downloaded.extend(
+            download_legdb_session(config.legdb_base_url, year, config.files_to_download, destination / str(year))
+        )
+    return downloaded
 
 
 def _upload_changed(
