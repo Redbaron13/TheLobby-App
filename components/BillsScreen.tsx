@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
 import { styles as BillsScreenStyles } from './BillsScreenStyles'; // Corrected import
 
 interface Bill {
@@ -31,7 +31,13 @@ export function BillsScreen() {
 
       console.log('Fetching bills from Supabase...');
 
-      if (!isSupabaseConfigured || !supabase) {
+      if (!isSupabaseConfigured()) {
+        setError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        return;
+      }
+
+      const supabase = getSupabaseClient();
+      if (!supabase) {
         setError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
         return;
       }
@@ -48,7 +54,7 @@ export function BillsScreen() {
           intro_date,
           first_prime
         `)
-        .order('BillNumber', { ascending: false })
+        .order('bill_number', { ascending: false })
         .limit(50);
 
       if (error) {

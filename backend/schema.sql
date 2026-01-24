@@ -111,6 +111,20 @@ create table if not exists public.districts (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.user_saved_bills (
+  user_id uuid references auth.users(id) on delete cascade,
+  bill_key text references public.bills(bill_key) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, bill_key)
+);
+
+create table if not exists public.user_saved_legislators (
+  user_id uuid references auth.users(id) on delete cascade,
+  roster_key integer references public.legislators(roster_key) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, roster_key)
+);
+
 create table if not exists public.legislative_districts (
   id uuid primary key default gen_random_uuid(),
   chamber text not null check (chamber in ('A','S')),
