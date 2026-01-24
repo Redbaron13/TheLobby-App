@@ -3,13 +3,11 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import date, timedelta
-
 import psycopg2
-from shapely.geometry import MultiPolygon, mapping, shape
+from shapely.geometry import MultiPolygon, shape, mapping
 from supabase import Client, create_client
 
 from backend.gis.geometry import geometries_equal
-
 
 @dataclass
 class UpsertResult:
