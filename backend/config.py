@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -19,6 +20,10 @@ class PipelineConfig:
     backup_retention_count: int
     backup_interval_days: int
     files_to_download: tuple[str, ...]
+    session_lookback_count: int
+    session_length_years: int
+    legdb_base_url: str
+    legdb_years: tuple[int, ...]
 
 
 def load_config() -> PipelineConfig:
@@ -37,13 +42,17 @@ def load_config() -> PipelineConfig:
         "NJLEG_LEGDB_README_URL",
         "https://pub.njleg.state.nj.us/leg-databases/2024data/Readme.txt",
     )
+    legdb_base_url = os.getenv("NJLEG_LEGDB_BASE_URL", "https://pub.njleg.state.nj.us/leg-databases")
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
-    supabase_url = os.getenv("SUPABASE_URL", "").strip()
-    supabase_service_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    supabase_url = os.getenv("SUPABASE_URL", "https://zgtevahaudnjpocptzgj.supabase.co").strip()
+    supabase_service_key = _resolve_supabase_key()
 
     retention_days = int(os.getenv("DATA_RETENTION_DAYS", "3"))
     backup_retention_count = int(os.getenv("BACKUP_RETENTION_COUNT", "2"))
     backup_interval_days = int(os.getenv("BACKUP_INTERVAL_DAYS", "14"))
+    session_lookback_count = int(os.getenv("SESSION_LOOKBACK_COUNT", "3"))
+    session_length_years = int(os.getenv("SESSION_LENGTH_YEARS", "2"))
+    legdb_years = _parse_legdb_years(os.getenv("NJLEG_LEGDB_YEARS"))
 
     files_to_download = (
         "MAINBILL.TXT",
@@ -65,14 +74,54 @@ def load_config() -> PipelineConfig:
         backup_retention_count=backup_retention_count,
         backup_interval_days=backup_interval_days,
         files_to_download=files_to_download,
+        session_lookback_count=session_lookback_count,
+        session_length_years=session_length_years,
+        legdb_base_url=legdb_base_url,
+        legdb_years=legdb_years,
     )
 
 
 PRIMARY_KEYS = {
     "bills": "bill_key",
     "legislators": "roster_key",
+    "former_legislators": "roster_key",
     "bill_sponsors": "bill_sponsor_key",
     "committee_members": "committee_member_key",
     "vote_records": "vote_record_key",
     "districts": "district_key",
 }
+
+DRAFT_TABLE_PREFIX = "draft_"
+
+
+def draft_table_name(table: str) -> str:
+    return f"{DRAFT_TABLE_PREFIX}{table}"
+
+
+def _parse_legdb_years(value: str | None) -> tuple[int, ...]:
+    if not value:
+        fallback_year = datetime.utcnow().year - 1
+        return (fallback_year,)
+    years: list[int] = []
+    for part in value.split(","):
+        cleaned = part.strip()
+        if not cleaned:
+            continue
+        try:
+            years.append(int(cleaned))
+        except ValueError:
+            continue
+    return tuple(years)
+
+
+def _resolve_supabase_key() -> str:
+    service_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    if service_key:
+        return service_key
+    publishable_key = os.getenv(
+        "SUPABASE_PUBLISHABLE_KEY",
+        "sb_publishable_MWnlnNUDf6oIWqlvI8DUJg_QkSawezh",
+    ).strip()
+    if publishable_key:
+        return publishable_key
+    return os.getenv("SUPABASE_ANON_KEY", "").strip()
