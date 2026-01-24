@@ -19,6 +19,8 @@ class PipelineConfig:
     backup_retention_count: int
     backup_interval_days: int
     files_to_download: tuple[str, ...]
+    session_lookback_count: int
+    session_length_years: int
 
 
 def load_config() -> PipelineConfig:
@@ -44,6 +46,8 @@ def load_config() -> PipelineConfig:
     retention_days = int(os.getenv("DATA_RETENTION_DAYS", "3"))
     backup_retention_count = int(os.getenv("BACKUP_RETENTION_COUNT", "2"))
     backup_interval_days = int(os.getenv("BACKUP_INTERVAL_DAYS", "14"))
+    session_lookback_count = int(os.getenv("SESSION_LOOKBACK_COUNT", "3"))
+    session_length_years = int(os.getenv("SESSION_LENGTH_YEARS", "2"))
 
     files_to_download = (
         "MAINBILL.TXT",
@@ -65,6 +69,8 @@ def load_config() -> PipelineConfig:
         backup_retention_count=backup_retention_count,
         backup_interval_days=backup_interval_days,
         files_to_download=files_to_download,
+        session_lookback_count=session_lookback_count,
+        session_length_years=session_length_years,
     )
 
 
@@ -76,3 +82,9 @@ PRIMARY_KEYS = {
     "vote_records": "vote_record_key",
     "districts": "district_key",
 }
+
+DRAFT_TABLE_PREFIX = "draft_"
+
+
+def draft_table_name(table: str) -> str:
+    return f"{DRAFT_TABLE_PREFIX}{table}"

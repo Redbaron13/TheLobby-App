@@ -22,6 +22,7 @@ def main() -> int:
     print(f"Committee members: {result.committee_members}")
     print(f"Vote records: {result.vote_records}")
     print(f"Districts: {result.districts}")
+    print(f"Validation issues: {result.validation_issues}")
     return 0
 
 
