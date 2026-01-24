@@ -13,6 +13,8 @@ class PipelineConfig:
     votes_readme_urls: tuple[str, ...]
     gis_service_url: str
     legdb_readme_url: str
+    download_type: str
+    bill_tracking_years: tuple[int, ...]
     data_dir: Path
     supabase_url: str
     supabase_service_key: str
@@ -43,6 +45,8 @@ def load_config() -> PipelineConfig:
         "https://pub.njleg.state.nj.us/leg-databases/2024data/Readme.txt",
     )
     legdb_base_url = os.getenv("NJLEG_LEGDB_BASE_URL", "https://pub.njleg.state.nj.us/leg-databases")
+    download_type = os.getenv("NJLEG_DOWNLOAD_TYPE", "Bill_Tracking")
+    bill_tracking_years = _parse_years(os.getenv("NJLEG_BILL_TRACKING_YEARS", "2024"))
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
     supabase_url = os.getenv("SUPABASE_URL", "https://zgtevahaudnjpocptzgj.supabase.co").strip()
     supabase_service_key = _resolve_supabase_key()
@@ -60,12 +64,16 @@ def load_config() -> PipelineConfig:
         "COMEMBER.TXT",
     )
 
+    legdb_years = _parse_years(os.getenv("NJLEG_LEGDB_YEARS", "2024"))
+
     return PipelineConfig(
         base_url=base_url,
         votes_base_url=votes_base_url,
         votes_readme_urls=tuple(url for url in votes_readme_urls if url),
         gis_service_url=gis_service_url,
         legdb_readme_url=legdb_readme_url,
+        download_type=download_type,
+        bill_tracking_years=bill_tracking_years,
         data_dir=data_dir,
         supabase_url=supabase_url,
         supabase_service_key=supabase_service_key,
@@ -75,7 +83,27 @@ def load_config() -> PipelineConfig:
         files_to_download=files_to_download,
         session_lookback_count=session_lookback_count,
         session_length_years=session_length_years,
+        legdb_base_url=legdb_base_url,
+        legdb_years=legdb_years,
     )
+
+
+def _parse_years(value: str) -> tuple[int, ...]:
+    years: list[int] = []
+    for chunk in value.split(","):
+        cleaned = chunk.strip()
+        if not cleaned:
+            continue
+        years.append(int(cleaned))
+    return tuple(years)
+
+
+def _resolve_supabase_key() -> str:
+    for key in ("SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"):
+        value = os.getenv(key)
+        if value:
+            return value
+    return ""
 
 
 PRIMARY_KEYS = {

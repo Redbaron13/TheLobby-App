@@ -17,6 +17,8 @@ The pipeline currently targets:
 
 ```bash
 export NJLEG_DOWNLOAD_BASE_URL="https://www.njleg.state.nj.us/downloads"
+export NJLEG_DOWNLOAD_TYPE="Bill_Tracking"
+export NJLEG_BILL_TRACKING_YEARS="2024"
 export NJLEG_VOTES_BASE_URL="https://pub.njleg.state.nj.us/votes"
 export NJLEG_VOTES_README_URL="https://pub.njleg.state.nj.us/votes/_Readme.txt"
 export NJLEG_VOTES_COMM_README_URL="https://pub.njleg.state.nj.us/votes/_CommRdme.txt"
