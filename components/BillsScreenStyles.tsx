@@ -132,7 +132,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
   },
   billNumber: {
-    color: '#ffffff',
+    color: '#1e293b',
     fontWeight: 'bold',
     fontSize: 14,
   },

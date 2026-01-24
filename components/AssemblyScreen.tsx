@@ -5,23 +5,24 @@ import { ChamberVisualization } from './ChamberVisualization';
 import { styles } from './LegislatorsScreenStyles';
 
 interface Legislator {
-  id: number;
-  Firstname: string;
-  LastName: string;
-  MidName?: string;
-  Suffix?: string;
-  Party: string;
-  House: string;
-  District: string;
-  LegPos?: string;
+  roster_key: number;
+  first_name: string;
+  last_name: string;
+  mid_name?: string;
+  suffix?: string;
+  party: string;
+  house: string;
+  district: string;
+  leg_pos?: string;
+  leg_status?: string;
 }
 
 interface Bill {
-  id: number;
-  ActualBillNumber: string;
-  Synopsis: string;
-  CurrentStatus: string;
-  IntroDate: string;
+  bill_key: string;
+  actual_bill_number: string;
+  synopsis: string;
+  current_status: string;
+  intro_date: string;
 }
 
 export function AssemblyScreen() {
@@ -35,7 +36,7 @@ export function AssemblyScreen() {
   }, []);
 
   const getFullName = (legislator: Legislator) => {
-    const parts = [legislator.Firstname, legislator.MidName, legislator.LastName, legislator.Suffix].filter(Boolean);
+    const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
     return parts.join(' ');
   };
 
@@ -47,9 +48,16 @@ export function AssemblyScreen() {
     }
 
     try {
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        setLoading(false);
+        return;
+      }
+
       const [assemblyRes, billsRes] = await Promise.all([
-        supabase.from('legislators').select('*').eq('House', 'Assembly').order('LastName'),
-        supabase.from('bills').select('*').order('IntroDate', { ascending: false }).limit(5)
+        supabase.from('legislators').select('*').eq('house', 'Assembly').order('last_name'),
+        supabase.from('bills').select('*').order('intro_date', { ascending: false }).limit(5)
       ]);
       
       if (assemblyRes.error) throw assemblyRes.error;
@@ -65,9 +73,9 @@ export function AssemblyScreen() {
     }
   };
 
-  const leadership = assemblyMembers.filter(m => m.LegPos && m.LegPos.toLowerCase().includes('speaker'));
-  const democrats = assemblyMembers.filter(m => m.Party?.toLowerCase().includes('democrat')).length;
-  const republicans = assemblyMembers.filter(m => m.Party?.toLowerCase().includes('republican')).length;
+  const leadership = assemblyMembers.filter(m => m.leg_pos && m.leg_pos.toLowerCase().includes('speaker'));
+  const democrats = assemblyMembers.filter(m => m.party?.toLowerCase().includes('democrat')).length;
+  const republicans = assemblyMembers.filter(m => m.party?.toLowerCase().includes('republican')).length;
 
   const committees = [
     'Judiciary', 'Budget', 'Environment & Solid Waste',
