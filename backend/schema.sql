@@ -24,6 +24,29 @@ create table if not exists public.legislators (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.former_legislators (
+  roster_key integer primary key,
+  district integer,
+  house text,
+  last_name text,
+  first_name text,
+  mid_name text,
+  suffix text,
+  sex text,
+  title text,
+  leg_pos text,
+  leg_status text,
+  party text,
+  race text,
+  address text,
+  city text,
+  state text,
+  zipcode text,
+  phone text,
+  email text,
+  updated_at timestamptz default now()
+);
+
 create table if not exists public.bills (
   bill_key text primary key,
   bill_type text,
@@ -191,6 +214,7 @@ create table if not exists public.draft_districts (
 
 create index if not exists idx_bills_bill_number on public.bills(bill_number);
 create index if not exists idx_legislators_district on public.legislators(district);
+create index if not exists idx_former_legislators_district on public.former_legislators(district);
 create index if not exists idx_bill_sponsors_bill_key on public.bill_sponsors(bill_key);
 create index if not exists idx_vote_records_source_file on public.vote_records(source_file);
 create index if not exists idx_districts_number on public.districts(district_number);

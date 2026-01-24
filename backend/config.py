@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,9 +40,10 @@ def load_config() -> PipelineConfig:
         "NJLEG_LEGDB_README_URL",
         "https://pub.njleg.state.nj.us/leg-databases/2024data/Readme.txt",
     )
+    legdb_base_url = os.getenv("NJLEG_LEGDB_BASE_URL", "https://pub.njleg.state.nj.us/leg-databases")
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
-    supabase_url = os.getenv("SUPABASE_URL", "").strip()
-    supabase_service_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    supabase_url = os.getenv("SUPABASE_URL", "https://zgtevahaudnjpocptzgj.supabase.co").strip()
+    supabase_service_key = _resolve_supabase_key()
 
     retention_days = int(os.getenv("DATA_RETENTION_DAYS", "3"))
     backup_retention_count = int(os.getenv("BACKUP_RETENTION_COUNT", "2"))
@@ -77,6 +79,7 @@ def load_config() -> PipelineConfig:
 PRIMARY_KEYS = {
     "bills": "bill_key",
     "legislators": "roster_key",
+    "former_legislators": "roster_key",
     "bill_sponsors": "bill_sponsor_key",
     "committee_members": "committee_member_key",
     "vote_records": "vote_record_key",

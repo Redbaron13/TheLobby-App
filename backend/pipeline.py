@@ -4,9 +4,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
+import urllib.error
 
 from backend.config import PRIMARY_KEYS, PipelineConfig, draft_table_name
 from backend.downloader import download_files, download_text_file
+from backend.data_merge import merge_rows_by_key
+from backend.legdb_downloader import download_legdb_session
 from backend.arcgis import fetch_all_features
 from backend.parsers import (
     parse_bill_sponsors,
@@ -43,6 +46,7 @@ from backend.validation import (
 class PipelineResult:
     bills: int
     legislators: int
+    former_legislators: int
     bill_sponsors: int
     committee_members: int
     vote_records: int
@@ -71,20 +75,22 @@ def _diff_rows(current_rows: list[dict], previous_rows: list[dict], key: str) ->
 
 def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> PipelineResult:
     if not config.supabase_url or not config.supabase_service_key:
-        raise RuntimeError("Supabase credentials are required to run the pipeline.")
+        raise RuntimeError("Supabase URL and key are required to run the pipeline.")
 
     run_date = date_str or datetime.utcnow().strftime("%Y-%m-%d")
     raw_dir = config.data_dir / "raw" / run_date
-    download_files(config.base_url, config.files_to_download, raw_dir)
-    download_text_file(config.legdb_readme_url, raw_dir)
-    votes_dir = config.data_dir / "raw" / run_date / "votes"
+    downloads_dir = raw_dir / "downloads"
+    download_files(config.base_url, config.files_to_download, downloads_dir)
+    download_text_file(config.legdb_readme_url, downloads_dir)
+    legdb_dirs = _download_legdb_sessions(config, raw_dir / "legdb")
+    votes_dir = raw_dir / "votes"
     vote_files = download_votes(config.votes_base_url, config.votes_readme_urls, votes_dir)
     feature_collection = fetch_all_features(config.gis_service_url)
 
-    bills = parse_mainbill(raw_dir / "MAINBILL.TXT")
-    legislators = parse_roster(raw_dir / "ROSTER.TXT")
-    bill_sponsors = parse_bill_sponsors(raw_dir / "BILLSPON.TXT")
-    committee_members = parse_committee_members(raw_dir / "COMEMBER.TXT")
+    bills = parse_mainbill(downloads_dir / "MAINBILL.TXT")
+    legislators = parse_roster(downloads_dir / "ROSTER.TXT")
+    bill_sponsors = parse_bill_sponsors(downloads_dir / "BILLSPON.TXT")
+    committee_members = parse_committee_members(downloads_dir / "COMEMBER.TXT")
     vote_records = []
     for vote_file in vote_files:
         vote_records.extend(parse_vote_file(vote_file))
@@ -109,7 +115,8 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
 
     processed_dir = snapshot_dir(config.data_dir, run_date)
     write_snapshot("bills", bills, processed_dir)
-    write_snapshot("legislators", legislators, processed_dir)
+    write_snapshot("legislators", active_legislators, processed_dir)
+    write_snapshot("former_legislators", former_legislators, processed_dir)
     write_snapshot("bill_sponsors", bill_sponsors, processed_dir)
     write_snapshot("committee_members", committee_members, processed_dir)
     write_snapshot("vote_records", vote_records, processed_dir)

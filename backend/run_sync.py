@@ -18,6 +18,7 @@ def main() -> int:
     print("Sync complete.")
     print(f"Bills: {result.bills}")
     print(f"Legislators: {result.legislators}")
+    print(f"Former legislators: {result.former_legislators}")
     print(f"Bill sponsors: {result.bill_sponsors}")
     print(f"Committee members: {result.committee_members}")
     print(f"Vote records: {result.vote_records}")
