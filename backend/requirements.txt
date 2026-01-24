@@ -1,0 +1,12 @@
+# Template Python requirements for TheLobby-App backend.
+# After validating locally, pin exact versions with:
+#   pip freeze > backend/requirements.txt
+
+requests>=2.28
+shapely>=2.0
+pyproj>=3.4
+geojson>=2.5
+supabase>=1.0
+python-dotenv>=1.0
+psycopg2-binary>=2.9
+pytest>=7.0
