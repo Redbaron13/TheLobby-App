@@ -144,30 +144,6 @@ create table if not exists public.draft_legislators (
   ingested_at timestamptz default now()
 );
 
-create table if not exists public.draft_former_legislators (
-  roster_key integer primary key,
-  district integer,
-  house text,
-  last_name text,
-  first_name text,
-  mid_name text,
-  suffix text,
-  sex text,
-  title text,
-  leg_pos text,
-  leg_status text,
-  party text,
-  race text,
-  address text,
-  city text,
-  state text,
-  zipcode text,
-  phone text,
-  email text,
-  run_date date,
-  ingested_at timestamptz default now()
-);
-
 create table if not exists public.draft_bills (
   bill_key text primary key,
   bill_type text,

@@ -4,27 +4,20 @@ import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 import LegislatorProfile from './LegislatorProfile';
 
 // Corrected interface to match the database table name 'legbio'
-interface LegBio {
-  Biography?: string;
-  OfficeAddress?: string;
-  OfficePhone?: string;
-}
-
-// Updated Legislator interface to use the correct property name
 interface Legislator {
-  RosterKey: number;
-  Firstname: string;
-  LastName: string;
-  MidName?: string;
-  Suffix?: string;
-  Party: string;
-  House: string;
-  District: number;
-  Title?: string;
-  LegPos?: string;
-  Email?: string;
-  Phone?: string;
-  legbio: LegBio | null; // Corrected from 'legisbio' to 'legbio'
+  roster_key: number;
+  first_name: string;
+  last_name: string;
+  mid_name?: string;
+  suffix?: string;
+  party: string;
+  house: string;
+  district: number;
+  title?: string;
+  leg_pos?: string;
+  email?: string;
+  phone?: string;
+  leg_status?: string;
 }
 
 export function LegislatorsScreen() {
@@ -72,7 +65,7 @@ export function LegislatorsScreen() {
   };
 
   const getFullName = (legislator: Legislator) => {
-    const parts = [legislator.Firstname, legislator.MidName, legislator.LastName, legislator.Suffix].filter(Boolean);
+    const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
     return parts.join(' ');
   };
 
@@ -85,8 +78,8 @@ export function LegislatorsScreen() {
   const filteredLegislators = legislators.filter(legislator => {
     const fullName = getFullName(legislator);
     const matchesSearch = fullName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesParty = filterParty === 'all' || (legislator.Party && legislator.Party.toLowerCase().includes(filterParty.toLowerCase()));
-    const matchesChamber = filterChamber === 'all' || (legislator.House && legislator.House.toLowerCase() === filterChamber.toLowerCase());
+    const matchesParty = filterParty === 'all' || (legislator.party && legislator.party.toLowerCase().includes(filterParty.toLowerCase()));
+    const matchesChamber = filterChamber === 'all' || (legislator.house && legislator.house.toLowerCase() === filterChamber.toLowerCase());
     return matchesSearch && matchesParty && matchesChamber;
   });
 
@@ -122,7 +115,7 @@ export function LegislatorsScreen() {
 
     return filteredLegislators.map(legislator => (
       <TouchableOpacity
-        key={legislator.RosterKey}
+        key={legislator.roster_key}
         onPress={() => setSelectedLegislator(legislator)}
         style={styles.legislatorCard}
       >
@@ -130,18 +123,23 @@ export function LegislatorsScreen() {
           <Text style={styles.legislatorName}>
             {getFullName(legislator)}
           </Text>
-          <View style={[styles.partyBadge, { backgroundColor: getPartyColor(legislator.Party) }]}>
+          <View style={[styles.partyBadge, { backgroundColor: getPartyColor(legislator.party) }]}>
             <Text style={styles.partyText}>
-              {legislator.Party?.charAt(0) || 'I'}
+              {legislator.party?.charAt(0) || 'I'}
             </Text>
           </View>
         </View>
         <Text style={styles.legislatorInfo}>
-          {legislator.House} - District {legislator.District}
+          {legislator.house} - District {legislator.district}
         </Text>
-        {legislator.LegPos && (
+        {legislator.leg_pos && (
           <Text style={styles.leadershipPosition}>
-            {legislator.LegPos}
+            {legislator.leg_pos}
+          </Text>
+        )}
+        {legislator.leg_status && (
+          <Text style={styles.statusText}>
+            Status: {legislator.leg_status}
           </Text>
         )}
       </TouchableOpacity>
@@ -319,6 +317,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 4
+  },
+  statusText: {
+    color: '#94a3b8',
+    fontSize: 13,
   },
 });
 

@@ -31,7 +31,6 @@ from backend.snapshot import (
 from backend.supabase_loader import SupabaseClient
 from backend.votes_downloader import download_votes
 from backend.session_filter import build_session_window
-from backend.roster_split import split_legislators
 from backend.validation import (
     filter_to_recent_sessions,
     validate_bill_sponsors,
@@ -97,30 +96,6 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         vote_records.extend(parse_vote_file(vote_file))
     districts = parse_districts(feature_collection)
 
-    for legdb_dir in legdb_dirs:
-        bills.extend(parse_mainbill(legdb_dir / "MAINBILL.TXT"))
-        legislators.extend(parse_roster(legdb_dir / "ROSTER.TXT"))
-        bill_sponsors.extend(parse_bill_sponsors(legdb_dir / "BILLSPON.TXT"))
-        committee_members.extend(parse_committee_members(legdb_dir / "COMEMBER.TXT"))
-
-    bills = merge_rows_by_key(
-        bills,
-        PRIMARY_KEYS["bills"],
-        ["mod_date", "intro_date", "proposed_date", "ldoa"],
-    )
-    bill_sponsors = merge_rows_by_key(
-        bill_sponsors,
-        PRIMARY_KEYS["bill_sponsors"],
-        ["mod_date", "spon_date", "with_date"],
-    )
-    committee_members = merge_rows_by_key(
-        committee_members,
-        PRIMARY_KEYS["committee_members"],
-        ["mod_date"],
-    )
-    legislators = merge_rows_by_key(legislators, PRIMARY_KEYS["legislators"], [])
-    active_legislators, former_legislators = split_legislators(legislators)
-
     session_window = build_session_window(
         config.session_lookback_count,
         config.session_length_years,
@@ -151,8 +126,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         create_backup(processed_dir, backup_dir(config.data_dir, run_date))
 
     bills_result = validate_bills(bills)
-    legislators_result = validate_legislators(active_legislators)
-    former_legislators_result = validate_legislators(former_legislators)
+    legislators_result = validate_legislators(legislators)
     bill_sponsors_result = validate_bill_sponsors(bill_sponsors, bills_result.valid_rows)
     committee_members_result = validate_committee_members(committee_members)
     vote_records_result = validate_vote_records(vote_records)
@@ -161,7 +135,6 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     validation_issues = (
         bills_result.issues
         + legislators_result.issues
-        + former_legislators_result.issues
         + bill_sponsors_result.issues
         + committee_members_result.issues
         + vote_records_result.issues
@@ -171,8 +144,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     client = SupabaseClient(config.supabase_url, config.supabase_service_key)
 
     _upload_draft(client, "bills", bills, run_date)
-    _upload_draft(client, "legislators", active_legislators, run_date)
-    _upload_draft(client, "former_legislators", former_legislators, run_date)
+    _upload_draft(client, "legislators", legislators, run_date)
     _upload_draft(client, "bill_sponsors", bill_sponsors, run_date)
     _upload_draft(client, "committee_members", committee_members, run_date)
     _upload_draft(client, "vote_records", vote_records, run_date)
@@ -184,7 +156,6 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
 
     _upload_changed(client, "bills", bills_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "legislators", legislators_result.valid_rows, config.data_dir, run_date)
-    _upload_changed(client, "former_legislators", former_legislators_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "bill_sponsors", bill_sponsors_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "committee_members", committee_members_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "vote_records", vote_records_result.valid_rows, config.data_dir, run_date)
@@ -195,7 +166,6 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     return PipelineResult(
         bills=len(bills_result.valid_rows),
         legislators=len(legislators_result.valid_rows),
-        former_legislators=len(former_legislators_result.valid_rows),
         bill_sponsors=len(bill_sponsors_result.valid_rows),
         committee_members=len(committee_members_result.valid_rows),
         vote_records=len(vote_records_result.valid_rows),
@@ -221,15 +191,3 @@ def _upload_draft(client: SupabaseClient, table: str, rows: list[dict], run_date
     draft_table = draft_table_name(table)
     draft_rows = [{**row, "run_date": run_date} for row in rows]
     client.upsert(draft_table, draft_rows)
-
-
-def _download_legdb_sessions(config: PipelineConfig, destination: Path) -> list[Path]:
-    session_dirs: list[Path] = []
-    for year in config.legdb_years:
-        session_dir = destination / str(year)
-        try:
-            download_legdb_session(config.legdb_base_url, year, config.files_to_download, session_dir)
-        except urllib.error.HTTPError:
-            continue
-        session_dirs.append(session_dir)
-    return session_dirs

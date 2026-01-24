@@ -90,6 +90,8 @@ export function ProfileScreen() {
 
       await supabase.auth.signOut();
       setUser(null);
+      setSavedBills([]);
+      setSavedLegislators([]);
       Alert.alert('Success', 'Signed out successfully!');
     } catch (error: any) {
       Alert.alert('Error', error.message);
@@ -132,6 +134,34 @@ export function ProfileScreen() {
                 Sign Out
               </Text>
             </TouchableOpacity>
+            <View style={{ marginTop: 24 }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e40af', marginBottom: 10 }}>
+                Saved Bills
+              </Text>
+              {savedError && (
+                <Text style={{ color: '#dc2626', marginBottom: 8 }}>{savedError}</Text>
+              )}
+              {savedBills.length === 0 && (
+                <Text style={{ color: '#64748b', marginBottom: 12 }}>No saved bills yet.</Text>
+              )}
+              {savedBills.map((bill) => (
+                <Text key={bill.bill_key} style={{ color: '#475569', marginBottom: 6 }}>
+                  {bill.actual_bill_number || bill.bill_key}
+                </Text>
+              ))}
+
+              <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e40af', marginTop: 16, marginBottom: 10 }}>
+                Saved Legislators
+              </Text>
+              {savedLegislators.length === 0 && (
+                <Text style={{ color: '#64748b' }}>No saved legislators yet.</Text>
+              )}
+              {savedLegislators.map((legislator) => (
+                <Text key={legislator.roster_key} style={{ color: '#475569', marginBottom: 6 }}>
+                  {legislator.first_name} {legislator.last_name}
+                </Text>
+              ))}
+            </View>
           </View>
         ) : (
           <View>
