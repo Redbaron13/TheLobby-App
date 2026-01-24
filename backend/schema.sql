@@ -1,0 +1,115 @@
+-- Core NJ Legislature tables for Supabase
+
+create table if not exists public.legislators (
+  roster_key integer primary key,
+  session_year integer,
+  district integer,
+  house text,
+  last_name text,
+  first_name text,
+  mid_name text,
+  suffix text,
+  sex text,
+  title text,
+  leg_pos text,
+  leg_status text,
+  party text,
+  race text,
+  address text,
+  city text,
+  state text,
+  zipcode text,
+  phone text,
+  email text,
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.bills (
+  bill_key text primary key,
+  session_year integer,
+  bill_type text,
+  bill_number integer,
+  actual_bill_number text,
+  current_status text,
+  intro_date date,
+  ldoa date,
+  synopsis text,
+  abstract text,
+  first_prime text,
+  second_prime text,
+  third_prime text,
+  identical_bill_number text,
+  last_session_full_bill_number text,
+  old_bill_number text,
+  proposed_date date,
+  mod_date date,
+  fn_certified text,
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.bill_sponsors (
+  bill_sponsor_key text primary key,
+  bill_key text references public.bills(bill_key),
+  session_year integer,
+  bill_type text,
+  bill_number integer,
+  sequence integer,
+  sponsor text,
+  sponsor_type text,
+  status text,
+  spon_date date,
+  with_date date,
+  mod_date date,
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.committee_members (
+  committee_member_key text primary key,
+  session_year integer,
+  committee_code text,
+  member text,
+  position_on_committee text,
+  assignment_to_committee text,
+  mod_date date,
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.vote_records (
+  vote_record_key text primary key,
+  source_file text,
+  data jsonb,
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.districts (
+  district_key text primary key,
+  district_number integer,
+  name text,
+  properties jsonb,
+  geometry_json jsonb,
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.user_saved_bills (
+  user_id uuid references auth.users(id),
+  bill_key text references public.bills(bill_key),
+  created_at timestamptz default now(),
+  primary key (user_id, bill_key)
+);
+
+create table if not exists public.user_saved_legislators (
+  user_id uuid references auth.users(id),
+  legislator_roster_key integer references public.legislators(roster_key),
+  created_at timestamptz default now(),
+  primary key (user_id, legislator_roster_key)
+);
+
+create index if not exists idx_bills_bill_number on public.bills(bill_number);
+create index if not exists idx_bills_session_year on public.bills(session_year);
+create index if not exists idx_legislators_district on public.legislators(district);
+create index if not exists idx_legislators_session_year on public.legislators(session_year);
+create index if not exists idx_bill_sponsors_bill_key on public.bill_sponsors(bill_key);
+create index if not exists idx_bill_sponsors_session_year on public.bill_sponsors(session_year);
+create index if not exists idx_committee_members_session_year on public.committee_members(session_year);
+create index if not exists idx_vote_records_source_file on public.vote_records(source_file);
+create index if not exists idx_districts_number on public.districts(district_number);

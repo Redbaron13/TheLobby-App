@@ -60,6 +60,9 @@ export const styles = StyleSheet.create({
   content: {
     padding: 16,
   },
+  section: {
+    marginBottom: 20,
+  },
   loadingText: {
     textAlign: 'center',
     color: '#64748b',

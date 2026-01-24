@@ -1,28 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
 
-// Corrected interface to match the database table name 'legbio'
-interface LegBio {
-  Biography?: string;
-  OfficeAddress?: string;
-  OfficePhone?: string;
-}
-
-// Updated Legislator interface to use the correct property name
 interface Legislator {
-  RosterKey: number;
-  Firstname: string;
-  LastName: string;
-  MidName?: string;
-  Suffix?: string;
-  Party: string;
-  House: string;
-  District: number;
-  Title?: string;
-  LegPos?: string;
-  Email?: string;
-  Phone?: string;
-  legbio: LegBio | null; // Corrected from 'legisbio'
+  roster_key: number;
+  first_name: string;
+  last_name: string;
+  mid_name?: string;
+  suffix?: string;
+  party: string;
+  house: string;
+  district: number;
+  title?: string;
+  leg_pos?: string;
+  email?: string;
+  phone?: string;
+  leg_status?: string;
+  address?: string;
 }
 
 interface LegislatorProfileProps {
@@ -30,25 +24,97 @@ interface LegislatorProfileProps {
   onClose: () => void;
 }
 
+interface SponsoredBill {
+  bill_key: string;
+  actual_bill_number: string;
+  synopsis?: string;
+  current_status?: string;
+}
+
 export default function LegislatorProfile({ legislator, onClose }: LegislatorProfileProps) {
+  const [sponsoredBills, setSponsoredBills] = useState<SponsoredBill[]>([]);
+  const [loadingSponsored, setLoadingSponsored] = useState(false);
+  const [sponsoredError, setSponsoredError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+
   const getFullName = () => {
-    const parts = [legislator.Firstname, legislator.MidName, legislator.LastName, legislator.Suffix].filter(Boolean);
+    const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
     return parts.join(' ');
   };
 
-  const mockVotingRecord = [
-    { bill: 'A1234 - Renewable Energy Act', vote: 'Yes', date: '2024-01-15' },
-    { bill: 'S567 - Education Funding Reform', vote: 'Yes', date: '2024-01-12' },
-    { bill: 'A890 - Healthcare Access Bill', vote: 'No', date: '2024-01-10' }
-  ];
+  useEffect(() => {
+    const fetchSponsoredBills = async () => {
+      const sponsorName = [legislator.last_name, legislator.first_name].filter(Boolean).join(', ');
+      if (!sponsorName) {
+        setSponsoredBills([]);
+        return;
+      }
 
-  const mockSponsoredBills = [
-    { id: 'A1111', title: 'Clean Water Protection Act', status: 'Committee Review' },
-    { id: 'A2222', title: 'Small Business Tax Relief', status: 'Passed Assembly' }
-  ];
+      if (!isSupabaseConfigured()) {
+        setSponsoredError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        return;
+      }
 
-  const getVoteColor = (vote: string) => {
-    return vote === 'Yes' ? '#059669' : '#dc2626';
+      setLoadingSponsored(true);
+      setSponsoredError(null);
+
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        setSponsoredError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        setLoadingSponsored(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('bills')
+        .select('bill_key, actual_bill_number, synopsis, current_status')
+        .ilike('first_prime', `%${sponsorName}%`)
+        .order('intro_date', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error('Error loading sponsored bills:', error);
+        setSponsoredError('Unable to load sponsored bills.');
+      } else {
+        setSponsoredBills(data || []);
+      }
+
+      setLoadingSponsored(false);
+    };
+
+    fetchSponsoredBills();
+  }, [legislator]);
+
+  const saveLegislator = async () => {
+    if (!isSupabaseConfigured()) {
+      setSavedMessage('Supabase is not configured.');
+      return;
+    }
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setSavedMessage('Supabase is not configured.');
+      return;
+    }
+    setSaving(true);
+    setSavedMessage(null);
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+    if (!user) {
+      setSavedMessage('Sign in to save legislators.');
+      setSaving(false);
+      return;
+    }
+    const { error } = await supabase.from('user_saved_legislators').upsert({
+      user_id: user.id,
+      legislator_roster_key: legislator.roster_key,
+    });
+    if (error) {
+      setSavedMessage('Unable to save legislator.');
+    } else {
+      setSavedMessage('Saved to your profile.');
+    }
+    setSaving(false);
   };
 
   return (
@@ -57,8 +123,11 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
         <View>
           <Text style={styles.name}>{getFullName()}</Text>
           <Text style={styles.details}>
-            {legislator.Party} • {legislator.House} • District {legislator.District}
+            {legislator.party} • {legislator.house} • District {legislator.district}
           </Text>
+          {legislator.leg_status && (
+            <Text style={styles.statusText}>Status: {legislator.leg_status}</Text>
+          )}
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeButtonText}>×</Text>
@@ -71,52 +140,52 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
           <View style={styles.contactItem}>
             <Text style={styles.contactLabel}>Office Address:</Text>
             <Text style={styles.contactValue}>
-              {legislator.legbio?.OfficeAddress || 'Not available'}
+              {legislator.address || 'Not available'}
             </Text>
           </View>
           <View style={styles.contactItem}>
             <Text style={styles.contactLabel}>Phone:</Text>
             <Text style={styles.contactValue}>
-              {legislator.legbio?.OfficePhone || legislator.Phone || 'Not available'}
+              {legislator.phone || 'Not available'}
             </Text>
           </View>
           <View style={styles.contactItem}>
             <Text style={styles.contactLabel}>Email:</Text>
             <Text style={styles.contactValue}>
-              {legislator.Email || 'Not available'}
+              {legislator.email || 'Not available'}
             </Text>
           </View>
         </View>
-
-        {legislator.legbio?.Biography && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Biography</Text>
-            <Text style={styles.biographyText}>{legislator.legbio.Biography}</Text>
-          </View>
-        )}
+        <TouchableOpacity style={styles.saveButton} onPress={saveLegislator} disabled={saving}>
+          <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Legislator'}</Text>
+        </TouchableOpacity>
+        {savedMessage && <Text style={styles.savedMessage}>{savedMessage}</Text>}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Voting Record</Text>
-          {mockVotingRecord.map((record) => (
-            <View key={record.bill} style={styles.voteItem}>
-              <View style={styles.voteHeader}>
-                <Text style={styles.billTitle}>{record.bill}</Text>
-                <View style={[styles.voteBadge, { backgroundColor: getVoteColor(record.vote) }]}>
-                  <Text style={styles.voteText}>{record.vote}</Text>
-                </View>
-              </View>
-              <Text style={styles.voteDate}>{record.date}</Text>
-            </View>
-          ))}
+          <Text style={styles.emptyStateText}>
+            Voting records are not yet connected. Provide a vote data source and we can surface recent roll-call votes here.
+          </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sponsored Bills</Text>
-          {mockSponsoredBills.map((bill) => (
-            <TouchableOpacity key={bill.id} style={styles.billItem}>
-              <Text style={styles.billId}>{bill.id}</Text>
-              <Text style={styles.billTitle}>{bill.title}</Text>
-              <Text style={styles.billStatus}>Status: {bill.status}</Text>
+          {loadingSponsored && (
+            <Text style={styles.loadingText}>Loading sponsored bills...</Text>
+          )}
+          {sponsoredError && (
+            <Text style={styles.errorText}>{sponsoredError}</Text>
+          )}
+          {!loadingSponsored && !sponsoredError && sponsoredBills.length === 0 && (
+            <Text style={styles.emptyStateText}>
+              No sponsored bills found yet.
+            </Text>
+          )}
+          {!loadingSponsored && !sponsoredError && sponsoredBills.map((bill) => (
+            <TouchableOpacity key={bill.bill_key} style={styles.billItem}>
+              <Text style={styles.billId}>{bill.actual_bill_number || bill.bill_key}</Text>
+              <Text style={styles.billTitle}>{bill.synopsis || 'No synopsis available'}</Text>
+              <Text style={styles.billStatus}>Status: {bill.current_status || 'Unknown'}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -145,6 +214,11 @@ const styles = StyleSheet.create({
   details: {
     fontSize: 16,
     color: '#bfdbfe',
+    marginTop: 4,
+  },
+  statusText: {
+    fontSize: 14,
+    color: '#e2e8f0',
     marginTop: 4,
   },
   closeButton: {
@@ -177,6 +251,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     color: '#374151',
+  },
+  saveButton: {
+    backgroundColor: '#059669',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  saveButtonText: {
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  savedMessage: {
+    color: '#059669',
+    marginBottom: 12,
   },
   voteItem: {
     backgroundColor: '#f9fafb',
@@ -226,6 +315,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
     marginTop: 4,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#dc2626',
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: '#6b7280',
   },
   contactItem: {
     marginBottom: 8,

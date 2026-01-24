@@ -1,16 +1,102 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { supabase } from '@/app/lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
 
 export function ProfileScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [savedBills, setSavedBills] = useState<{ bill_key: string; actual_bill_number: string | null }[]>([]);
+  const [savedLegislators, setSavedLegislators] = useState<{ roster_key: number; first_name: string; last_name: string }[]>([]);
+  const [savedError, setSavedError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      return;
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const loadSavedItems = async () => {
+      if (!isSupabaseConfigured()) {
+        return;
+      }
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        return;
+      }
+      setSavedError(null);
+      const { data: authData } = await supabase.auth.getUser();
+      const currentUser = authData.user;
+      if (!currentUser) {
+        return;
+      }
+      const [savedBillsRes, savedLegislatorsRes] = await Promise.all([
+        supabase
+          .from('user_saved_bills')
+          .select('bill_key, bills(actual_bill_number)')
+          .eq('user_id', currentUser.id),
+        supabase
+          .from('user_saved_legislators')
+          .select('legislator_roster_key, legislators(first_name, last_name)')
+          .eq('user_id', currentUser.id),
+      ]);
+
+      if (savedBillsRes.error || savedLegislatorsRes.error) {
+        setSavedError('Unable to load saved items.');
+        return;
+      }
+
+      setSavedBills(
+        (savedBillsRes.data || []).map((row: any) => ({
+          bill_key: row.bill_key,
+          actual_bill_number: row.bills?.actual_bill_number ?? null,
+        }))
+      );
+      setSavedLegislators(
+        (savedLegislatorsRes.data || []).map((row: any) => ({
+          roster_key: row.legislator_roster_key,
+          first_name: row.legislators?.first_name ?? '',
+          last_name: row.legislators?.last_name ?? '',
+        }))
+      );
+    };
+
+    loadSavedItems();
+  }, [user]);
 
   const signUp = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!isSupabaseConfigured()) {
+      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+      return;
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
       return;
     }
 
@@ -36,6 +122,17 @@ export function ProfileScreen() {
       return;
     }
 
+    if (!isSupabaseConfigured()) {
+      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+      return;
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+      return;
+    }
+
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -55,8 +152,21 @@ export function ProfileScreen() {
 
   const signOut = async () => {
     try {
+      if (!isSupabaseConfigured()) {
+        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+        return;
+      }
+
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+        return;
+      }
+
       await supabase.auth.signOut();
       setUser(null);
+      setSavedBills([]);
+      setSavedLegislators([]);
       Alert.alert('Success', 'Signed out successfully!');
     } catch (error: any) {
       Alert.alert('Error', error.message);
@@ -70,6 +180,13 @@ export function ProfileScreen() {
       </View>
 
       <View style={{ padding: 20 }}>
+        {!isSupabaseConfigured() && (
+          <View style={{ backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 16 }}>
+            <Text style={{ color: '#991b1b', fontSize: 14 }}>
+              Supabase is not configured. Use the Supabase Setup screen to connect your project.
+            </Text>
+          </View>
+        )}
         {user ? (
           <View>
             <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e40af', marginBottom: 10 }}>
@@ -92,6 +209,34 @@ export function ProfileScreen() {
                 Sign Out
               </Text>
             </TouchableOpacity>
+            <View style={{ marginTop: 24 }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e40af', marginBottom: 10 }}>
+                Saved Bills
+              </Text>
+              {savedError && (
+                <Text style={{ color: '#dc2626', marginBottom: 8 }}>{savedError}</Text>
+              )}
+              {savedBills.length === 0 && (
+                <Text style={{ color: '#64748b', marginBottom: 12 }}>No saved bills yet.</Text>
+              )}
+              {savedBills.map((bill) => (
+                <Text key={bill.bill_key} style={{ color: '#475569', marginBottom: 6 }}>
+                  {bill.actual_bill_number || bill.bill_key}
+                </Text>
+              ))}
+
+              <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e40af', marginTop: 16, marginBottom: 10 }}>
+                Saved Legislators
+              </Text>
+              {savedLegislators.length === 0 && (
+                <Text style={{ color: '#64748b' }}>No saved legislators yet.</Text>
+              )}
+              {savedLegislators.map((legislator) => (
+                <Text key={legislator.roster_key} style={{ color: '#475569', marginBottom: 6 }}>
+                  {legislator.first_name} {legislator.last_name}
+                </Text>
+              ))}
+            </View>
           </View>
         ) : (
           <View>

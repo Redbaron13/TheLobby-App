@@ -1,7 +1,8 @@
 import { Stack } from 'expo-router';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'expo-router';
+import { loadSupabaseConfig } from '@/app/lib/supabase';
 
 function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +16,8 @@ function TopNavigation() {
     { name: 'Assembly', path: '/assembly' },
     { name: 'All Legislators', path: '/legislators' },
     { name: 'Find Your Legislator', path: '/find-legislator' },
-    { name: 'Profile', path: '/profile' }
+    { name: 'Profile', path: '/profile' },
+    { name: 'Supabase Setup', path: '/setup' },
   ];
 
   const getCurrentTitle = () => {
@@ -26,6 +28,7 @@ function TopNavigation() {
     if (pathname === '/legislators') return 'All Legislators';
     if (pathname === '/find-legislator') return 'Find Your Legislator';
     if (pathname === '/profile') return 'Profile';
+    if (pathname === '/setup') return 'Supabase Setup';
     return 'NJ Legislature';
   };
 
@@ -62,6 +65,10 @@ function TopNavigation() {
 }
 
 export default function RootLayout() {
+  useEffect(() => {
+    loadSupabaseConfig();
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <TopNavigation />
@@ -73,6 +80,7 @@ export default function RootLayout() {
         <Stack.Screen name="senate" />
         <Stack.Screen name="assembly" />
         <Stack.Screen name="profile" />
+        <Stack.Screen name="setup" />
       </Stack>
     </View>
   );

@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 16,
   },
   syncButton: {
@@ -38,6 +38,12 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     color: '#ffffff',
+  },
+  resultCount: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 12,
+    paddingHorizontal: 16,
   },
   filterContainer: {
     flexDirection: 'row',
@@ -75,6 +81,37 @@ export const styles = StyleSheet.create({
     color: '#64748b',
     marginTop: 40,
   },
+  errorText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#dc2626',
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  retryButton: {
+    alignSelf: 'center',
+    backgroundColor: '#1e40af',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  billsList: {
+    paddingHorizontal: 16,
+  },
+  emptyStateText: {
+    textAlign: 'center',
+    color: '#64748b',
+    marginTop: 24,
+  },
+  actionMessage: {
+    textAlign: 'center',
+    color: '#059669',
+    marginBottom: 12,
+  },
   billCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
@@ -100,7 +137,7 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
   },
   billNumber: {
-    color: '#ffffff',
+    color: '#1e293b',
     fontWeight: 'bold',
     fontSize: 14,
   },
@@ -137,5 +174,16 @@ export const styles = StyleSheet.create({
     color: '#475569',
     lineHeight: 20,
     fontStyle: 'italic',
+  },
+  saveButton: {
+    marginTop: 12,
+    backgroundColor: '#059669',
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#ffffff',
+    fontWeight: '600',
   },
 });
