@@ -27,6 +27,8 @@ export SUPABASE_SERVICE_ROLE_KEY="<service-role-key>"
 export DATA_RETENTION_DAYS=3
 export BACKUP_RETENTION_COUNT=2
 export BACKUP_INTERVAL_DAYS=14
+export SESSION_LOOKBACK_COUNT=3
+export SESSION_LENGTH_YEARS=2
 ```
 
 ## Run a Manual Sync
@@ -60,3 +62,6 @@ Use `backend/schema.sql` to create the tables and indexes in Supabase before run
 - Vote files are stored in `backend/data/raw/<YYYY-MM-DD>/votes/` and parsed into a `vote_records` table with raw payloads for forward-compatible schema updates.
 - GIS district polygons are stored as GeoJSON in the `districts` table and can be used for point-in-polygon lookup in future services.
 - The legislative database readme is downloaded alongside other raw files to capture schema changes as they are published.
+- Draft tables (`draft_*`) store the pre-validation data with the run date, while validated rows are promoted to the live tables.
+- Validation issues are written to the `data_validation_issues` table for review.
+- Session filtering keeps data within the configured lookback window (default: last three 2-year sessions).
