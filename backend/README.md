@@ -68,5 +68,3 @@ Use `backend/schema.sql` to create the tables and indexes in Supabase before run
 - Draft tables (`draft_*`) store the pre-validation data with the run date, while validated rows are promoted to the live tables.
 - Validation issues are written to the `data_validation_issues` table for review.
 - Session filtering keeps data within the configured lookback window (default: last three 2-year sessions).
-- Former legislators are split into their own tables based on `leg_status`.
-- If you only provide the publishable key, ensure Supabase RLS policies allow the pipeline to upsert into draft/live tables.

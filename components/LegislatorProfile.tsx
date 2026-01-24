@@ -2,28 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 
-// Corrected interface to match the database table name 'legbio'
-interface LegBio {
-  Biography?: string;
-  OfficeAddress?: string;
-  OfficePhone?: string;
-}
-
-// Updated Legislator interface to use the correct property name
 interface Legislator {
-  RosterKey: number;
-  Firstname: string;
-  LastName: string;
-  MidName?: string;
-  Suffix?: string;
-  Party: string;
-  House: string;
-  District: number;
-  Title?: string;
-  LegPos?: string;
-  Email?: string;
-  Phone?: string;
-  legbio: LegBio | null; // Corrected from 'legisbio'
+  roster_key: number;
+  first_name: string;
+  last_name: string;
+  mid_name?: string;
+  suffix?: string;
+  party: string;
+  house: string;
+  district: number;
+  title?: string;
+  leg_pos?: string;
+  email?: string;
+  phone?: string;
+  leg_status?: string;
+  address?: string;
 }
 
 interface LegislatorProfileProps {
@@ -44,7 +37,7 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
   const [sponsoredError, setSponsoredError] = useState<string | null>(null);
 
   const getFullName = () => {
-    const parts = [legislator.Firstname, legislator.MidName, legislator.LastName, legislator.Suffix].filter(Boolean);
+    const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
     return parts.join(' ');
   };
 
@@ -90,8 +83,11 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
         <View>
           <Text style={styles.name}>{getFullName()}</Text>
           <Text style={styles.details}>
-            {legislator.Party} • {legislator.House} • District {legislator.District}
+            {legislator.party} • {legislator.house} • District {legislator.district}
           </Text>
+          {legislator.leg_status && (
+            <Text style={styles.statusText}>Status: {legislator.leg_status}</Text>
+          )}
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeButtonText}>×</Text>
@@ -104,29 +100,26 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
           <View style={styles.contactItem}>
             <Text style={styles.contactLabel}>Office Address:</Text>
             <Text style={styles.contactValue}>
-              {legislator.legbio?.OfficeAddress || 'Not available'}
+              {legislator.address || 'Not available'}
             </Text>
           </View>
           <View style={styles.contactItem}>
             <Text style={styles.contactLabel}>Phone:</Text>
             <Text style={styles.contactValue}>
-              {legislator.legbio?.OfficePhone || legislator.Phone || 'Not available'}
+              {legislator.phone || 'Not available'}
             </Text>
           </View>
           <View style={styles.contactItem}>
             <Text style={styles.contactLabel}>Email:</Text>
             <Text style={styles.contactValue}>
-              {legislator.Email || 'Not available'}
+              {legislator.email || 'Not available'}
             </Text>
           </View>
         </View>
-
-        {legislator.legbio?.Biography && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Biography</Text>
-            <Text style={styles.biographyText}>{legislator.legbio.Biography}</Text>
-          </View>
-        )}
+        <TouchableOpacity style={styles.saveButton} onPress={saveLegislator} disabled={saving}>
+          <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Legislator'}</Text>
+        </TouchableOpacity>
+        {savedMessage && <Text style={styles.savedMessage}>{savedMessage}</Text>}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Voting Record</Text>
@@ -183,6 +176,11 @@ const styles = StyleSheet.create({
     color: '#bfdbfe',
     marginTop: 4,
   },
+  statusText: {
+    fontSize: 14,
+    color: '#e2e8f0',
+    marginTop: 4,
+  },
   closeButton: {
     width: 32,
     height: 32,
@@ -213,6 +211,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     color: '#374151',
+  },
+  saveButton: {
+    backgroundColor: '#059669',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  saveButtonText: {
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  savedMessage: {
+    color: '#059669',
+    marginBottom: 12,
   },
   voteItem: {
     backgroundColor: '#f9fafb',
