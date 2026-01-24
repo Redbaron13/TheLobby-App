@@ -9,6 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 .env
+backend/data/
 
 web-build/
 assets/
