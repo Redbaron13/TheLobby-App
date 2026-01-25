@@ -138,7 +138,8 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         create_backup(processed_dir, backup_dir(config.data_dir, run_date))
 
     bills_result = validate_bills(bills)
-    legislators_result = validate_legislators(legislators)
+    legislators_result = validate_legislators(active_legislators)
+    former_legislators_result = validate_legislators(former_legislators, table="former_legislators")
     bill_sponsors_result = validate_bill_sponsors(bill_sponsors, bills_result.valid_rows)
     committee_members_result = validate_committee_members(committee_members)
     vote_records_result = validate_vote_records(vote_records)
@@ -147,6 +148,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     validation_issues = (
         bills_result.issues
         + legislators_result.issues
+        + former_legislators_result.issues
         + bill_sponsors_result.issues
         + committee_members_result.issues
         + vote_records_result.issues
@@ -156,7 +158,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     client = SupabaseClient(config.supabase_url, config.supabase_service_key)
 
     _upload_draft(client, "bills", bills, run_date)
-    _upload_draft(client, "legislators", legislators, run_date)
+    _upload_draft(client, "legislators", active_legislators, run_date)
     _upload_draft(client, "bill_sponsors", bill_sponsors, run_date)
     _upload_draft(client, "committee_members", committee_members, run_date)
     _upload_draft(client, "vote_records", vote_records, run_date)
@@ -168,6 +170,13 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
 
     _upload_changed(client, "bills", bills_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "legislators", legislators_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(
+        client,
+        "former_legislators",
+        former_legislators_result.valid_rows,
+        config.data_dir,
+        run_date,
+    )
     _upload_changed(client, "bill_sponsors", bill_sponsors_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "committee_members", committee_members_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "vote_records", vote_records_result.valid_rows, config.data_dir, run_date)
@@ -178,6 +187,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     return PipelineResult(
         bills=len(bills_result.valid_rows),
         legislators=len(legislators_result.valid_rows),
+        former_legislators=len(former_legislators_result.valid_rows),
         bill_sponsors=len(bill_sponsors_result.valid_rows),
         committee_members=len(committee_members_result.valid_rows),
         vote_records=len(vote_records_result.valid_rows),

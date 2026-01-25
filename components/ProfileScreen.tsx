@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
 
 export function ProfileScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [savedBills, setSavedBills] = useState<Array<{ bill_key: string; actual_bill_number?: string }>>([]);
+  const [savedLegislators, setSavedLegislators] = useState<Array<{ roster_key: number; first_name: string; last_name: string }>>([]);
+  const [savedError, setSavedError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isSupabaseConfigured()) {
+      return;
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
       return;
     }
 
@@ -26,19 +34,81 @@ export function ProfileScreen() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      setSavedBills([]);
+      setSavedLegislators([]);
+      setSavedError(null);
+      return;
+    }
+
+    const loadSavedData = async () => {
+      if (!isSupabaseConfigured()) {
+        return;
+      }
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        return;
+      }
+
+      setSavedError(null);
+
+      try {
+        const [savedBillsRes, savedLegislatorsRes] = await Promise.all([
+          supabase
+            .from('user_saved_bills')
+            .select('bill_key, bills (bill_key, actual_bill_number)')
+            .eq('user_id', user.id),
+          supabase
+            .from('user_saved_legislators')
+            .select('roster_key, legislators (roster_key, first_name, last_name)')
+            .eq('user_id', user.id),
+        ]);
+
+        if (savedBillsRes.error) throw savedBillsRes.error;
+        if (savedLegislatorsRes.error) throw savedLegislatorsRes.error;
+
+        const bills = (savedBillsRes.data || []).map((row: any) => ({
+          bill_key: row.bill_key,
+          actual_bill_number: row.bills?.actual_bill_number ?? row.bill_key,
+        }));
+
+        const legislators = (savedLegislatorsRes.data || []).map((row: any) => ({
+          roster_key: row.roster_key,
+          first_name: row.legislators?.first_name ?? '',
+          last_name: row.legislators?.last_name ?? '',
+        }));
+
+        setSavedBills(bills);
+        setSavedLegislators(legislators);
+      } catch (error: any) {
+        console.error('Saved items error:', error);
+        setSavedError('Unable to load saved items. Ensure the saved tables exist and RLS is configured.');
+      }
+    };
+
+    loadSavedData();
+  }, [user]);
+
   const signUp = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isSupabaseConfigured()) {
       Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
       return;
     }
 
     setLoading(true);
     try {
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
@@ -59,13 +129,19 @@ export function ProfileScreen() {
       return;
     }
 
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isSupabaseConfigured()) {
       Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
       return;
     }
 
     setLoading(true);
     try {
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+        return;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
@@ -83,7 +159,13 @@ export function ProfileScreen() {
 
   const signOut = async () => {
     try {
-      if (!isSupabaseConfigured || !supabase) {
+      if (!isSupabaseConfigured()) {
+        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+        return;
+      }
+
+      const supabase = getSupabaseClient();
+      if (!supabase) {
         Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
         return;
       }
@@ -105,10 +187,10 @@ export function ProfileScreen() {
       </View>
 
       <View style={{ padding: 20 }}>
-        {!isSupabaseConfigured && (
+        {!isSupabaseConfigured() && (
           <View style={{ backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 16 }}>
             <Text style={{ color: '#991b1b', fontSize: 14 }}>
-              Supabase is not configured. Add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to enable sign in.
+              Supabase is not configured. Configure it in Settings to enable sign in.
             </Text>
           </View>
         )}

@@ -111,6 +111,77 @@ create table if not exists public.districts (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.user_saved_bills (
+  user_id uuid references auth.users(id) on delete cascade,
+  bill_key text references public.bills(bill_key) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, bill_key)
+);
+
+create table if not exists public.user_saved_legislators (
+  user_id uuid references auth.users(id) on delete cascade,
+  roster_key integer references public.legislators(roster_key) on delete cascade,
+  created_at timestamptz default now(),
+  primary key (user_id, roster_key)
+);
+
+create table if not exists public.admin_pipeline_settings (
+  setting_id uuid primary key default gen_random_uuid(),
+  pipeline text not null,
+  setting_key text not null,
+  setting_value text,
+  updated_by uuid references auth.users(id),
+  updated_at timestamptz default now(),
+  unique (pipeline, setting_key)
+);
+
+create table if not exists public.admin_pipeline_runs (
+  run_id uuid primary key default gen_random_uuid(),
+  pipeline text not null,
+  status text not null,
+  started_at timestamptz default now(),
+  finished_at timestamptz,
+  summary jsonb,
+  error_message text
+);
+
+create table if not exists public.admin_pipeline_logs (
+  log_id uuid primary key default gen_random_uuid(),
+  run_id uuid references public.admin_pipeline_runs(run_id) on delete cascade,
+  pipeline text not null,
+  level text not null,
+  message text not null,
+  payload jsonb,
+  created_at timestamptz default now()
+);
+
+create table if not exists public.admin_user_actions (
+  action_id uuid primary key default gen_random_uuid(),
+  admin_user_id uuid references auth.users(id),
+  action text not null,
+  target_user_id uuid references auth.users(id),
+  metadata jsonb,
+  created_at timestamptz default now()
+);
+
+create table if not exists public.user_search_analytics (
+  analytics_id uuid primary key default gen_random_uuid(),
+  subject_type text not null,
+  subject_key text not null,
+  search_count integer not null default 0,
+  updated_at timestamptz default now(),
+  unique (subject_type, subject_key)
+);
+
+create table if not exists public.user_follow_analytics (
+  analytics_id uuid primary key default gen_random_uuid(),
+  subject_type text not null,
+  subject_key text not null,
+  follow_count integer not null default 0,
+  updated_at timestamptz default now(),
+  unique (subject_type, subject_key)
+);
+
 create table if not exists public.legislative_districts (
   id uuid primary key default gen_random_uuid(),
   chamber text not null check (chamber in ('A','S')),
