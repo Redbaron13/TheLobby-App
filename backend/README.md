@@ -1,6 +1,6 @@
 # NJ Legislature Data Pipeline
 
-This backend module downloads NJ Legislature data files, cleans them, and upserts changes into Supabase. It is designed to run daily (via cron, GitHub Actions, or a server job) and only pushes changed rows while keeping a small rolling history and periodic backups.
+This backend module downloads NJ Legislature data files, cleans them, and upserts changes into Supabase. It is designed to run daily (via GitHub Actions by default, or cron/server jobs) and only pushes changed rows while keeping a small rolling history and periodic backups. For step-by-step setup, see `backend/SETUP.md`.
 
 ## Data Sources
 - `https://www.njleg.state.nj.us/downloads`
@@ -42,6 +42,12 @@ export SESSION_LENGTH_YEARS=2
 python backend/run_sync.py
 ```
 
+You can also use the unified initializer/runner:
+
+```bash
+python -m backend.init_pipelines --pipeline legislative --action run
+```
+
 You can set a specific date if you are backfilling data:
 
 ```bash
@@ -56,9 +62,21 @@ Run nightly at 2 AM:
 0 2 * * * /usr/bin/python /path/to/repo/backend/run_sync.py >> /var/log/njleg-sync.log 2>&1
 ```
 
+## GitHub Actions (Default)
+
+The default design is to run ingestion from GitHub Actions. See `.github/workflows/legislative-ingestion.yml`
+and `backend/SETUP.md` for the exact steps to configure repository secrets and schedule.
+
 ## Supabase Tables
 
 Use `backend/schema.sql` to create the tables and indexes in Supabase before running the sync.
+
+## Requirements files
+
+The ingestion pipelines have explicit requirements files:
+
+- `backend/requirements-legislative.txt` (stdlib-only for legislative ingestion)
+- `backend/requirements-gis.txt` (ArcGIS + PostGIS dependencies)
 
 ## Notes
 - The pipeline stores raw downloads in `backend/data/raw/<YYYY-MM-DD>/` and processed snapshots in `backend/data/processed/<YYYY-MM-DD>/`.

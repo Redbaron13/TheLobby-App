@@ -4,7 +4,6 @@ import json
 import sys
 
 from backend.config import load_config
-from backend.gis.setup_env import ensure_dependencies
 from backend.pipeline import run_pipeline
 
 
@@ -14,7 +13,6 @@ def _log(payload: dict) -> None:
 
 def main() -> int:
     try:
-        ensure_dependencies()
         config = load_config()
         result = run_pipeline(config)
         _log(
