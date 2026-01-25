@@ -169,6 +169,9 @@ source locations in GitHub Actions (secrets) or your server’s `.env` file.
 For the legislature download scraper, the module is covered by unit tests in `backend/tests/test_legislative_downloads.py`,
 which validates the download discovery logic.
 
+For admin control in the app UI, use the `admin_pipeline_settings` table (see `backend/ADMIN_DASHBOARD.md`) and mirror those
+values into environment overrides when triggering runs from the admin backend.
+
 ---
 
 ## 10) Admin dashboard plan

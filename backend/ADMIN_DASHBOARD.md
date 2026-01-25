@@ -34,6 +34,7 @@ using (auth.jwt() ->> 'role' = 'admin');
 - Start/Stop GIS ingestion
 - View last run status, row counts, validation issues
 - Edit settings (download URLs, years, retention)
+- Re-run the legislature scraper with updated parameters
 
 **Recommended tables:**
 - `admin_pipeline_settings`  
@@ -52,6 +53,7 @@ using (auth.jwt() ->> 'role' = 'admin');
 - Reset user passwords (admin-initiated)
 - View new sign-ups and mark verified
 - View “most searched legislator” and “most followed bill”
+- Review audit trail for admin actions
 
 **Recommended tables:**
 - `admin_user_actions`  
@@ -76,10 +78,11 @@ using (auth.jwt() ->> 'role' = 'admin');
 
 ## 4) Integration with pipelines
 
-The ingestion pipelines should read **admin_pipeline_settings** at runtime to pick up changes without code edits.  
+The ingestion pipelines should read **admin_pipeline_settings** at runtime to pick up changes without code edits.
 For example:
 - Update `NJLEG_BILL_TRACKING_YEARS` from settings table
 - Enable/disable GIS ingestion without redeploy
+- Override download base URLs for the NJ Legislature scraper
 
 When a pipeline runs, it should:
 1. Insert a row into `admin_pipeline_runs` with `status=running`.
