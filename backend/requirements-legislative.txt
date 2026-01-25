@@ -1,0 +1,2 @@
+# Legislative data pipeline dependencies.
+# This pipeline uses only the Python standard library.

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Modal, ActivityIndicator, StyleSheet } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
 import LegislatorProfile from './LegislatorProfile';
 
 // Corrected interface to match the database table name 'legbio'
@@ -36,16 +36,22 @@ export function LegislatorsScreen() {
   const loadLegislators = async () => {
     setLoading(true);
     try {
-      if (!isSupabaseConfigured || !supabase) {
-        setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+      if (!isSupabaseConfigured()) {
+        setErrorMessage('Supabase is not configured. Configure it in Settings.');
         return;
       }
 
       // Load bios when available, but do not exclude legislators without bios.
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        setErrorMessage('Supabase is not configured. Configure it in Settings.');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('legislators')
-        .select('*, legbio(*)')
-        .order('LastName');
+        .select('*')
+        .order('last_name');
 
       if (error) {
         console.error('Supabase error:', error);

@@ -1,0 +1,45 @@
+name: Legislative ingestion
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+  run-legislative-ingestion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements-legislative.txt
+
+      - name: Run pipeline
+        env:
+          NJLEG_DOWNLOAD_BASE_URL: ${{ secrets.NJLEG_DOWNLOAD_BASE_URL }}
+          NJLEG_DOWNLOAD_TYPE: ${{ secrets.NJLEG_DOWNLOAD_TYPE }}
+          NJLEG_BILL_TRACKING_YEARS: ${{ secrets.NJLEG_BILL_TRACKING_YEARS }}
+          NJLEG_VOTES_BASE_URL: ${{ secrets.NJLEG_VOTES_BASE_URL }}
+          NJLEG_VOTES_README_URL: ${{ secrets.NJLEG_VOTES_README_URL }}
+          NJLEG_VOTES_COMM_README_URL: ${{ secrets.NJLEG_VOTES_COMM_README_URL }}
+          NJLEG_GIS_SERVICE_URL: ${{ secrets.NJLEG_GIS_SERVICE_URL }}
+          NJLEG_LEGDB_README_URL: ${{ secrets.NJLEG_LEGDB_README_URL }}
+          NJLEG_LEGDB_BASE_URL: ${{ secrets.NJLEG_LEGDB_BASE_URL }}
+          NJLEG_LEGDB_YEARS: ${{ secrets.NJLEG_LEGDB_YEARS }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DATA_RETENTION_DAYS: ${{ secrets.DATA_RETENTION_DAYS }}
+          BACKUP_RETENTION_COUNT: ${{ secrets.BACKUP_RETENTION_COUNT }}
+          BACKUP_INTERVAL_DAYS: ${{ secrets.BACKUP_INTERVAL_DAYS }}
+          SESSION_LOOKBACK_COUNT: ${{ secrets.SESSION_LOOKBACK_COUNT }}
+          SESSION_LENGTH_YEARS: ${{ secrets.SESSION_LENGTH_YEARS }}
+        run: |
+          python -m backend.init_pipelines --pipeline legislative --action run
