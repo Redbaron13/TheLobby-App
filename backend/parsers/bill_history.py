@@ -39,7 +39,7 @@ def parse_bill_history(path: Path) -> list[dict]:
             # Note: There might be collisions if multiple identical actions happen on same day.
             # We will use a hash or just concat.
 
-            bill_history_key = f"{bill_key}-{date_str}-{action}"[:255] # truncate if needed
+            bill_history_key = f"{bill_key}-{date_str}-{action}-{action_by}"[:255]
 
             records.append(
                 {
