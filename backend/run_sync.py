@@ -23,6 +23,15 @@ def main() -> int:
     print(f"Committee members: {result.committee_members}")
     print(f"Vote records: {result.vote_records}")
     print(f"Districts: {result.districts}")
+    print(f"Bill history: {result.bill_history}")
+    print(f"Bill subjects: {result.bill_subjects}")
+    print(f"Bill documents: {result.bill_documents}")
+    print(f"Committees: {result.committees}")
+    print(f"Agendas: {result.agendas}")
+    print(f"Agenda bills: {result.agenda_bills}")
+    print(f"Agenda nominees: {result.agenda_nominees}")
+    print(f"Legislator bios: {result.legislator_bios}")
+    print(f"Subject headings: {result.subject_headings}")
     print(f"Validation issues: {result.validation_issues}")
     return 0
 

@@ -23,6 +23,15 @@ from backend.parsers import (
     parse_roster,
     parse_vote_file,
     parse_districts,
+    parse_bill_history,
+    parse_bill_subjects,
+    parse_bill_documents,
+    parse_committees,
+    parse_agendas,
+    parse_agenda_bills,
+    parse_agenda_nominees,
+    parse_legislator_bios,
+    parse_subject_headings,
 )
 from backend.snapshot import (
     backup_dir,
@@ -45,6 +54,15 @@ from backend.validation import (
     validate_districts,
     validate_legislators,
     validate_vote_records,
+    validate_bill_history,
+    validate_bill_subjects,
+    validate_bill_documents,
+    validate_committees,
+    validate_agendas,
+    validate_agenda_bills,
+    validate_agenda_nominees,
+    validate_legislator_bios,
+    validate_subject_headings,
 )
 
 
@@ -58,6 +76,15 @@ class PipelineResult:
     vote_records: int
     districts: int
     validation_issues: int
+    bill_history: int
+    bill_subjects: int
+    bill_documents: int
+    committees: int
+    agendas: int
+    agenda_bills: int
+    agenda_nominees: int
+    legislator_bios: int
+    subject_headings: int
 
 
 def _index_by_key(rows: Iterable[dict], key: str) -> dict[str, dict]:
@@ -90,7 +117,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     readme_text = readme_path.read_text(encoding="latin1", errors="ignore")
     ensure_required_tables(
         readme_text,
-        ("MainBill", "Roster", "BillSpon", "COMember"),
+        ("MainBill", "Roster", "BillSpon", "COMember", "BillHist", "BillSubj", "BillWP", "Committee", "Agendas", "BAgendas", "NAgendas", "LegBio", "SubjHeadings"),
     )
     _download_bill_tracking(config, downloads_dir)
     _download_legdb_sessions(config, raw_dir / "legdb")
@@ -98,6 +125,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     vote_files = download_votes(config.votes_base_url, config.votes_readme_urls, votes_dir)
     feature_collection = fetch_all_features(config.gis_service_url)
 
+    # Parse existing tables
     bills = parse_mainbill(downloads_dir / "MAINBILL.TXT")
     legislators = parse_roster(downloads_dir / "ROSTER.TXT")
     active_legislators, former_legislators = split_legislators(legislators)
@@ -107,6 +135,17 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     for vote_file in vote_files:
         vote_records.extend(parse_vote_file(vote_file))
     districts = parse_districts(feature_collection)
+
+    # Parse new tables
+    bill_history = parse_bill_history(downloads_dir / "BILLHIST.TXT")
+    bill_subjects = parse_bill_subjects(downloads_dir / "BILLSUBJ.TXT")
+    bill_documents = parse_bill_documents(downloads_dir / "BILLWP.TXT")
+    committees = parse_committees(downloads_dir / "COMMITTEE.TXT")
+    agendas = parse_agendas(downloads_dir / "AGENDAS.TXT")
+    agenda_bills = parse_agenda_bills(downloads_dir / "BAGENDAS.TXT")
+    agenda_nominees = parse_agenda_nominees(downloads_dir / "NAGENDAS.TXT")
+    legislator_bios = parse_legislator_bios(downloads_dir / "LEGBIO.TXT")
+    subject_headings = parse_subject_headings(downloads_dir / "SUBJHEADINGS.TXT")
 
     session_window = build_session_window(
         config.session_lookback_count,
@@ -124,6 +163,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         vote_records=vote_records,
         session_window=session_window,
     )
+    # Note: We should probably filter the new tables too (bill_history, etc.) but ignoring for now or relying on bill_key check in validation.
 
     processed_dir = snapshot_dir(config.data_dir, run_date)
     write_snapshot("bills", bills, processed_dir)
@@ -133,6 +173,17 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     write_snapshot("committee_members", committee_members, processed_dir)
     write_snapshot("vote_records", vote_records, processed_dir)
     write_snapshot("districts", districts, processed_dir)
+
+    # Snapshot new tables
+    write_snapshot("bill_history", bill_history, processed_dir)
+    write_snapshot("bill_subjects", bill_subjects, processed_dir)
+    write_snapshot("bill_documents", bill_documents, processed_dir)
+    write_snapshot("committees", committees, processed_dir)
+    write_snapshot("agendas", agendas, processed_dir)
+    write_snapshot("agenda_bills", agenda_bills, processed_dir)
+    write_snapshot("agenda_nominees", agenda_nominees, processed_dir)
+    write_snapshot("legislator_bios", legislator_bios, processed_dir)
+    write_snapshot("subject_headings", subject_headings, processed_dir)
 
     if should_create_backup(config.data_dir, run_date, config.backup_interval_days):
         create_backup(processed_dir, backup_dir(config.data_dir, run_date))
@@ -144,6 +195,16 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     vote_records_result = validate_vote_records(vote_records)
     districts_result = validate_districts(districts)
 
+    bill_history_result = validate_bill_history(bill_history, bills_result.valid_rows)
+    bill_subjects_result = validate_bill_subjects(bill_subjects, bills_result.valid_rows)
+    bill_documents_result = validate_bill_documents(bill_documents, bills_result.valid_rows)
+    committees_result = validate_committees(committees)
+    agendas_result = validate_agendas(agendas)
+    agenda_bills_result = validate_agenda_bills(agenda_bills, agendas_result.valid_rows, bills_result.valid_rows)
+    agenda_nominees_result = validate_agenda_nominees(agenda_nominees, agendas_result.valid_rows)
+    legislator_bios_result = validate_legislator_bios(legislator_bios, legislators_result.valid_rows)
+    subject_headings_result = validate_subject_headings(subject_headings)
+
     validation_issues = (
         bills_result.issues
         + legislators_result.issues
@@ -151,6 +212,15 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         + committee_members_result.issues
         + vote_records_result.issues
         + districts_result.issues
+        + bill_history_result.issues
+        + bill_subjects_result.issues
+        + bill_documents_result.issues
+        + committees_result.issues
+        + agendas_result.issues
+        + agenda_bills_result.issues
+        + agenda_nominees_result.issues
+        + legislator_bios_result.issues
+        + subject_headings_result.issues
     )
 
     client = SupabaseClient(config.supabase_url, config.supabase_service_key)
@@ -161,6 +231,18 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     _upload_draft(client, "committee_members", committee_members, run_date)
     _upload_draft(client, "vote_records", vote_records, run_date)
     _upload_draft(client, "districts", districts, run_date)
+
+    # Upload draft new tables
+    _upload_draft(client, "bill_history", bill_history, run_date)
+    _upload_draft(client, "bill_subjects", bill_subjects, run_date)
+    _upload_draft(client, "bill_documents", bill_documents, run_date)
+    _upload_draft(client, "committees", committees, run_date)
+    _upload_draft(client, "agendas", agendas, run_date)
+    _upload_draft(client, "agenda_bills", agenda_bills, run_date)
+    _upload_draft(client, "agenda_nominees", agenda_nominees, run_date)
+    _upload_draft(client, "legislator_bios", legislator_bios, run_date)
+    _upload_draft(client, "subject_headings", subject_headings, run_date)
+
 
     if validation_issues:
         issue_payloads = [issue.as_dict(run_date=run_date) for issue in validation_issues]
@@ -173,6 +255,16 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     _upload_changed(client, "vote_records", vote_records_result.valid_rows, config.data_dir, run_date)
     _upload_changed(client, "districts", districts_result.valid_rows, config.data_dir, run_date)
 
+    _upload_changed(client, "bill_history", bill_history_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "bill_subjects", bill_subjects_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "bill_documents", bill_documents_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "committees", committees_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "agendas", agendas_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "agenda_bills", agenda_bills_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "agenda_nominees", agenda_nominees_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "legislator_bios", legislator_bios_result.valid_rows, config.data_dir, run_date)
+    _upload_changed(client, "subject_headings", subject_headings_result.valid_rows, config.data_dir, run_date)
+
     enforce_retention(config.data_dir, config.retention_days, config.backup_retention_count)
 
     return PipelineResult(
@@ -183,6 +275,15 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         vote_records=len(vote_records_result.valid_rows),
         districts=len(districts_result.valid_rows),
         validation_issues=len(validation_issues),
+        bill_history=len(bill_history_result.valid_rows),
+        bill_subjects=len(bill_subjects_result.valid_rows),
+        bill_documents=len(bill_documents_result.valid_rows),
+        committees=len(committees_result.valid_rows),
+        agendas=len(agendas_result.valid_rows),
+        agenda_bills=len(agenda_bills_result.valid_rows),
+        agenda_nominees=len(agenda_nominees_result.valid_rows),
+        legislator_bios=len(legislator_bios_result.valid_rows),
+        subject_headings=len(subject_headings_result.valid_rows),
     )
 
 

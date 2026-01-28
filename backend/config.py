@@ -18,6 +18,7 @@ class PipelineConfig:
     data_dir: Path
     supabase_url: str
     supabase_service_key: str
+    supabase_db_url: str
     retention_days: int
     backup_retention_count: int
     backup_interval_days: int
@@ -50,6 +51,7 @@ def load_config() -> PipelineConfig:
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
     supabase_url = os.getenv("SUPABASE_URL", "https://zgtevahaudnjpocptzgj.supabase.co").strip()
     supabase_service_key = _resolve_supabase_key()
+    supabase_db_url = os.getenv("SUPABASE_DB_URL", os.getenv("DATABASE_URL", "")).strip()
 
     retention_days = int(os.getenv("DATA_RETENTION_DAYS", "3"))
     backup_retention_count = int(os.getenv("BACKUP_RETENTION_COUNT", "2"))
@@ -62,6 +64,15 @@ def load_config() -> PipelineConfig:
         "ROSTER.TXT",
         "BILLSPON.TXT",
         "COMEMBER.TXT",
+        "BILLHIST.TXT",
+        "BILLSUBJ.TXT",
+        "BILLWP.TXT",
+        "COMMITTEE.TXT",
+        "AGENDAS.TXT",
+        "BAGENDAS.TXT",
+        "NAGENDAS.TXT",
+        "LEGBIO.TXT",
+        "SUBJHEADINGS.TXT",
     )
 
     legdb_years = _parse_years(os.getenv("NJLEG_LEGDB_YEARS", "2024"))
@@ -77,6 +88,7 @@ def load_config() -> PipelineConfig:
         data_dir=data_dir,
         supabase_url=supabase_url,
         supabase_service_key=supabase_service_key,
+        supabase_db_url=supabase_db_url,
         retention_days=retention_days,
         backup_retention_count=backup_retention_count,
         backup_interval_days=backup_interval_days,
@@ -114,6 +126,15 @@ PRIMARY_KEYS = {
     "committee_members": "committee_member_key",
     "vote_records": "vote_record_key",
     "districts": "district_key",
+    "bill_history": "bill_history_key",
+    "bill_subjects": "bill_subject_key",
+    "bill_documents": "bill_document_key",
+    "committees": "committee_code",
+    "agendas": "agenda_key",
+    "agenda_bills": "agenda_bill_key",
+    "agenda_nominees": "agenda_nominee_key",
+    "legislator_bios": "roster_key",
+    "subject_headings": "subject_code",
 }
 
 DRAFT_TABLE_PREFIX = "draft_"
