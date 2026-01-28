@@ -1,0 +1,51 @@
+Starting project at /app
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@53.0.13 - expected version: ~53.0.25
+  expo-constants@17.1.6 - expected version: ~17.1.8
+  expo-font@13.3.1 - expected version: ~13.3.2
+  expo-image@2.1.7 - expected version: ~2.4.1
+  expo-linking@7.1.5 - expected version: ~7.1.7
+  expo-location@18.1.5 - expected version: ~18.1.6
+  expo-router@5.0.7 - expected version: ~5.1.10
+  expo-splash-screen@0.30.9 - expected version: ~0.30.10
+  expo-system-ui@5.0.9 - expected version: ~5.0.11
+  expo-web-browser@14.1.6 - expected version: ~14.2.0
+  react-native@0.79.2 - expected version: 0.79.6
+  react-native-screens@4.10.0 - expected version: ~4.11.1
+  @react-native-async-storage/async-storage@2.1.0 - expected version: 2.1.2
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓░░░░░░░░░░░░ 30.7% (108/195)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  5.7% ( 40/204)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓░░░░░░░░ 54.5% (245/347)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 43.7% (287/434)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 66.1% (409/522)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 74.5% (518/600)
+| Dynamic import at line 109: require(s). This module may not work as intended when deployed to a runtime.
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 93.3% (735/761)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.7% (766/775)
+λ Bundled 14514ms node_modules/expo-router/node/render.js (789 modules)
+λ  WARN  "shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  Route "./lib/supabase.ts" is missing the required default export. Ensure a React component is exported as default.
+Web Bundled 16884ms node_modules/expo-router/entry.js (782 modules)
+Web node_modules/expo-router/entry.js ▓▓░░░░░░░░░░░░░░ 17.0% ( 56/169)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 70.9% (538/639)
+Web Bundled 5532ms node_modules/expo-router/entry.js (792 modules)
+ LOG  [web] Logs will appear in the browser console
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 75ms node_modules/expo-router/node/render.js (1 module)
+λ  WARN  "shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  Route "./lib/supabase.ts" is missing the required default export. Ensure a React component is exported as default.
+Web Bundled 634ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 94ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ  WARN  "shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  Route "./lib/supabase.ts" is missing the required default export. Ensure a React component is exported as default.
+λ Bundled 43ms node_modules/expo-router/node/render.js (1 module)
+Web Bundled 287ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 39ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console

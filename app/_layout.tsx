@@ -17,6 +17,7 @@ function TopNavigation() {
     { name: 'All Legislators', path: '/legislators' },
     { name: 'Find Your Legislator', path: '/find-legislator' },
     { name: 'Profile', path: '/profile' },
+    { name: 'Admin Dashboard', path: '/admin' },
     { name: 'Supabase Setup', path: '/setup' },
   ];
 
@@ -28,6 +29,7 @@ function TopNavigation() {
     if (pathname === '/legislators') return 'All Legislators';
     if (pathname === '/find-legislator') return 'Find Your Legislator';
     if (pathname === '/profile') return 'Profile';
+    if (pathname === '/admin') return 'Admin Dashboard';
     if (pathname === '/setup') return 'Supabase Setup';
     return 'NJ Legislature';
   };
@@ -80,6 +82,7 @@ export default function RootLayout() {
         <Stack.Screen name="senate" />
         <Stack.Screen name="assembly" />
         <Stack.Screen name="profile" />
+        <Stack.Screen name="admin" />
         <Stack.Screen name="setup" />
       </Stack>
     </View>

@@ -4,13 +4,35 @@ import json
 from typing import Any
 
 
-def parse_districts(feature_collection: dict[str, Any]) -> list[dict]:
+def parse_districts(feature_collection: dict[str, Any]) -> tuple[list[dict], list[dict]]:
+    """
+    Parses GeoJSON features into district records.
+    Returns (valid_records, issues).
+    """
     records: list[dict] = []
+    issues: list[dict] = []
+
     for feature in feature_collection.get("features", []):
         properties = feature.get("properties", {})
         district_number = _extract_district_number(properties)
         name = _extract_name(properties)
-        district_key = str(district_number) if district_number is not None else _fallback_key(properties)
+
+        district_key = None
+        if district_number is not None:
+             district_key = str(district_number)
+        else:
+             fallback = _fallback_key(properties)
+             if fallback == "unknown":
+                 issues.append({
+                     "table": "districts",
+                     "record_key": None,
+                     "issue": "missing_district_identifier",
+                     "details": f"Could not determine district number or fallback ID. Properties: {properties.keys()}",
+                     "raw_data": str(properties)
+                 })
+                 continue
+             district_key = fallback
+
         geometry_json = json.dumps(feature.get("geometry"), sort_keys=True)
         records.append(
             {
@@ -21,7 +43,7 @@ def parse_districts(feature_collection: dict[str, Any]) -> list[dict]:
                 "geometry_json": geometry_json,
             }
         )
-    return records
+    return records, issues
 
 
 def _extract_district_number(properties: dict[str, Any]) -> int | None:

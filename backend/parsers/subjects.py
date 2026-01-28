@@ -1,28 +1,36 @@
 from __future__ import annotations
 
-import csv
 from pathlib import Path
 
-from .utils import normalize_string
+from .utils import normalize_string, parse_csv_robust, convert_csv_issue
 
 
-def parse_subject_headings(path: Path) -> list[dict]:
+def parse_subject_headings(path: Path) -> tuple[list[dict], list[dict]]:
+    """
+    Parses the SUBJHEADINGS.TXT file.
+    Returns (valid_records, issues).
+    """
     records: list[dict] = []
-    if not path.exists():
-        return []
 
-    with path.open("r", encoding="latin1", newline="") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            # Based on README: SubjHeadings SubjAbbrev
-            subj_abbrev = normalize_string(row.get("SubjAbbrev"))
-            if not subj_abbrev:
-                continue
+    parse_result = parse_csv_robust(path)
+    issues = [convert_csv_issue(i, "subject_headings") for i in parse_result.issues]
 
-            records.append(
-                {
-                    "subject_code": subj_abbrev,
-                    "description": normalize_string(row.get("Description")),
-                }
-            )
-    return records
+    for row in parse_result.rows:
+        subj_abbrev = normalize_string(row.get("SubjAbbrev"))
+        if not subj_abbrev:
+            issues.append({
+                "table": "subject_headings",
+                "record_key": None,
+                "issue": "missing_subject_code",
+                "details": "Missing SubjAbbrev",
+                "raw_data": str(row)
+            })
+            continue
+
+        records.append(
+            {
+                "subject_code": subj_abbrev,
+                "description": normalize_string(row.get("Description")),
+            }
+        )
+    return records, issues

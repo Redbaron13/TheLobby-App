@@ -77,15 +77,11 @@ export function BillsScreen() {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
   const saveBill = async (bill: Bill) => {
-    if (!isSupabaseConfigured()) {
+    if (!isSupabaseConfigured || !supabase) {
       setActionMessage('Supabase is not configured. Configure it in Settings.');
       return;
     }
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      setActionMessage('Supabase is not configured. Configure it in Settings.');
-      return;
-    }
+
     const { data: authData } = await supabase.auth.getUser();
     const user = authData.user;
     if (!user) {
