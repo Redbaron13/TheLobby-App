@@ -21,9 +21,13 @@ def parse_committee_members(path: Path) -> tuple[list[dict], list[dict]]:
         assignment = normalize_string(row.get("Assignment_to_Committee"))
 
         if not code or not member or not assignment:
+             # Construct a key from whatever is present, or None if nothing
+             present_parts = [part for part in (code, member, assignment) if part]
+             record_key = "-".join(present_parts) if present_parts else None
+
              issues.append({
                 "table": "committee_members",
-                "record_key": f"{code}-{member}",
+                "record_key": record_key,
                 "issue": "missing_key_fields",
                 "details": "Missing Code, Member, or Assignment_to_Committee",
                 "raw_data": str(row)
