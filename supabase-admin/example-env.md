@@ -1,21 +1,26 @@
-# Copy this file to .env and fill in your values.
-#Supabase Database Link Configuration 
+# Supabase Admin Environment Configuration Template
+# Copy this file to .env and fill in your actual values
 
-# Supabase Configuration
-    SUPABASE_PROJECT_ID="your-supabase-project-id" 
-    SUPABASE_URL="your-supabase-url" 
-# Supabase_URL="SUPABASE_PROJECT_ID.supabse.co
+################################################################################
+# SUPABASE PROJECT DETAILS
+################################################################################
 
-# API Keys: (Setup for both old and new key types for your project)
-# Old API Key Types:
-    SUPABASE_ANON_PUBLIC_KEY="your-supabase-ANON-PUBLIC-key" #publishable key
+SUPABASE_PROJECT_ID="your-supabase-project-id"
+SUPABASE_URL="https://your-project-id.supabase.co"
 
-    SUPABASE_SERVICE_ROLE_SECRET_KEY="your-supabase-SERVICE-ROLE-SECRET-key" 
-        # Never share this key publicly
+################################################################################
+# API KEYS - SECURITY WARNING
+################################################################################
 
-# New API Key Types:
-    SUPABASE_PUBLISHABLE_KEY="ur_publishable_key" 
-    # Publishable key can be shared publicly.
+# NEVER commit actual keys to git. Use environment variables in production.
 
-    SUPABASE_SECRET_KEY="ur_secret_key" 
-    # Never share this key publicly!
+# Service Role Key - FOR SERVER USE ONLY
+# Has full admin access. DO NOT expose this to the client.
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+
+# Publishable Key - Safe to share
+# Can be used in client-side code
+SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
+
+# Optional: Anonymous Key (old naming convention)
+SUPABASE_ANON_KEY="your-anon-key"
