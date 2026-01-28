@@ -22,7 +22,7 @@ def parse_subject_headings(path: Path) -> list[dict]:
             records.append(
                 {
                     "subject_code": subj_abbrev,
-                    "description": normalize_string(row.get("SubjectHeading")), # Guessing column name
+                    "description": normalize_string(row.get("Description")),
                 }
             )
     return records
