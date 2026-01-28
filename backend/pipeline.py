@@ -142,8 +142,8 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     bill_documents = parse_bill_documents(downloads_dir / "BILLWP.TXT")
     committees = parse_committees(downloads_dir / "COMMITTEE.TXT")
     agendas = parse_agendas(downloads_dir / "AGENDAS.TXT")
-    agenda_bills = parse_agenda_bills(downloads_dir / "BAGENDAS.TXT")
-    agenda_nominees = parse_agenda_nominees(downloads_dir / "NAGENDAS.TXT")
+    agenda_bills = parse_agenda_bills(downloads_dir / "BAGENDA.TXT")
+    agenda_nominees = parse_agenda_nominees(downloads_dir / "NAGENDA.TXT")
     legislator_bios = parse_legislator_bios(downloads_dir / "LEGBIO.TXT")
     subject_headings = parse_subject_headings(downloads_dir / "SUBJHEADINGS.TXT")
 

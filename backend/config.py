@@ -69,8 +69,8 @@ def load_config() -> PipelineConfig:
         "BILLWP.TXT",
         "COMMITTEE.TXT",
         "AGENDAS.TXT",
-        "BAGENDAS.TXT",
-        "NAGENDAS.TXT",
+        "BAGENDA.TXT",
+        "NAGENDA.TXT",
         "LEGBIO.TXT",
         "SUBJHEADINGS.TXT",
     )
