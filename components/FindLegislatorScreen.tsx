@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '@/app/lib/supabase';
 
 interface Legislator {
-  RosterKey: number;
-  Firstname: string;
-  LastName: string;
-  Party: string;
-  House: string;
-  District: number;
-  LegPos?: string;
+  roster_key: number;
+  first_name: string;
+  last_name: string;
+  party: string;
+  house: string;
+  district: number;
+  leg_pos?: string;
 }
 
 export function FindLegislatorScreen() {
@@ -54,7 +54,7 @@ export function FindLegislatorScreen() {
       return;
     }
 
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isSupabaseConfigured()) {
       setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
       return;
     }
@@ -63,11 +63,18 @@ export function FindLegislatorScreen() {
     setErrorMessage(null);
     setDistrictReps([]);
 
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+      setDistrictLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('legislators')
-      .select('RosterKey, Firstname, LastName, Party, House, District, LegPos')
-      .eq('District', districtNumber)
-      .order('House');
+      .select('roster_key, first_name, last_name, party, house, district, leg_pos')
+      .eq('district', districtNumber)
+      .order('house');
 
     if (error) {
       console.error('District lookup error:', error);
@@ -180,7 +187,7 @@ export function FindLegislatorScreen() {
           {!districtLoading && districtReps.length > 0 && (
             <View>
               {districtReps.map(rep => (
-                <View key={rep.RosterKey} style={{
+                <View key={rep.roster_key} style={{
                   backgroundColor: '#ffffff',
                   borderRadius: 12,
                   padding: 12,
@@ -192,14 +199,14 @@ export function FindLegislatorScreen() {
                   elevation: 2,
                 }}>
                   <Text style={{ fontSize: 16, fontWeight: '600', color: '#1e293b' }}>
-                    {rep.Firstname} {rep.LastName}
+                    {rep.first_name} {rep.last_name}
                   </Text>
                   <Text style={{ color: '#64748b' }}>
-                    {rep.House} • District {rep.District} • {rep.Party}
+                    {rep.house} • District {rep.district} • {rep.party}
                   </Text>
-                  {rep.LegPos && (
+                  {rep.leg_pos && (
                     <Text style={{ color: '#059669', marginTop: 4 }}>
-                      {rep.LegPos}
+                      {rep.leg_pos}
                     </Text>
                   )}
                 </View>

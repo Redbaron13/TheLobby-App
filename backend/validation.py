@@ -106,7 +106,7 @@ def validate_bills(bills: list[dict]) -> ValidationResult:
     return ValidationResult(valid_rows=valid, issues=issues)
 
 
-def validate_legislators(legislators: list[dict]) -> ValidationResult:
+def validate_legislators(legislators: list[dict], *, table: str = "legislators") -> ValidationResult:
     valid: list[dict] = []
     issues: list[ValidationIssue] = []
     for legislator in legislators:
@@ -114,7 +114,7 @@ def validate_legislators(legislators: list[dict]) -> ValidationResult:
         if roster_key is None:
             issues.append(
                 ValidationIssue(
-                    table="legislators",
+                    table=table,
                     record_key=None,
                     issue="missing_roster_key",
                 )
@@ -124,7 +124,7 @@ def validate_legislators(legislators: list[dict]) -> ValidationResult:
         if district is not None and not (1 <= int(district) <= 40):
             issues.append(
                 ValidationIssue(
-                    table="legislators",
+                    table=table,
                     record_key=str(roster_key),
                     issue="invalid_district",
                     details=str(district),
