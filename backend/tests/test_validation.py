@@ -12,7 +12,7 @@ from backend.session_filter import SessionWindow
 
 def test_validate_bills_flags_key_mismatch() -> None:
     bills = [
-        {"bill_key": "A-1", "bill_type": "B", "bill_number": 1},
+        {"bill_key": "A-2", "bill_type": "A", "bill_number": 1},
         {"bill_key": "S-2", "bill_type": "S", "bill_number": 2, "intro_date": "2024-01-02", "mod_date": "2024-01-03"},
     ]
     result = validate_bills(bills)

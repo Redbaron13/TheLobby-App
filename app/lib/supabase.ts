@@ -9,3 +9,9 @@ export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey);
 export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseKey)
   : null;
+
+export const loadSupabaseConfig = async () => {
+    // Placeholder for dynamic configuration loading
+    console.log('Loading Supabase config...');
+    return isSupabaseConfigured;
+};

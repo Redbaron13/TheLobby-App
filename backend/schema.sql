@@ -207,6 +207,7 @@ create table if not exists public.data_validation_issues (
   record_key text,
   issue text,
   details text,
+  raw_data text,
   created_at timestamptz default now()
 );
 

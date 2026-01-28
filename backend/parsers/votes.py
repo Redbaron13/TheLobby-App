@@ -7,22 +7,72 @@ from pathlib import Path
 from typing import Any
 
 
-def _detect_dialect(sample: str) -> csv.Dialect:
+def _detect_dialect(sample: str) -> csv.Dialect | type[csv.Dialect]:
     try:
         return csv.Sniffer().sniff(sample)
     except csv.Error:
         return csv.excel
 
 
-def parse_vote_file(path: Path) -> list[dict]:
+def parse_vote_file(path: Path) -> tuple[list[dict], list[dict]]:
+    """
+    Parses a vote CSV file.
+    Returns (valid_records, issues).
+    """
     records: list[dict] = []
+    issues: list[dict] = []
+
+    if not path.exists():
+        return records, issues
+
     with path.open("r", encoding="latin1", newline="") as file:
-        sample = file.read(2048)
-        file.seek(0)
-        dialect = _detect_dialect(sample)
-        reader = csv.DictReader(file, dialect=dialect)
-        for row in reader:
-            normalized = {key.strip(): _normalize_value(value) for key, value in row.items() if key}
+        try:
+            sample = file.read(2048)
+            file.seek(0)
+            dialect = _detect_dialect(sample)
+            reader = csv.reader(file, dialect=dialect)
+        except csv.Error as e:
+            issues.append({
+                "table": "vote_records",
+                "record_key": None,
+                "issue": "csv_init_error",
+                "details": f"Failed to initialize CSV reader for {path.name}: {e}",
+                "raw_data": ""
+            })
+            return records, issues
+
+        try:
+            header = next(reader, None)
+        except csv.Error as e:
+            issues.append({
+                "table": "vote_records",
+                "record_key": None,
+                "issue": "header_read_error",
+                "details": f"Failed to read header: {e}",
+                "raw_data": ""
+            })
+            return records, issues
+
+        if not header:
+            return records, issues
+
+        header_len = len(header)
+
+        for line_num, row in enumerate(reader, start=2):
+            if len(row) != header_len:
+                issues.append({
+                    "table": "vote_records",
+                    "record_key": None,
+                    "issue": "column_mismatch",
+                    "details": f"Expected {header_len} columns, got {len(row)} in {path.name}",
+                    "raw_data": ",".join(row)
+                })
+                continue
+
+            # Create dict manually
+            row_dict = dict(zip(header, row))
+
+            normalized = {key.strip(): _normalize_value(value) for key, value in row_dict.items() if key}
             data_payload = {"source_file": path.name, "fields": normalized}
             vote_record_key = _hash_payload(data_payload)
             records.append(
@@ -32,7 +82,8 @@ def parse_vote_file(path: Path) -> list[dict]:
                     "data": data_payload,
                 }
             )
-    return records
+
+    return records, issues
 
 
 def _normalize_value(value: Any) -> str | None:

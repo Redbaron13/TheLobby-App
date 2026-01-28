@@ -1,28 +1,37 @@
 from __future__ import annotations
 
-import csv
 from pathlib import Path
 
-from .utils import normalize_string
+from .utils import normalize_string, parse_csv_robust, convert_csv_issue
 
 
-def parse_committees(path: Path) -> list[dict]:
+def parse_committees(path: Path) -> tuple[list[dict], list[dict]]:
+    """
+    Parses the COMMITTEE.TXT file.
+    Returns (valid_records, issues).
+    """
     records: list[dict] = []
-    if not path.exists():
-        return []
 
-    with path.open("r", encoding="latin1", newline="") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            code = normalize_string(row.get("Code"))
-            if not code:
-                continue
+    parse_result = parse_csv_robust(path)
+    issues = [convert_csv_issue(i, "committees") for i in parse_result.issues]
 
-            records.append(
-                {
-                    "committee_code": code,
-                    "description": normalize_string(row.get("Description")),
-                    "house": normalize_string(row.get("House")),
-                }
-            )
-    return records
+    for row in parse_result.rows:
+        code = normalize_string(row.get("Code"))
+        if not code:
+            issues.append({
+                "table": "committees",
+                "record_key": None,
+                "issue": "missing_committee_code",
+                "details": "Missing Code",
+                "raw_data": str(row)
+            })
+            continue
+
+        records.append(
+            {
+                "committee_code": code,
+                "description": normalize_string(row.get("Description")),
+                "house": normalize_string(row.get("House")),
+            }
+        )
+    return records, issues
