@@ -30,6 +30,8 @@ def parse_bill_documents(path: Path) -> list[dict]:
             description = normalize_string(row.get("Description"))
             # Generate a key.
             bill_document_key = f"{bill_key}-{doc_type}-{description}"[:200]
+            # Replace spaces in key with hyphens to be safer
+            bill_document_key = bill_document_key.replace(" ", "-")
 
             records.append(
                 {
