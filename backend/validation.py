@@ -238,6 +238,259 @@ def validate_districts(districts: list[dict]) -> ValidationResult:
     return ValidationResult(valid_rows=valid, issues=issues)
 
 
+def validate_bill_history(bill_history: list[dict], bills: Sequence[dict] | None = None) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    bill_keys = {bill.get("bill_key") for bill in bills} if bills else None
+
+    for record in bill_history:
+        key = record.get("bill_history_key")
+        bill_key = record.get("bill_key")
+        if not key or not bill_key:
+            issues.append(
+                ValidationIssue(
+                    table="bill_history",
+                    record_key=key,
+                    issue="missing_required_fields",
+                    details="bill_history_key or bill_key missing",
+                )
+            )
+            continue
+        if bill_keys and bill_key not in bill_keys:
+            issues.append(
+                ValidationIssue(
+                    table="bill_history",
+                    record_key=key,
+                    issue="unknown_bill_key",
+                    details=bill_key,
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_bill_subjects(bill_subjects: list[dict], bills: Sequence[dict] | None = None) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    bill_keys = {bill.get("bill_key") for bill in bills} if bills else None
+
+    for record in bill_subjects:
+        key = record.get("bill_subject_key")
+        bill_key = record.get("bill_key")
+        if not key or not bill_key:
+            issues.append(
+                ValidationIssue(
+                    table="bill_subjects",
+                    record_key=key,
+                    issue="missing_required_fields",
+                )
+            )
+            continue
+        if bill_keys and bill_key not in bill_keys:
+            issues.append(
+                ValidationIssue(
+                    table="bill_subjects",
+                    record_key=key,
+                    issue="unknown_bill_key",
+                    details=bill_key,
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_bill_documents(bill_documents: list[dict], bills: Sequence[dict] | None = None) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    bill_keys = {bill.get("bill_key") for bill in bills} if bills else None
+
+    for record in bill_documents:
+        key = record.get("bill_document_key")
+        bill_key = record.get("bill_key")
+        if not key or not bill_key:
+            issues.append(
+                ValidationIssue(
+                    table="bill_documents",
+                    record_key=key,
+                    issue="missing_required_fields",
+                )
+            )
+            continue
+        if bill_keys and bill_key not in bill_keys:
+            issues.append(
+                ValidationIssue(
+                    table="bill_documents",
+                    record_key=key,
+                    issue="unknown_bill_key",
+                    details=bill_key,
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_committees(committees: list[dict]) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    for record in committees:
+        key = record.get("committee_code")
+        if not key:
+            issues.append(
+                ValidationIssue(
+                    table="committees",
+                    record_key=key,
+                    issue="missing_committee_code",
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_agendas(agendas: list[dict]) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    for record in agendas:
+        key = record.get("agenda_key")
+        if not key:
+            issues.append(
+                ValidationIssue(
+                    table="agendas",
+                    record_key=key,
+                    issue="missing_agenda_key",
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_agenda_bills(agenda_bills: list[dict], agendas: Sequence[dict] | None = None, bills: Sequence[dict] | None = None) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    agenda_keys = {a.get("agenda_key") for a in agendas} if agendas else None
+    bill_keys = {b.get("bill_key") for b in bills} if bills else None
+
+    for record in agenda_bills:
+        key = record.get("agenda_bill_key")
+        agenda_key = record.get("agenda_key")
+        bill_key = record.get("bill_key")
+
+        if not key or not agenda_key or not bill_key:
+            issues.append(
+                ValidationIssue(
+                    table="agenda_bills",
+                    record_key=key,
+                    issue="missing_required_fields",
+                )
+            )
+            continue
+        if agenda_keys and agenda_key not in agenda_keys:
+            issues.append(
+                ValidationIssue(
+                    table="agenda_bills",
+                    record_key=key,
+                    issue="unknown_agenda_key",
+                    details=agenda_key,
+                )
+            )
+            continue
+        if bill_keys and bill_key not in bill_keys:
+            issues.append(
+                ValidationIssue(
+                    table="agenda_bills",
+                    record_key=key,
+                    issue="unknown_bill_key",
+                    details=bill_key,
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_agenda_nominees(agenda_nominees: list[dict], agendas: Sequence[dict] | None = None) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    agenda_keys = {a.get("agenda_key") for a in agendas} if agendas else None
+
+    for record in agenda_nominees:
+        key = record.get("agenda_nominee_key")
+        agenda_key = record.get("agenda_key")
+        if not key or not agenda_key:
+            issues.append(
+                ValidationIssue(
+                    table="agenda_nominees",
+                    record_key=key,
+                    issue="missing_required_fields",
+                )
+            )
+            continue
+        if agenda_keys and agenda_key not in agenda_keys:
+            issues.append(
+                ValidationIssue(
+                    table="agenda_nominees",
+                    record_key=key,
+                    issue="unknown_agenda_key",
+                    details=agenda_key,
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_legislator_bios(legislator_bios: list[dict], legislators: Sequence[dict] | None = None) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    roster_keys = {l.get("roster_key") for l in legislators} if legislators else None
+
+    for record in legislator_bios:
+        key = record.get("roster_key")
+        if not key:
+            issues.append(
+                ValidationIssue(
+                    table="legislator_bios",
+                    record_key=str(key),
+                    issue="missing_roster_key",
+                )
+            )
+            continue
+        if roster_keys and key not in roster_keys:
+            issues.append(
+                ValidationIssue(
+                    table="legislator_bios",
+                    record_key=str(key),
+                    issue="unknown_roster_key",
+                    details=str(key),
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
+def validate_subject_headings(subject_headings: list[dict]) -> ValidationResult:
+    valid: list[dict] = []
+    issues: list[ValidationIssue] = []
+    for record in subject_headings:
+        key = record.get("subject_code")
+        if not key:
+            issues.append(
+                ValidationIssue(
+                    table="subject_headings",
+                    record_key=key,
+                    issue="missing_subject_code",
+                )
+            )
+            continue
+        valid.append(record)
+    return ValidationResult(valid_rows=valid, issues=issues)
+
+
 def _dates_in_order(row: dict, start_field: str, end_field: str) -> bool:
     start = _parse_iso_date(row.get(start_field))
     end = _parse_iso_date(row.get(end_field))

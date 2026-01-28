@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import json
-import os
 import sys
 
 import psycopg2
 
+from backend.config import load_config
 from backend.schema import load_schema_sql
 
 
@@ -26,9 +26,11 @@ def initialize_schema(database_url: str) -> None:
 
 
 def main() -> int:
-    database_url = os.getenv("DATABASE_URL")
+    config = load_config()
+    database_url = config.supabase_db_url
+
     if not database_url:
-        _log({"action": "error", "error": "DATABASE_URL is required"})
+        _log({"action": "error", "error": "SUPABASE_DB_URL or DATABASE_URL is required"})
         return 1
     try:
         initialize_schema(database_url)
