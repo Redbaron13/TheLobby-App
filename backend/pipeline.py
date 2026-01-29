@@ -47,6 +47,7 @@ from backend.votes_downloader import download_votes
 from backend.session_filter import build_session_window
 from backend.roster_split import split_legislators
 from backend.validation import (
+    ValidationIssue,
     filter_to_recent_sessions,
     validate_bill_sponsors,
     validate_bills,
@@ -106,6 +107,10 @@ def _diff_rows(current_rows: list[dict], previous_rows: list[dict], key: str) ->
     return changed
 
 
+def _to_validation_issues(issues_dicts: list[dict]) -> list[ValidationIssue]:
+    return [ValidationIssue(**i) for i in issues_dicts]
+
+
 def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> PipelineResult:
     if not config.supabase_url or not config.supabase_service_key:
         raise RuntimeError("Supabase URL and key are required to run the pipeline.")
@@ -126,26 +131,31 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     feature_collection = fetch_all_features(config.gis_service_url)
 
     # Parse existing tables
-    bills = parse_mainbill(downloads_dir / "MAINBILL.TXT")
-    legislators = parse_roster(downloads_dir / "ROSTER.TXT")
+    bills, bills_parse_issues = parse_mainbill(downloads_dir / "MAINBILL.TXT")
+    legislators, legislators_parse_issues = parse_roster(downloads_dir / "ROSTER.TXT")
     active_legislators, former_legislators = split_legislators(legislators)
-    bill_sponsors = parse_bill_sponsors(downloads_dir / "BILLSPON.TXT")
-    committee_members = parse_committee_members(downloads_dir / "COMEMBER.TXT")
+    bill_sponsors, bill_sponsors_parse_issues = parse_bill_sponsors(downloads_dir / "BILLSPON.TXT")
+    committee_members, committee_members_parse_issues = parse_committee_members(downloads_dir / "COMEMBER.TXT")
+
     vote_records = []
+    vote_records_parse_issues = []
     for vote_file in vote_files:
-        vote_records.extend(parse_vote_file(vote_file))
-    districts = parse_districts(feature_collection)
+        v_recs, v_issues = parse_vote_file(vote_file)
+        vote_records.extend(v_recs)
+        vote_records_parse_issues.extend(v_issues)
+
+    districts, districts_parse_issues = parse_districts(feature_collection)
 
     # Parse new tables
-    bill_history = parse_bill_history(downloads_dir / "BILLHIST.TXT")
-    bill_subjects = parse_bill_subjects(downloads_dir / "BILLSUBJ.TXT")
-    bill_documents = parse_bill_documents(downloads_dir / "BILLWP.TXT")
-    committees = parse_committees(downloads_dir / "COMMITTEE.TXT")
-    agendas = parse_agendas(downloads_dir / "AGENDAS.TXT")
-    agenda_bills = parse_agenda_bills(downloads_dir / "BAGENDA.TXT")
-    agenda_nominees = parse_agenda_nominees(downloads_dir / "NAGENDA.TXT")
-    legislator_bios = parse_legislator_bios(downloads_dir / "LEGBIO.TXT")
-    subject_headings = parse_subject_headings(downloads_dir / "SUBJHEADINGS.TXT")
+    bill_history, bill_history_parse_issues = parse_bill_history(downloads_dir / "BILLHIST.TXT")
+    bill_subjects, bill_subjects_parse_issues = parse_bill_subjects(downloads_dir / "BILLSUBJ.TXT")
+    bill_documents, bill_documents_parse_issues = parse_bill_documents(downloads_dir / "BILLWP.TXT")
+    committees, committees_parse_issues = parse_committees(downloads_dir / "COMMITTEE.TXT")
+    agendas, agendas_parse_issues = parse_agendas(downloads_dir / "AGENDAS.TXT")
+    agenda_bills, agenda_bills_parse_issues = parse_agenda_bills(downloads_dir / "BAGENDA.TXT")
+    agenda_nominees, agenda_nominees_parse_issues = parse_agenda_nominees(downloads_dir / "NAGENDA.TXT")
+    legislator_bios, legislator_bios_parse_issues = parse_legislator_bios(downloads_dir / "LEGBIO.TXT")
+    subject_headings, subject_headings_parse_issues = parse_subject_headings(downloads_dir / "SUBJHEADINGS.TXT")
 
     session_window = build_session_window(
         config.session_lookback_count,
@@ -223,6 +233,27 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         + subject_headings_result.issues
     )
 
+    # Add parsing issues
+    parsing_issues = (
+        _to_validation_issues(bills_parse_issues)
+        + _to_validation_issues(legislators_parse_issues)
+        + _to_validation_issues(bill_sponsors_parse_issues)
+        + _to_validation_issues(committee_members_parse_issues)
+        + _to_validation_issues(vote_records_parse_issues)
+        + _to_validation_issues(districts_parse_issues)
+        + _to_validation_issues(bill_history_parse_issues)
+        + _to_validation_issues(bill_subjects_parse_issues)
+        + _to_validation_issues(bill_documents_parse_issues)
+        + _to_validation_issues(committees_parse_issues)
+        + _to_validation_issues(agendas_parse_issues)
+        + _to_validation_issues(agenda_bills_parse_issues)
+        + _to_validation_issues(agenda_nominees_parse_issues)
+        + _to_validation_issues(legislator_bios_parse_issues)
+        + _to_validation_issues(subject_headings_parse_issues)
+    )
+
+    all_issues = validation_issues + parsing_issues
+
     client = SupabaseClient(config.supabase_url, config.supabase_service_key)
 
     _upload_draft(client, "bills", bills, run_date)
@@ -244,8 +275,8 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     _upload_draft(client, "subject_headings", subject_headings, run_date)
 
 
-    if validation_issues:
-        issue_payloads = [issue.as_dict(run_date=run_date) for issue in validation_issues]
+    if all_issues:
+        issue_payloads = [issue.as_dict(run_date=run_date) for issue in all_issues]
         client.upsert("data_validation_issues", issue_payloads)
 
     _upload_changed(client, "bills", bills_result.valid_rows, config.data_dir, run_date)
@@ -274,7 +305,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
         committee_members=len(committee_members_result.valid_rows),
         vote_records=len(vote_records_result.valid_rows),
         districts=len(districts_result.valid_rows),
-        validation_issues=len(validation_issues),
+        validation_issues=len(all_issues),
         bill_history=len(bill_history_result.valid_rows),
         bill_subjects=len(bill_subjects_result.valid_rows),
         bill_documents=len(bill_documents_result.valid_rows),

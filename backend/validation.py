@@ -13,6 +13,7 @@ class ValidationIssue:
     record_key: str | None
     issue: str
     details: str | None = None
+    raw_data: str | None = None
 
     def as_dict(self, run_date: str | None = None) -> dict:
         payload = {
@@ -20,6 +21,7 @@ class ValidationIssue:
             "record_key": self.record_key,
             "issue": self.issue,
             "details": self.details,
+            "raw_data": self.raw_data,
         }
         if run_date:
             payload["run_date"] = run_date
@@ -30,6 +32,10 @@ class ValidationIssue:
 class ValidationResult:
     valid_rows: list[dict]
     issues: list[ValidationIssue]
+
+
+VALID_BILL_TYPES = {"A", "S", "AR", "SR", "AJR", "SJR", "ACR", "SCR"}
+VALID_HOUSES = {"Senate", "Assembly", "S", "A"}
 
 
 def filter_to_recent_sessions(
@@ -81,6 +87,19 @@ def validate_bills(bills: list[dict]) -> ValidationResult:
                 )
             )
             continue
+        if bill_type not in VALID_BILL_TYPES:
+            issues.append(
+                ValidationIssue(
+                    table="bills",
+                    record_key=bill_key,
+                    issue="invalid_bill_type",
+                    details=f"Unexpected bill type: {bill_type}",
+                )
+            )
+            # Warning only, don't skip? Or skip? User wants "validation".
+            # If it's not a standard type, it might be junk. Let's skip.
+            continue
+
         expected_key = f"{bill_type}-{bill_number}"
         if bill_key != expected_key:
             issues.append(
@@ -131,6 +150,19 @@ def validate_legislators(legislators: list[dict]) -> ValidationResult:
                 )
             )
             continue
+
+        house = legislator.get("house")
+        if house and house not in VALID_HOUSES:
+             issues.append(
+                ValidationIssue(
+                    table="legislators",
+                    record_key=str(roster_key),
+                    issue="invalid_house",
+                    details=f"Unexpected house: {house}",
+                )
+            )
+             continue
+
         valid.append(legislator)
     return ValidationResult(valid_rows=valid, issues=issues)
 

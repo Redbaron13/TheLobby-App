@@ -1,0 +1,34 @@
+Starting project at /app
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@53.0.13 - expected version: ~53.0.25
+  expo-constants@17.1.6 - expected version: ~17.1.8
+  expo-font@13.3.1 - expected version: ~13.3.2
+  expo-image@2.1.7 - expected version: ~2.4.1
+  expo-linking@7.1.5 - expected version: ~7.1.7
+  expo-location@18.1.5 - expected version: ~18.1.6
+  expo-router@5.0.7 - expected version: ~5.1.10
+  expo-splash-screen@0.30.9 - expected version: ~0.30.10
+  expo-system-ui@5.0.9 - expected version: ~5.0.11
+  expo-web-browser@14.1.6 - expected version: ~14.2.0
+  react-native@0.79.2 - expected version: 0.79.6
+  react-native-screens@4.10.0 - expected version: ~4.11.1
+  @react-native-async-storage/async-storage@2.1.0 - expected version: 2.1.2
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 2167ms node_modules/expo-router/node/render.js (788 modules)
+λ  WARN  "shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  Route "./lib/supabase.ts" is missing the required default export. Ensure a React component is exported as default.
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.3% (726/775)
+Web Bundled 5071ms node_modules/expo-router/entry.js (775 modules)
+Web Bundled 855ms node_modules/expo-router/entry.js (782 modules)
+ LOG  [web] Logs will appear in the browser console
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 53ms node_modules/expo-router/node/render.js (1 module)
+λ  WARN  "shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  Route "./lib/supabase.ts" is missing the required default export. Ensure a React component is exported as default.
+Web Bundled 344ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 54ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console

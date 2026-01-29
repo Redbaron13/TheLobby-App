@@ -1,3 +1,9 @@
+# DEPRECATED: This script is legacy and superseded by the backend pipeline.
+# Logic from this file (Latin1 encoding, row validation, numeric checks) has been
+# integrated into backend/parsers/mainbill.py and backend/parsers/utils.py.
+#
+# Do not use this script for production data processing.
+
 import pandas as pd
 import uuid
 import os
@@ -9,7 +15,7 @@ def create_bills_file():
     billuuid, and saves the result as bills.csv.
     """
     print("Starting process to create 'bills.csv'...")
-
+    # ... (rest of the file)
     source_filename = None
     if os.path.exists('MAINBILL.TXT'):
         source_filename = 'MAINBILL.TXT'
