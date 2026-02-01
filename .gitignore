@@ -16,7 +16,16 @@ npm-debug.*
 .env.supabase
 .env.backend
 .env.production
+<<<<<<< HEAD
+
+data/njleg/
+data/njleg/stage2/
+data/njleg/pipeline_logs/
+data/njleg/pipeline_crashes/
+
+=======
 .env
+>>>>>>> 3acc31417a6f2ae001978d6fa4136eb8ee962d82
 backend/data/
 
 web-build/
