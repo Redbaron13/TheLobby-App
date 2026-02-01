@@ -9,6 +9,14 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 *.env
+*.env.local
+*.env.*.local
+*.expo-shared/
+.env.local
+.env.supabase
+.env.backend
+.env.production
+
 backend/data/
 
 web-build/
