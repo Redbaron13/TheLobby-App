@@ -16,7 +16,7 @@ npm-debug.*
 .env.supabase
 .env.backend
 .env.production
-
+.env
 backend/data/
 
 web-build/
