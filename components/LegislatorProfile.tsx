@@ -43,7 +43,8 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
 
   useEffect(() => {
     const fetchSponsoredBills = async () => {
-      const sponsorName = [legislator.LastName, legislator.Firstname].filter(Boolean).join(', ');
+      // Note: properties are lowercase in interface Legislator
+      const sponsorName = [legislator.last_name, legislator.first_name].filter(Boolean).join(', ');
       if (!sponsorName) {
         setSponsoredBills([]);
         return;
@@ -60,7 +61,10 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
       const { data, error } = await supabase
         .from('bills')
         .select('billuuid, "ActualBillNumber", "Synopsis", "CurrentStatus"')
-        .ilike('FirstPrime', `%${sponsorName}%`)
+        .textSearch('fts_first_prime', `'${sponsorName}'`, {
+          config: 'simple',
+          type: 'plain'
+        })
         .order('IntroDate', { ascending: false })
         .limit(5);
 
