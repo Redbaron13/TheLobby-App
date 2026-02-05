@@ -31,7 +31,10 @@ backend/data/
 web-build/
 assets/
 
-
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
 
 
 ios

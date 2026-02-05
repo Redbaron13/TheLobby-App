@@ -41,6 +41,8 @@ from backend.snapshot import (
     should_create_backup,
     snapshot_dir,
     write_snapshot,
+    load_latest_hashes,
+    compute_row_hash,
 )
 from backend.supabase_loader import SupabaseClient
 from backend.votes_downloader import download_votes
@@ -103,6 +105,16 @@ def _diff_rows(current_rows: list[dict], previous_rows: list[dict], key: str) ->
     for row in current_rows:
         row_key = str(row.get(key))
         if row_key not in previous_map or previous_map[row_key] != row:
+            changed.append(row)
+    return changed
+
+
+def _diff_rows_using_hashes(current_rows: list[dict], previous_hashes: dict[str, str], key: str) -> list[dict]:
+    changed: list[dict] = []
+    for row in current_rows:
+        row_key = str(row.get(key))
+        current_hash = compute_row_hash(row)
+        if row_key not in previous_hashes or previous_hashes[row_key] != current_hash:
             changed.append(row)
     return changed
 
@@ -350,8 +362,14 @@ def _upload_changed(
     run_date: str,
 ) -> None:
     key = PRIMARY_KEYS[table]
-    previous_rows = load_latest_snapshot(base_dir, table, exclude_date=run_date)
-    changed_rows = _diff_rows(current_rows, previous_rows, key)
+    previous_hashes = load_latest_hashes(base_dir, table, exclude_date=run_date)
+
+    if previous_hashes is not None:
+        changed_rows = _diff_rows_using_hashes(current_rows, previous_hashes, key)
+    else:
+        previous_rows = load_latest_snapshot(base_dir, table, exclude_date=run_date)
+        changed_rows = _diff_rows(current_rows, previous_rows, key)
+
     client.upsert(table, changed_rows)
 
 
