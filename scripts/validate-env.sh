@@ -46,6 +46,7 @@ echo "Checking Frontend Variables:"
 FRONTEND_OK=true
 check_var "EXPO_PUBLIC_SUPABASE_URL" || FRONTEND_OK=false
 check_var "EXPO_PUBLIC_SUPABASE_ANON_KEY" || FRONTEND_OK=false
+check_var "EXPO_PUBLIC_BACKEND_API_URL" || FRONTEND_OK=false
 
 # Check backend environment
 echo ""
