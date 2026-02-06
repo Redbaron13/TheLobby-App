@@ -4,6 +4,14 @@ from pydantic import BaseModel
 from typing import Optional, Dict, Any
 import datetime
 import threading
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 from backend.pipeline import run_pipeline, PipelineResult
 from backend.config import load_config
@@ -58,8 +66,9 @@ def run_sync_task(date: Optional[str]):
             "validation_issues": result.validation_issues
         }
     except Exception as e:
+        logger.error(f"Pipeline failed: {e}", exc_info=True)
         pipeline_status["status"] = "failed"
-        pipeline_status["error"] = str(e)
+        pipeline_status["error"] = "An internal error occurred during data synchronization."
         pipeline_status["last_run"] = datetime.datetime.now().isoformat()
 
 @app.post("/sync")
@@ -80,8 +89,14 @@ async def init_db():
 
         initialize_schema(config.supabase_db_url)
         return {"message": "Database schema initialized successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Database initialization failed: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred during database initialization."
+        )
 
 if __name__ == "__main__":
     import uvicorn
