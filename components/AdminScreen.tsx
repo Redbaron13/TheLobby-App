@@ -18,12 +18,33 @@ export function AdminScreen() {
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<any>(null);
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [expandedIssues, setExpandedIssues] = useState<Set<string>>(new Set());
 
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_API_URL || 'http://localhost:8000';
+
   useEffect(() => {
     fetchIssues();
+    fetchBackendStatus();
+    const interval = setInterval(fetchBackendStatus, 5000);
+    return () => clearInterval(interval);
   }, []);
+
+  const fetchBackendStatus = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/status`);
+      const data = await response.json();
+      setBackendStatus(data);
+      if (data.status === 'running') {
+        setSyncing(true);
+      } else {
+        setSyncing(false);
+      }
+    } catch (err) {
+      console.error('Error fetching backend status:', err);
+    }
+  };
 
   const fetchIssues = async () => {
     setLoading(true);
@@ -51,14 +72,45 @@ export function AdminScreen() {
 
   const triggerPipeline = async () => {
     setSyncing(true);
-    // Mock pipeline trigger
-    // In a real scenario, this would call an Edge Function or API endpoint
-    // that invokes the Python pipeline.
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${backendUrl}/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      if (!response.ok) throw new Error('Failed to trigger pipeline');
+      Alert.alert('Pipeline Triggered', 'The data synchronization pipeline has been initiated.');
+    } catch (err) {
+      console.error('Error triggering pipeline:', err);
+      Alert.alert('Error', 'Failed to trigger the pipeline.');
       setSyncing(false);
-      Alert.alert('Pipeline Triggered', 'The data synchronization pipeline has been initiated. Check back later for results.');
-      fetchIssues(); // Reload issues after trigger (assuming quick run for mock)
-    }, 2000);
+    }
+  };
+
+  const triggerInit = async () => {
+    Alert.alert(
+      'Initialize Database',
+      'This will create all necessary tables in Supabase. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Initialize',
+          onPress: async () => {
+            try {
+              const response = await fetch(`${backendUrl}/init`, { method: 'POST' });
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to initialize database');
+              }
+              Alert.alert('Success', 'Database schema initialized successfully.');
+            } catch (err: any) {
+              console.error('Error initializing database:', err);
+              Alert.alert('Error', err.message || 'Failed to initialize database.');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const toggleExpand = (id: string) => {
@@ -107,14 +159,6 @@ export function AdminScreen() {
     </View>
   );
 
-  if (!isSupabaseConfigured) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.emptyText}>Supabase is not configured.</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -123,17 +167,34 @@ export function AdminScreen() {
 
       <View style={styles.controlPanel}>
         <Text style={styles.controlTitle}>Pipeline Control</Text>
-        <TouchableOpacity
-          style={[styles.syncButton, syncing && { opacity: 0.7 }]}
-          onPress={triggerPipeline}
-          disabled={syncing}
-        >
-          {syncing ? (
-             <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.syncButtonText}>Force Data Sync (Manual)</Text>
-          )}
-        </TouchableOpacity>
+        {backendStatus && (
+          <View style={{ marginBottom: 10 }}>
+            <Text style={{ color: '#fff' }}>Status: {backendStatus.status}</Text>
+            {backendStatus.last_run && (
+              <Text style={{ color: '#94a3b8', fontSize: 12 }}>Last run: {new Date(backendStatus.last_run).toLocaleString()}</Text>
+            )}
+          </View>
+        )}
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity
+            style={[styles.syncButton, { flex: 1 }, syncing && { opacity: 0.7 }]}
+            onPress={triggerPipeline}
+            disabled={syncing}
+          >
+            {syncing ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.syncButtonText}>Run Data Sync</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.syncButton, { flex: 1, backgroundColor: '#475569' }]}
+            onPress={triggerInit}
+          >
+            <Text style={styles.syncButtonText}>Init Database</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.header}>
@@ -162,6 +223,12 @@ export function AdminScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      {!isSupabaseConfigured && (
+        <Text style={[styles.emptyText, { marginBottom: 20 }]}>
+          Note: Supabase is not configured in the frontend. Issue tracking may be unavailable.
+        </Text>
+      )}
 
       {loading ? (
         <ActivityIndicator size="large" color="#38bdf8" style={{ marginTop: 20 }} />
