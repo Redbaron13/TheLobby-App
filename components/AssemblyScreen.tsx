@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 import { ChamberVisualization } from './ChamberVisualization';
 import { styles } from './LegislatorsScreenStyles';
 
@@ -26,6 +26,7 @@ interface Bill {
 }
 
 export function AssemblyScreen() {
+  const { supabase, isConfigured } = useSupabase();
   const [assemblyMembers, setAssemblyMembers] = useState<Legislator[]>([]);
   const [recentBills, setRecentBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +34,7 @@ export function AssemblyScreen() {
 
   useEffect(() => {
     loadAssemblyData();
-  }, []);
+  }, [supabase, isConfigured]);
 
   const getFullName = (legislator: Legislator) => {
     const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
@@ -41,20 +42,13 @@ export function AssemblyScreen() {
   };
 
   const loadAssemblyData = async () => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isConfigured || !supabase) {
       setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
       setLoading(false);
       return;
     }
 
     try {
-      const supabase = getSupabaseClient();
-      if (!supabase) {
-        setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
-        setLoading(false);
-        return;
-      }
-
       const [assemblyRes, billsRes] = await Promise.all([
         supabase.from('legislators').select('*').eq('house', 'Assembly').order('last_name'),
         supabase.from('bills').select('*').order('intro_date', { ascending: false }).limit(5)

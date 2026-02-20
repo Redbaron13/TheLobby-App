@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 
 interface Legislator {
   RosterKey: number;
@@ -14,6 +14,7 @@ interface Legislator {
 }
 
 export function FindLegislatorScreen() {
+  const { supabase, isConfigured } = useSupabase();
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [address, setAddress] = useState<Location.LocationGeocodedAddress | null>(null);
   const [loading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ export function FindLegislatorScreen() {
       return;
     }
 
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isConfigured || !supabase) {
       setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
       return;
     }

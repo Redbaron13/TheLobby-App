@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 import { styles as BillsScreenStyles } from './BillsScreenStyles'; // Corrected import
 
 interface Bill {
@@ -15,6 +15,7 @@ interface Bill {
 }
 
 export function BillsScreen() {
+  const { supabase, isConfigured } = useSupabase();
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +23,7 @@ export function BillsScreen() {
 
   useEffect(() => {
     fetchBills();
-  }, []);
+  }, [supabase, isConfigured]);
 
   const fetchBills = async () => {
     try {
@@ -31,7 +32,7 @@ export function BillsScreen() {
 
       console.log('Fetching bills from Supabase...');
 
-      if (!isSupabaseConfigured || !supabase) {
+      if (!isConfigured || !supabase) {
         setError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
         return;
       }
@@ -77,7 +78,7 @@ export function BillsScreen() {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
   const saveBill = async (bill: Bill) => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isConfigured || !supabase) {
       setActionMessage('Supabase is not configured. Configure it in Settings.');
       return;
     }

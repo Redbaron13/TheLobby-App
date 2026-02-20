@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 
 interface Legislator {
   roster_key: number;
@@ -32,9 +32,15 @@ interface SponsoredBill {
 }
 
 export default function LegislatorProfile({ legislator, onClose }: LegislatorProfileProps) {
+  const { supabase, isConfigured } = useSupabase();
   const [sponsoredBills, setSponsoredBills] = useState<SponsoredBill[]>([]);
   const [loadingSponsored, setLoadingSponsored] = useState(false);
   const [sponsoredError, setSponsoredError] = useState<string | null>(null);
+
+  // Placeholder state for missing variables in original file
+  const [saving, setSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const saveLegislator = () => console.log('Save logic pending');
 
   const getFullName = () => {
     const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
@@ -49,7 +55,7 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
         return;
       }
 
-      if (!isSupabaseConfigured || !supabase) {
+      if (!isConfigured || !supabase) {
         setSponsoredError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
         return;
       }
@@ -75,7 +81,7 @@ export default function LegislatorProfile({ legislator, onClose }: LegislatorPro
     };
 
     fetchSponsoredBills();
-  }, [legislator]);
+  }, [legislator, supabase, isConfigured]);
 
   return (
     <View style={styles.container}>

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList } from 'react-native';
-import { supabase } from './supabase';
+import { useSupabase } from './supabase';
 
 export default function App() {
+  const { supabase } = useSupabase();
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
     const getTodos = async () => {
       try {
+        if (!supabase) return;
         const { data: todos, error } = await supabase.from('todos').select();
 
         if (error) {

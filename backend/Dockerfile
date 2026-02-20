@@ -10,11 +10,14 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy requirements first to leverage Docker cache
+COPY backend/requirements.txt backend/requirements.txt
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r backend/requirements.txt
+
+# Copy the current directory contents into the container at /app
+COPY . /app
 
 # Set PYTHONPATH to include the current directory
 ENV PYTHONPATH=/app

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 import { styles } from './AdminScreenStyles';
 
 interface ValidationIssue {
@@ -15,6 +15,7 @@ interface ValidationIssue {
 }
 
 export function AdminScreen() {
+  const { supabase, isConfigured } = useSupabase();
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -29,7 +30,7 @@ export function AdminScreen() {
     fetchBackendStatus();
     const interval = setInterval(fetchBackendStatus, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [supabase, isConfigured]);
 
   const fetchBackendStatus = async () => {
     try {
@@ -48,7 +49,7 @@ export function AdminScreen() {
 
   const fetchIssues = async () => {
     setLoading(true);
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isConfigured || !supabase) {
       setLoading(false);
       return;
     }
@@ -78,6 +79,12 @@ export function AdminScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       });
+
+      if (response.status === 409) {
+        Alert.alert('Pipeline Running', 'A data synchronization is already in progress.');
+        return;
+      }
+
       if (!response.ok) throw new Error('Failed to trigger pipeline');
       Alert.alert('Pipeline Triggered', 'The data synchronization pipeline has been initiated.');
     } catch (err) {
@@ -224,7 +231,7 @@ export function AdminScreen() {
         ))}
       </View>
 
-      {!isSupabaseConfigured && (
+      {!isConfigured && (
         <Text style={[styles.emptyText, { marginBottom: 20 }]}>
           Note: Supabase is not configured in the frontend. Issue tracking may be unavailable.
         </Text>
