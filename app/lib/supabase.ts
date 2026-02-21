@@ -83,10 +83,6 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     setClient(null);
     setConfig({ url: '', key: '' });
     setIsConfigured(false);
-
-    // Check env vars again? Maybe, but usually clear implies "I want to logout/reset".
-    // If env vars exist, it might re-login on next reload.
-    // For now, let's just clear.
   };
 
   const getConfig = () => config;
@@ -105,16 +101,3 @@ export function useSupabase() {
   }
   return context;
 }
-
-// Re-export for backward compatibility (but deprecated)
-// To make migration easier, we can't really export a hook result as a constant.
-// So we will remove the old exports and fix the callers.
-
-// Helper functions for direct usage if needed (e.g. outside React tree - discouraged)
-export const getSupabaseConfig = () => {
-   // This is synchronous and can't read AsyncStorage easily without async.
-   // But the previous code had it synchronous? No, previous code had `loadSupabaseConfig` as async.
-   // Components/SupabaseSetupScreen used `getSupabaseConfig` synchronously in useEffect?
-   // Let's check SupabaseSetupScreen usage.
-   return { url: '', key: '' }; // Placeholder, consumers should use hook
-};
