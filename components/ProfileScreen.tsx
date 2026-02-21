@@ -34,7 +34,7 @@ export function ProfileScreen() {
     }
 
     if (!isConfigured || !supabase) {
-      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+      Alert.alert('Configuration Required', 'Please go to the Setup screen to configure Supabase.');
       return;
     }
 
@@ -61,7 +61,7 @@ export function ProfileScreen() {
     }
 
     if (!isConfigured || !supabase) {
-      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+      Alert.alert('Configuration Required', 'Please go to the Setup screen to configure Supabase.');
       return;
     }
 
@@ -85,7 +85,7 @@ export function ProfileScreen() {
   const signOut = async () => {
     try {
       if (!isConfigured || !supabase) {
-        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+        Alert.alert('Configuration Required', 'Please go to the Setup screen to configure Supabase.');
         return;
       }
 
@@ -109,7 +109,7 @@ export function ProfileScreen() {
         {!isConfigured && (
           <View style={{ backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 16 }}>
             <Text style={{ color: '#991b1b', fontSize: 14 }}>
-              Supabase is not configured. Add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to enable sign in.
+              Supabase is not configured. Go to the Setup screen to connect your database.
             </Text>
           </View>
         )}

@@ -43,7 +43,7 @@ export function SenateScreen() {
 
   const loadSenateData = async () => {
     if (!isConfigured || !supabase) {
-      setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+      setErrorMessage('Supabase is not configured. Go to the Setup screen to configure it.');
       setLoading(false);
       return;
     }
