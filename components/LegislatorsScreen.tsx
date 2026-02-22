@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Modal, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { View, Text, FlatList, TouchableOpacity, TextInput, Alert, Modal, ActivityIndicator, StyleSheet } from 'react-native';
 import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 import LegislatorProfile from './LegislatorProfile';
 
@@ -83,39 +83,9 @@ export function LegislatorsScreen() {
     return matchesSearch && matchesParty && matchesChamber;
   });
 
-  // Corrected renderContent function
-  const renderContent = () => {
-    if (loading) {
-      return <ActivityIndicator size="large" color="#0f172a" style={{ marginTop: 20 }} />;
-    }
-
-    if (errorMessage) {
-      return (
-        <Text style={styles.infoText}>
-          {errorMessage}
-        </Text>
-      );
-    }
-
-    if (legislators.length === 0) {
-      return (
-        <Text style={styles.infoText}>
-          No legislators found. There might be an issue with the data source or RLS policies.
-        </Text>
-      );
-    }
-
-    if (filteredLegislators.length === 0) {
-      return (
-        <Text style={styles.infoText}>
-          No legislators match your search criteria.
-        </Text>
-      );
-    }
-
-    return filteredLegislators.map(legislator => (
+  const renderLegislator = useCallback(({ item: legislator }: { item: Legislator }) => {
+    return (
       <TouchableOpacity
-        key={legislator.roster_key}
         onPress={() => setSelectedLegislator(legislator)}
         style={styles.legislatorCard}
       >
@@ -143,59 +113,93 @@ export function LegislatorsScreen() {
           </Text>
         )}
       </TouchableOpacity>
-    ));
-  };
+    );
+  }, [setSelectedLegislator]);
 
+  const memoizedHeader = useMemo(() => (
+    <View style={styles.header}>
+      <Text style={styles.title}>
+        All Legislators
+      </Text>
+
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search legislators..."
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+        placeholderTextColor="#94a3b8"
+      />
+
+      <View style={{ marginBottom: 8 }}>
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+          {['all', 'senate', 'assembly'].map(chamber => (
+            <TouchableOpacity
+              key={chamber}
+              style={[styles.filterButton, filterChamber === chamber && styles.activeFilter]}
+              onPress={() => setFilterChamber(chamber)}
+            >
+              <Text style={[styles.filterText, filterChamber === chamber && styles.activeFilterText]}>
+                {chamber.charAt(0).toUpperCase() + chamber.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {['all', 'democrat', 'republican'].map(party => (
+            <TouchableOpacity
+              key={party}
+              style={[styles.filterButton, filterParty === party && styles.activeFilter]}
+              onPress={() => setFilterParty(party)}
+            >
+              <Text style={[styles.filterText, filterParty === party && styles.activeFilterText]}>
+                {party.charAt(0).toUpperCase() + party.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    </View>
+  ), [searchTerm, filterParty, filterChamber]);
+
+  const renderEmpty = useCallback(() => {
+    if (loading) {
+      return <ActivityIndicator size="large" color="#0f172a" style={{ marginTop: 20 }} />;
+    }
+
+    if (errorMessage) {
+      return (
+        <Text style={[styles.infoText, { paddingHorizontal: 16 }]}>
+          {errorMessage}
+        </Text>
+      );
+    }
+
+    if (legislators.length === 0) {
+      return (
+        <Text style={[styles.infoText, { paddingHorizontal: 16 }]}>
+          No legislators found. There might be an issue with the data source or RLS policies.
+        </Text>
+      );
+    }
+
+    return (
+      <Text style={[styles.infoText, { paddingHorizontal: 16 }]}>
+        No legislators match your search criteria.
+      </Text>
+    );
+  }, [loading, errorMessage, legislators.length]);
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Text style={styles.title}>
-            All Legislators
-          </Text>
-
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search legislators..."
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-            placeholderTextColor="#94a3b8"
-          />
-
-          <View style={{ marginBottom: 8 }}>
-            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
-              {['all', 'senate', 'assembly'].map(chamber => (
-                <TouchableOpacity
-                  key={chamber}
-                  style={[styles.filterButton, filterChamber === chamber && styles.activeFilter]}
-                  onPress={() => setFilterChamber(chamber)}
-                >
-                  <Text style={[styles.filterText, filterChamber === chamber && styles.activeFilterText]}>
-                    {chamber.charAt(0).toUpperCase() + chamber.slice(1)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              {['all', 'democrat', 'republican'].map(party => (
-                <TouchableOpacity
-                  key={party}
-                  style={[styles.filterButton, filterParty === party && styles.activeFilter]}
-                  onPress={() => setFilterParty(party)}
-                >
-                  <Text style={[styles.filterText, filterParty === party && styles.activeFilterText]}>
-                    {party.charAt(0).toUpperCase() + party.slice(1)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.content}>{renderContent()}</View>
-
-      </ScrollView>
+      <FlatList
+        data={filteredLegislators}
+        renderItem={renderLegislator}
+        keyExtractor={item => item.roster_key.toString()}
+        ListHeaderComponent={memoizedHeader}
+        ListEmptyComponent={renderEmpty}
+        style={styles.scrollView}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 16 }}
+      />
 
       <Modal
         animationType="slide"
@@ -277,6 +281,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    marginHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
