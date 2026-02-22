@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase.tsx';
 
 interface Legislator {
   roster_key: number;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
-import { useSupabase } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase.tsx';
 
 interface Legislator {
   RosterKey: number;

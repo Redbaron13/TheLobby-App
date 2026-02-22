@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'expo-router';
-import { SupabaseProvider } from '@/app/lib/supabase';
+import { SupabaseProvider } from '@/app/lib/supabase.tsx';
 
 function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);

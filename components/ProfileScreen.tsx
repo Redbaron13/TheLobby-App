@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase.tsx';
 
 export function ProfileScreen() {
   const { supabase, isConfigured } = useSupabase();

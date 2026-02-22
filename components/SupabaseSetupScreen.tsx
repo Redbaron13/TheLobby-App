@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase.tsx';
 
 export function SupabaseSetupScreen() {
   const [url, setUrl] = useState('');
