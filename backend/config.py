@@ -49,9 +49,20 @@ def load_config() -> PipelineConfig:
     download_type = os.getenv("NJLEG_DOWNLOAD_TYPE", "Bill_Tracking")
     bill_tracking_years = _parse_years(os.getenv("NJLEG_BILL_TRACKING_YEARS", "2024"))
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
-    supabase_url = os.getenv("SUPABASE_URL", "https://zgtevahaudnjpocptzgj.supabase.co").strip()
-    supabase_service_key = _resolve_supabase_key()
-    supabase_db_url = os.getenv("SUPABASE_DB_URL", os.getenv("DATABASE_URL", "")).strip()
+
+    # Local vs Cloud logic for Supabase
+    is_local = os.getenv("LOCAL_DEV", "").lower() in ("true", "1", "yes")
+
+    if is_local:
+        supabase_url = os.getenv("SUPABASE_URL", "http://localhost:5432")
+        # For local dev without real Supabase, we might use a dummy key or rely on direct DB access
+        supabase_service_key = os.getenv("SUPABASE_SERVICE_KEY", "dummy-key-for-local")
+        # Default to the docker-compose service name 'db'
+        supabase_db_url = os.getenv("SUPABASE_DB_URL", "postgresql://postgres:postgres@db:5432/postgres")
+    else:
+        supabase_url = os.getenv("SUPABASE_URL", "https://zgtevahaudnjpocptzgj.supabase.co").strip()
+        supabase_service_key = _resolve_supabase_key()
+        supabase_db_url = os.getenv("SUPABASE_DB_URL", os.getenv("DATABASE_URL", "")).strip()
 
     retention_days = int(os.getenv("DATA_RETENTION_DAYS", "3"))
     backup_retention_count = int(os.getenv("BACKUP_RETENTION_COUNT", "2"))

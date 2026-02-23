@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 
 import psycopg2
+from pathlib import Path
 
 from backend.config import load_config
 from backend.schema import load_schema_sql
@@ -22,6 +24,16 @@ def initialize_schema(database_url: str) -> None:
     with psycopg2.connect(database_url) as connection:
         with connection.cursor() as cursor:
             cursor.execute(schema_sql)
+
+            # If local dev, initialize roles for PostgREST
+            is_local = os.getenv("LOCAL_DEV", "").lower() in ("true", "1", "yes")
+            if is_local:
+                roles_path = Path(__file__).parent / "roles.sql"
+                if roles_path.exists():
+                    roles_sql = roles_path.read_text(encoding="utf-8")
+                    cursor.execute(roles_sql)
+                    _log({"action": "roles_initialized", "local": True})
+
         connection.commit()
 
 
