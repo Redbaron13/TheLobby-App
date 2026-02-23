@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase.tsx';
+import { useSupabase } from '@/app/lib/supabase';
 import { styles as BillsScreenStyles } from './BillsScreenStyles'; // Corrected import
 
 interface Bill {

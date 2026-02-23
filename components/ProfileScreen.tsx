@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase.tsx';
+import { useSupabase } from '@/app/lib/supabase';
 
 export function ProfileScreen() {
   const { supabase, isConfigured } = useSupabase();
@@ -8,6 +8,9 @@ export function ProfileScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [savedBills, setSavedBills] = useState<any[]>([]);
+  const [savedLegislators, setSavedLegislators] = useState<any[]>([]);
+  const [savedError, setSavedError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isConfigured || !supabase) {

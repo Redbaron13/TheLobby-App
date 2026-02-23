@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Modal, ActivityIndicator, StyleSheet } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase.tsx';
+import { useSupabase } from '@/app/lib/supabase';
 import LegislatorProfile from './LegislatorProfile';
 
 // Corrected interface to match the database table name 'legbio'
