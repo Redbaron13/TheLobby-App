@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
 import { styles as BillsScreenStyles } from './BillsScreenStyles'; // Corrected import
@@ -68,11 +68,14 @@ export function BillsScreen() {
     }
   };
 
-  const filteredBills = bills.filter(bill =>
-    bill.synopsis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bill.actual_bill_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bill.first_prime?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBills = useMemo(() => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return bills.filter(bill =>
+      bill.synopsis?.toLowerCase().includes(lowerSearchTerm) ||
+      bill.actual_bill_number?.toLowerCase().includes(lowerSearchTerm) ||
+      bill.first_prime?.toLowerCase().includes(lowerSearchTerm)
+    );
+  }, [bills, searchTerm]);
 
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
