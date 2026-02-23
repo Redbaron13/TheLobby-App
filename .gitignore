@@ -17,8 +17,12 @@ npm-debug.*
 .env.production
 
 backend/data/
-backend/__pycache__/
-*.pyc
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
 *.log
 
 web-build/

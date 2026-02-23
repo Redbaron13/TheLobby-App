@@ -8,6 +8,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -31,13 +32,17 @@ check_var() {
 }
 
 # Try to load .env files
-if [ -f "$SCRIPT_DIR/.env.local" ]; then
-    export $(cat "$SCRIPT_DIR/.env.local" | grep -v '^#' | xargs)
+if [ -f "$PROJECT_ROOT/.env.local" ]; then
+    set -a
+    . "$PROJECT_ROOT/.env.local"
+    set +a
     echo "Loaded .env.local"
 fi
 
-if [ -f "$SCRIPT_DIR/.env.example" ]; then
-    export $(cat "$SCRIPT_DIR/.env.example" | grep -v '^#' | xargs) 2>/dev/null || true
+if [ -f "$PROJECT_ROOT/.env.example" ]; then
+    set -a
+    . "$PROJECT_ROOT/.env.example"
+    set +a
     echo "Loaded .env.example as fallback"
 fi
 
@@ -51,13 +56,17 @@ check_var "EXPO_PUBLIC_BACKEND_API_URL" || FRONTEND_OK=false
 # Check backend environment
 echo ""
 echo "🐍 BACKEND (.env or .env.example):"
-if [ -f "$SCRIPT_DIR/backend/.env" ]; then
-    export $(cat "$SCRIPT_DIR/backend/.env" | grep -v '^#' | xargs)
+if [ -f "$PROJECT_ROOT/backend/.env" ]; then
+    set -a
+    . "$PROJECT_ROOT/backend/.env"
+    set +a
     echo "Loaded backend/.env"
 fi
 
-if [ -f "$SCRIPT_DIR/backend/.env.example" ]; then
-    export $(cat "$SCRIPT_DIR/backend/.env.example" | grep -v '^#' | xargs) 2>/dev/null || true
+if [ -f "$PROJECT_ROOT/backend/.env.example" ]; then
+    set -a
+    . "$PROJECT_ROOT/backend/.env.example"
+    set +a
     echo "Loaded backend/.env.example as fallback"
 fi
 
@@ -73,8 +82,10 @@ check_var "DATA_RETENTION_DAYS" || BACKEND_OK=false
 # Check admin tools environment
 echo ""
 echo "🛠️  ADMIN TOOLS (supabase-admin/.env or example-env.md):"
-if [ -f "$SCRIPT_DIR/supabase-admin/.env" ]; then
-    export $(cat "$SCRIPT_DIR/supabase-admin/.env" | grep -v '^#' | xargs)
+if [ -f "$PROJECT_ROOT/supabase-admin/.env" ]; then
+    set -a
+    . "$PROJECT_ROOT/supabase-admin/.env"
+    set +a
     echo "Loaded supabase-admin/.env"
 fi
 
