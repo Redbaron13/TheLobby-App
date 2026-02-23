@@ -91,9 +91,8 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     <SupabaseContext.Provider value={{ supabase: client, isConfigured, saveConfig, clearConfig, getConfig }}>
       {children}
     </SupabaseContext.Provider>
-  );
+);
 }
-
 export function useSupabase() {
   const context = useContext(SupabaseContext);
   if (context === undefined) {
