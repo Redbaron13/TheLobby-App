@@ -9,7 +9,7 @@ services:
     env_file:
       - backend/.env
     environment:
-      - LOCAL_DEV=true
+      - BACKEND_MODE=local_postgres
       - SUPABASE_DB_URL=postgresql://postgres:postgres@db:5432/postgres
       - SUPABASE_URL=http://nginx:80
       - SUPABASE_SERVICE_KEY=dummy-key-for-local

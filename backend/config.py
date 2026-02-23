@@ -50,16 +50,32 @@ def load_config() -> PipelineConfig:
     bill_tracking_years = _parse_years(os.getenv("NJLEG_BILL_TRACKING_YEARS", "2024"))
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
 
-    # Local vs Cloud logic for Supabase
-    is_local = os.getenv("LOCAL_DEV", "").lower() in ("true", "1", "yes")
+    # Backend Mode Logic
+    # Modes:
+    # - 'cloud': (Default) Uses Supabase Cloud or external Supabase instance.
+    # - 'local_postgres': Uses the local docker-compose Postgres + PostgREST setup.
+    # - 'local_supabase': Uses a full local Supabase CLI stack (defaulting to localhost:54321 usually).
 
-    if is_local:
-        supabase_url = os.getenv("SUPABASE_URL", "http://localhost:5432")
-        # For local dev without real Supabase, we might use a dummy key or rely on direct DB access
+    backend_mode = os.getenv("BACKEND_MODE", "cloud").lower()
+
+    # Check for legacy LOCAL_DEV flag for backward compatibility
+    if os.getenv("LOCAL_DEV", "").lower() in ("true", "1", "yes"):
+        backend_mode = "local_postgres"
+
+    if backend_mode == "local_postgres":
+        # Docker Compose Local Setup
+        supabase_url = os.getenv("SUPABASE_URL", "http://localhost:5432") # Or http://nginx:80/rest/v1 internally
         supabase_service_key = os.getenv("SUPABASE_SERVICE_KEY", "dummy-key-for-local")
-        # Default to the docker-compose service name 'db'
         supabase_db_url = os.getenv("SUPABASE_DB_URL", "postgresql://postgres:postgres@db:5432/postgres")
+
+    elif backend_mode == "local_supabase":
+        # Standard Supabase CLI Local Dev
+        supabase_url = os.getenv("SUPABASE_URL", "http://127.0.0.1:54321")
+        supabase_service_key = os.getenv("SUPABASE_SERVICE_KEY", _resolve_supabase_key())
+        supabase_db_url = os.getenv("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54322/postgres")
+
     else:
+        # Default: Cloud / Production
         supabase_url = os.getenv("SUPABASE_URL", "https://zgtevahaudnjpocptzgj.supabase.co").strip()
         supabase_service_key = _resolve_supabase_key()
         supabase_db_url = os.getenv("SUPABASE_DB_URL", os.getenv("DATABASE_URL", "")).strip()
