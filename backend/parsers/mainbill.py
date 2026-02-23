@@ -51,7 +51,7 @@ def parse_mainbill(path: Path) -> tuple[list[dict], list[dict]]:
 
         # Validate Bill Type
         if bill_type not in VALID_BILL_TYPES:
-             issues.append({
+            issues.append({
                 "table": "bills",
                 "record_key": f"{bill_type}-{bill_number}",
                 "issue": "invalid_bill_type",
