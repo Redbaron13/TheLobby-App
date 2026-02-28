@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase';
+import { useSupabase } from '@/lib/supabase';
 import { styles } from './AdminScreenStyles';
 
 interface ValidationIssue {

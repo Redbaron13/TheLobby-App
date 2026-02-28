@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useSupabase } from '@/app/lib/supabase';
+import { useSupabase } from '@/lib/supabase';
 import { ChamberVisualization } from './ChamberVisualization';
 import { styles } from './LegislatorsScreenStyles';
 
