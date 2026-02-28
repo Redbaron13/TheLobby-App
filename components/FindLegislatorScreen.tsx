@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
-import { useSupabase } from '@/app/lib/supabase';
+import { useSupabase } from '@/lib/supabase';
 
 interface Legislator {
   roster_key: number;
@@ -118,10 +118,7 @@ export function FindLegislatorScreen() {
             backgroundColor: '#ffffff',
             borderRadius: 12,
             padding: 16,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
+            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
             elevation: 3,
           }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e293b', marginBottom: 8 }}>

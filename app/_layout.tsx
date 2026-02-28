@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'expo-router';
-import { SupabaseProvider } from '@/app/lib/supabase';
+import { SupabaseProvider } from '@/lib/supabase';
 
 function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -118,10 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1e293b',
     borderRadius: 8,
     minWidth: 200,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.25)',
     elevation: 5,
   },
   menuItem: {
