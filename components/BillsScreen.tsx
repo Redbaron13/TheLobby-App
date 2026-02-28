@@ -19,18 +19,31 @@ export function BillsScreen() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBills();
-  }, [supabase, isConfigured]);
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm.trim() === '') {
+      fetchBills();
+    } else {
+      searchBills(debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, supabase, isConfigured]);
 
   const fetchBills = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      console.log('Fetching bills from Supabase...');
 
       if (!isConfigured || !supabase) {
         setError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
@@ -49,7 +62,7 @@ export function BillsScreen() {
           intro_date,
           first_prime
         `)
-        .order('BillNumber', { ascending: false })
+        .order('bill_number', { ascending: false })
         .limit(50);
 
       if (error) {
@@ -58,9 +71,7 @@ export function BillsScreen() {
         return;
       }
 
-      console.log('Bills fetched successfully:', data?.length || 0);
       setBills(data || []);
-
     } catch (err) {
       console.error('Fetch error:', err);
       setError(`Fetch error: ${err}`);
@@ -69,11 +80,33 @@ export function BillsScreen() {
     }
   };
 
-  const filteredBills = bills.filter(bill =>
-    bill.synopsis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bill.actual_bill_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    bill.first_prime?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const searchBills = async (query: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (!isConfigured || !supabase) {
+        setError('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
+        return;
+      }
+
+      const { data, error } = await supabase
+        .rpc('search_bills', { query_text: query });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        setError(`Database error: ${error.message}`);
+        return;
+      }
+
+      setBills(data || []);
+    } catch (err) {
+      console.error('Search error:', err);
+      setError(`Search error: ${err}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
@@ -157,14 +190,14 @@ export function BillsScreen() {
       />
 
       <Text style={BillsScreenStyles.resultCount}>
-        Showing {filteredBills.length} of {bills.length} bills
+        Showing {bills.length} bills
       </Text>
       {actionMessage && (
         <Text style={BillsScreenStyles.actionMessage}>{actionMessage}</Text>
       )}
 
       <FlatList
-        data={filteredBills}
+        data={bills}
         renderItem={renderBill}
         keyExtractor={(item) => item.bill_key}
         style={BillsScreenStyles.billsList}
