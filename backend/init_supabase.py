@@ -8,7 +8,7 @@ import psycopg2
 from pathlib import Path
 
 from backend.config import load_config
-from backend.schema import load_schema_sql
+from backend.schema import load_schema_sql, load_migrations
 
 
 class InitError(RuntimeError):
@@ -21,9 +21,14 @@ def _log(payload: dict) -> None:
 
 def initialize_schema(database_url: str) -> None:
     schema_sql = load_schema_sql()
+    migrations_sql = load_migrations()
+
     with psycopg2.connect(database_url) as connection:
         with connection.cursor() as cursor:
             cursor.execute(schema_sql)
+
+            for migration in migrations_sql:
+                cursor.execute(migration)
 
             # If backend mode is 'local_postgres', initialize roles for PostgREST
             backend_mode = os.getenv("BACKEND_MODE", "cloud").lower()
