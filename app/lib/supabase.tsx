@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import 'react-native-url-polyfill/auto';
 
 // Define the shape of our context
@@ -14,10 +15,20 @@ interface SupabaseContextType {
 
 const SupabaseContext = createContext<SupabaseContextType | undefined>(undefined);
 
-// Helper to check env vars
+// Helper to check env vars - support Expo, Next.js, and expo-constants
 const getEnvConfig = () => {
-  const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
-  const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+  const extra = Constants.expoConfig?.extra;
+  const url =
+    process.env.EXPO_PUBLIC_SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    extra?.supabaseUrl ||
+    '';
+  const key =
+    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    extra?.supabaseAnonKey ||
+    '';
   return { url, key };
 };
 
@@ -33,21 +44,27 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
 
   const loadConfig = async () => {
     try {
-      // Try AsyncStorage first
+      // Try env vars first (most reliable in web/sandbox environments)
+      const { url, key } = getEnvConfig();
+      if (url && key) {
+        initializeClient(url, key);
+        return;
+      }
+
+      // Fallback to AsyncStorage
       const storedUrl = await AsyncStorage.getItem('supabase_url');
       const storedKey = await AsyncStorage.getItem('supabase_key');
 
       if (storedUrl && storedKey) {
         initializeClient(storedUrl, storedKey);
-      } else {
-        // Fallback to Env Vars
-        const { url, key } = getEnvConfig();
-        if (url && key) {
-          initializeClient(url, key);
-        }
       }
     } catch (e) {
       console.error('Failed to load Supabase config', e);
+      // Last resort: try env vars even if AsyncStorage failed
+      const { url, key } = getEnvConfig();
+      if (url && key) {
+        initializeClient(url, key);
+      }
     }
   };
 
