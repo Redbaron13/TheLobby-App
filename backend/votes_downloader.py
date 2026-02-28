@@ -5,7 +5,7 @@ import urllib.parse
 from pathlib import Path
 from typing import Iterable
 
-from backend.downloader import download_text_file
+from backend.downloader import download_file
 
 
 def extract_vote_filenames(readme_text: str) -> list[str]:
@@ -17,10 +17,10 @@ def download_votes(base_url: str, readme_urls: Iterable[str], destination: Path)
     destination.mkdir(parents=True, exist_ok=True)
     files: list[Path] = []
     for readme_url in readme_urls:
-        readme_path = download_text_file(readme_url, destination)
+        readme_path = download_file(readme_url, destination)
         readme_text = readme_path.read_text(encoding="latin1", errors="ignore")
         filenames = extract_vote_filenames(readme_text)
         for filename in filenames:
             file_url = f"{base_url.rstrip('/')}/{urllib.parse.quote(filename)}"
-            files.append(download_text_file(file_url, destination))
+            files.append(download_file(file_url, destination))
     return files
