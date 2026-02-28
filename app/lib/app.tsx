@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { useSupabase } from './supabase';
 
+type Todo = { id: number; title: string };
+
 export default function App() {
   const { supabase } = useSupabase();
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
     const getTodos = async () => {
@@ -21,7 +23,11 @@ export default function App() {
           setTodos(todos);
         }
       } catch (error) {
-        console.error('Error fetching todos:', error.message);
+        if (error instanceof Error) {
+          console.error('Error fetching todos:', error.message);
+        } else {
+          console.error('Error fetching todos:', error);
+        }
       }
     };
 
