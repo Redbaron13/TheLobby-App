@@ -7,13 +7,19 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
     <View style={styles.container}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
-        const label = options.tabBarLabel !== undefined
-          ? options.tabBarLabel
-          : options.title !== undefined
-          ? options.title
-          : route.name;
-
         const isFocused = state.index === index;
+
+        let label: React.ReactNode;
+        if (typeof options.tabBarLabel === 'function') {
+          label = options.tabBarLabel({ focused: isFocused, color: isFocused ? '#ffffff' : '#94a3b8', position: 'below-icon', children: route.name });
+        } else if (options.tabBarLabel !== undefined) {
+          label = options.tabBarLabel;
+        } else if (options.title !== undefined) {
+          label = options.title;
+        } else {
+          label = route.name;
+        }
+
 
         const onPress = () => {
           const event = navigation.emit({
