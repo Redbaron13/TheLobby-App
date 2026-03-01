@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Modal, ActivityIndicator, StyleSheet } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 import LegislatorProfile from './LegislatorProfile';
 
 // Corrected interface to match the database table name 'legbio'
@@ -21,6 +21,7 @@ interface Legislator {
 }
 
 export function LegislatorsScreen() {
+  const { supabase, isConfigured } = useSupabase();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterParty, setFilterParty] = useState('all');
   const [filterChamber, setFilterChamber] = useState('all');
@@ -31,12 +32,12 @@ export function LegislatorsScreen() {
 
   useEffect(() => {
     loadLegislators();
-  }, []);
+  }, [supabase, isConfigured]);
 
   const loadLegislators = async () => {
     setLoading(true);
     try {
-      if (!isSupabaseConfigured || !supabase) {
+      if (!isConfigured || !supabase) {
         setErrorMessage('Supabase is not configured. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY.');
         return;
       }

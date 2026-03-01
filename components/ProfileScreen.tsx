@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { supabase, isSupabaseConfigured } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 
 export function ProfileScreen() {
+  const { supabase, isConfigured } = useSupabase();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [savedBills, setSavedBills] = useState<any[]>([]);
+  const [savedLegislators, setSavedLegislators] = useState<any[]>([]);
+  const [savedError, setSavedError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (!isConfigured || !supabase) {
       return;
     }
 
@@ -32,8 +36,8 @@ export function ProfileScreen() {
       return;
     }
 
-    if (!isSupabaseConfigured || !supabase) {
-      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+    if (!isConfigured || !supabase) {
+      Alert.alert('Configuration Required', 'Please go to the Setup screen to configure Supabase.');
       return;
     }
 
@@ -59,8 +63,8 @@ export function ProfileScreen() {
       return;
     }
 
-    if (!isSupabaseConfigured || !supabase) {
-      Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+    if (!isConfigured || !supabase) {
+      Alert.alert('Configuration Required', 'Please go to the Setup screen to configure Supabase.');
       return;
     }
 
@@ -83,8 +87,8 @@ export function ProfileScreen() {
 
   const signOut = async () => {
     try {
-      if (!isSupabaseConfigured || !supabase) {
-        Alert.alert('Error', 'Supabase is not configured. Please set your environment variables.');
+      if (!isConfigured || !supabase) {
+        Alert.alert('Configuration Required', 'Please go to the Setup screen to configure Supabase.');
         return;
       }
 
@@ -105,10 +109,10 @@ export function ProfileScreen() {
       </View>
 
       <View style={{ padding: 20 }}>
-        {!isSupabaseConfigured && (
+        {!isConfigured && (
           <View style={{ backgroundColor: '#fee2e2', padding: 12, borderRadius: 8, marginBottom: 16 }}>
             <Text style={{ color: '#991b1b', fontSize: 14 }}>
-              Supabase is not configured. Add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to enable sign in.
+              Supabase is not configured. Go to the Setup screen to connect your database.
             </Text>
           </View>
         )}

@@ -142,8 +142,19 @@ You can enable/disable features via environment variables:
 ## 🧪 Testing
 
 ### Run Backend Tests
+Run the standard unit tests:
 ```bash
 PYTHONPATH=. python3 -m pytest backend/tests/
+```
+
+### Run Live Data Integration Tests
+To specifically run tests that connect to the live NJ Legislature website, download the current data, and verify the parsing logic:
+```bash
+# Using pytest
+PYTHONPATH=. python3 -m pytest -m integration backend/tests/
+
+# Or run the script directly
+PYTHONPATH=. python3 backend/tests/test_integration_live.py
 ```
 
 ### Run Setup Validation
