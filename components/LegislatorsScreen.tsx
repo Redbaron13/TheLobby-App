@@ -3,17 +3,6 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert, Modal, Acti
 import { useSupabase } from '@/app/lib/supabase';
 import LegislatorProfile from './LegislatorProfile';
 
-const getFullName = (legislator: Legislator) => {
-  const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
-  return parts.join(' ');
-};
-
-const getPartyColor = (party: string) => {
-  if (party?.toLowerCase().includes('democrat')) return '#059669';
-  if (party?.toLowerCase().includes('republican')) return '#7c3aed';
-  return '#64748b';
-};
-
 // Corrected interface to match the database table name 'legbio'
 interface Legislator {
   roster_key: number;
@@ -76,6 +65,16 @@ export function LegislatorsScreen() {
     }
   };
 
+  const getFullName = (legislator: Legislator) => {
+    const parts = [legislator.first_name, legislator.mid_name, legislator.last_name, legislator.suffix].filter(Boolean);
+    return parts.join(' ');
+  };
+
+  const getPartyColor = (party: string) => {
+    if (party?.toLowerCase().includes('democrat')) return '#059669';
+    if (party?.toLowerCase().includes('republican')) return '#7c3aed';
+    return '#64748b';
+  };
 
   const filteredLegislators = legislators.filter(legislator => {
     const fullName = getFullName(legislator);
@@ -85,38 +84,8 @@ export function LegislatorsScreen() {
     return matchesSearch && matchesParty && matchesChamber;
   });
 
-  const renderLegislator: ListRenderItem<Legislator> = useCallback(({ item: legislator }) => (
-    <TouchableOpacity
-      onPress={() => setSelectedLegislator(legislator)}
-      style={styles.legislatorCard}
-    >
-      <View style={styles.legislatorHeader}>
-        <Text style={styles.legislatorName}>
-          {getFullName(legislator)}
-        </Text>
-        <View style={[styles.partyBadge, { backgroundColor: getPartyColor(legislator.party) }]}>
-          <Text style={styles.partyText}>
-            {legislator.party?.charAt(0) || 'I'}
-          </Text>
-        </View>
-      </View>
-      <Text style={styles.legislatorInfo}>
-        {legislator.house} - District {legislator.district}
-      </Text>
-      {legislator.leg_pos && (
-        <Text style={styles.leadershipPosition}>
-          {legislator.leg_pos}
-        </Text>
-      )}
-      {legislator.leg_status && (
-        <Text style={styles.statusText}>
-          Status: {legislator.leg_status}
-        </Text>
-      )}
-    </TouchableOpacity>
-  ), [setSelectedLegislator]);
-
-  const renderEmpty = () => {
+  // Corrected renderContent function
+  const renderContent = () => {
     if (loading) {
       return <ActivityIndicator size="large" color="#0f172a" style={{ marginTop: 20 }} />;
     }
@@ -137,69 +106,97 @@ export function LegislatorsScreen() {
       );
     }
 
-    return (
-      <Text style={styles.infoText}>
-        No legislators match your search criteria.
-      </Text>
-    );
+    if (filteredLegislators.length === 0) {
+      return (
+        <Text style={styles.infoText}>
+          No legislators match your search criteria.
+        </Text>
+      );
+    }
+
+    return filteredLegislators.map(legislator => (
+      <TouchableOpacity
+        key={legislator.roster_key}
+        onPress={() => setSelectedLegislator(legislator)}
+        style={styles.legislatorCard}
+      >
+        <View style={styles.legislatorHeader}>
+          <Text style={styles.legislatorName}>
+            {getFullName(legislator)}
+          </Text>
+          <View style={[styles.partyBadge, { backgroundColor: getPartyColor(legislator.party) }]}>
+            <Text style={styles.partyText}>
+              {legislator.party?.charAt(0) || 'I'}
+            </Text>
+          </View>
+        </View>
+        <Text style={styles.legislatorInfo}>
+          {legislator.house} - District {legislator.district}
+        </Text>
+        {legislator.leg_pos && (
+          <Text style={styles.leadershipPosition}>
+            {legislator.leg_pos}
+          </Text>
+        )}
+        {legislator.leg_status && (
+          <Text style={styles.statusText}>
+            Status: {legislator.leg_status}
+          </Text>
+        )}
+      </TouchableOpacity>
+    ));
   };
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <Text style={styles.title}>
-        All Legislators
-      </Text>
-
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search legislators..."
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-        placeholderTextColor="#94a3b8"
-      />
-
-      <View style={{ marginBottom: 8 }}>
-        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
-          {['all', 'senate', 'assembly'].map(chamber => (
-            <TouchableOpacity
-              key={chamber}
-              style={[styles.filterButton, filterChamber === chamber && styles.activeFilter]}
-              onPress={() => setFilterChamber(chamber)}
-            >
-              <Text style={[styles.filterText, filterChamber === chamber && styles.activeFilterText]}>
-                {chamber.charAt(0).toUpperCase() + chamber.slice(1)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {['all', 'democrat', 'republican'].map(party => (
-            <TouchableOpacity
-              key={party}
-              style={[styles.filterButton, filterParty === party && styles.activeFilter]}
-              onPress={() => setFilterParty(party)}
-            >
-              <Text style={[styles.filterText, filterParty === party && styles.activeFilterText]}>
-                {party.charAt(0).toUpperCase() + party.slice(1)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={filteredLegislators}
-        renderItem={renderLegislator}
-        keyExtractor={(item) => item.roster_key.toString()}
-        ListHeaderComponent={renderHeader()}
-        ListEmptyComponent={renderEmpty()}
-        contentContainerStyle={{ paddingBottom: 16 }}
-        style={styles.scrollView}
-      />
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.header}>
+          <Text style={styles.title}>
+            All Legislators
+          </Text>
+
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search legislators..."
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            placeholderTextColor="#94a3b8"
+          />
+
+          <View style={{ marginBottom: 8 }}>
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+              {['all', 'senate', 'assembly'].map(chamber => (
+                <TouchableOpacity
+                  key={chamber}
+                  style={[styles.filterButton, filterChamber === chamber && styles.activeFilter]}
+                  onPress={() => setFilterChamber(chamber)}
+                >
+                  <Text style={[styles.filterText, filterChamber === chamber && styles.activeFilterText]}>
+                    {chamber.charAt(0).toUpperCase() + chamber.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {['all', 'democrat', 'republican'].map(party => (
+                <TouchableOpacity
+                  key={party}
+                  style={[styles.filterButton, filterParty === party && styles.activeFilter]}
+                  onPress={() => setFilterParty(party)}
+                >
+                  <Text style={[styles.filterText, filterParty === party && styles.activeFilterText]}>
+                    {party.charAt(0).toUpperCase() + party.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.content}>{renderContent()}</View>
+
+      </ScrollView>
 
       <Modal
         animationType="slide"
@@ -233,8 +230,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    marginBottom: 16
+    borderBottomColor: '#e2e8f0'
   },
   title: {
     fontSize: 24,
@@ -268,19 +264,20 @@ const styles = StyleSheet.create({
   activeFilterText: {
     color: '#ffffff',
   },
+  content: {
+    padding: 16,
+  },
   infoText: {
     textAlign: 'center',
     color: '#64748b',
     fontSize: 16,
-    marginTop: 20,
-    paddingHorizontal: 16,
+    marginTop: 20
   },
   legislatorCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    marginHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

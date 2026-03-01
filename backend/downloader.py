@@ -25,11 +25,6 @@ def resolve_download_url(base_url: str, index_html: str, filename: str) -> str:
     return f"{base_url.rstrip('/')}/{filename}"
 
 
-def _save_url_to_path(url: str, target_path: Path) -> None:
-    with urllib.request.urlopen(url) as response, target_path.open("wb") as f:
-        f.write(response.read())
-
-
 def download_files(base_url: str, filenames: Iterable[str], destination: Path) -> list[Path]:
     destination.mkdir(parents=True, exist_ok=True)
     index_html = fetch_index_html(base_url)
@@ -38,15 +33,21 @@ def download_files(base_url: str, filenames: Iterable[str], destination: Path) -
     for filename in filenames:
         url = resolve_download_url(base_url, index_html, filename)
         target_path = destination / filename
-        _save_url_to_path(url, target_path)
+        with urllib.request.urlopen(url) as response, target_path.open("wb") as f:
+            f.write(response.read())
         downloaded_paths.append(target_path)
 
     return downloaded_paths
 
 
-def download_file(url: str, destination: Path) -> Path:
+def download_text_file(url: str, destination: Path) -> Path:
     destination.mkdir(parents=True, exist_ok=True)
     filename = Path(urllib.parse.urlparse(url).path).name
     target_path = destination / filename
-    _save_url_to_path(url, target_path)
+    with urllib.request.urlopen(url) as response, target_path.open("wb") as f:
+        f.write(response.read())
     return target_path
+
+
+def download_binary_file(url: str, destination: Path) -> Path:
+    return download_text_file(url, destination)

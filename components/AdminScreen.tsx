@@ -119,11 +119,19 @@ export function AdminScreen() {
 
       addInitLog('Database schema initialized successfully.');
       Alert.alert('Success', 'Database initialized successfully.');
+
     } catch (err: any) {
       console.error('Error initializing database:', err);
-      addInitLog(`Error: ${err.message || 'Failed to initialize database.'}`);
-      Alert.alert('Error', 'Failed to initialize database. Check logs.');
+      if (err.message === 'Failed to fetch' || err.message.includes('Network Error')) {
+        const errorMsg = `Network Error: Could not reach backend at ${backendUrl}. Ensure the Python backend is running (e.g., uvicorn backend.api:app --reload) and EXPO_PUBLIC_BACKEND_API_URL is set correctly (use your local IP instead of localhost on physical devices).`;
+        addInitLog(errorMsg);
+        Alert.alert('Backend Unreachable', errorMsg);
+      } else {
+        addInitLog(`Error: ${err.message || 'Failed to initialize database.'}`);
+        Alert.alert('Error', 'Failed to initialize database. Check logs.');
+      }
     } finally {
+
       setInitializing(false);
     }
   };
