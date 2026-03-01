@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useSupabase } from '@/app/lib/supabase';
 
 export function SupabaseSetupScreen() {
   const [url, setUrl] = useState('');
   const [key, setKey] = useState('');
   const [loading, setLoading] = useState(false);
-  const { saveConfig, clearConfig, getConfig } = useSupabase();
+  const [initializing, setInitializing] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const { saveConfig, clearConfig, getConfig, isConfigured } = useSupabase();
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_API_URL || 'http://localhost:8000';
 
   useEffect(() => {
     const currentConfig = getConfig();
@@ -17,6 +20,10 @@ export function SupabaseSetupScreen() {
       setKey(currentConfig.key);
     }
   }, [getConfig]);
+
+  const addLog = (msg: string) => {
+    setLogs((prev) => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
+  };
 
   const handleSave = async () => {
     if (!url || !key) {
@@ -42,6 +49,7 @@ export function SupabaseSetupScreen() {
       await clearConfig();
       setUrl('');
       setKey('');
+      setLogs([]);
       Alert.alert('Cleared', 'Supabase configuration removed.');
     } catch (error) {
       console.error('Supabase clear error:', error);
@@ -51,12 +59,51 @@ export function SupabaseSetupScreen() {
     }
   };
 
+  const handleInitialize = async () => {
+    if (!isConfigured) {
+      Alert.alert('Configuration Required', 'Please save your Supabase URL and key first.');
+      return;
+    }
+
+    setInitializing(true);
+    setLogs([]);
+    addLog('Starting database initialization...');
+
+    try {
+      addLog(`Calling backend init endpoint at ${backendUrl}/init...`);
+      const response = await fetch(`${backendUrl}/init`, { method: 'POST' });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to initialize database');
+      }
+
+      addLog('Database schema initialized successfully.');
+      Alert.alert('Success', 'Database initialized successfully. You can now use the app.');
+    } catch (err: any) {
+      console.error('Error initializing database:', err);
+      addLog(`Error: ${err.message || 'Failed to initialize database.'}`);
+      Alert.alert('Error', 'Failed to initialize database. Check logs for details.');
+    } finally {
+      setInitializing(false);
+    }
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{ backgroundColor: '#0f172a', padding: 20 }}>
-        <Text style={{ color: '#ffffff', fontSize: 24, fontWeight: 'bold' }}>Supabase Setup</Text>
+        <Text style={{ color: '#ffffff', fontSize: 24, fontWeight: 'bold' }}>Setup Required</Text>
       </View>
       <View style={{ padding: 20 }}>
+        {!isConfigured && (
+          <View style={{ backgroundColor: '#fef3c7', padding: 16, borderRadius: 8, marginBottom: 20 }}>
+            <Text style={{ color: '#92400e', fontWeight: '600' }}>No Database Detected</Text>
+            <Text style={{ color: '#92400e', marginTop: 4 }}>
+              Please configure your database connection and run the initialization script to continue.
+            </Text>
+          </View>
+        )}
+
         <Text style={{ color: '#475569', marginBottom: 12 }}>
           Enter your Supabase project URL and publishable API key to connect the app.
         </Text>
@@ -90,36 +137,84 @@ export function SupabaseSetupScreen() {
           onChangeText={setKey}
         />
 
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#059669',
-            padding: 14,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginBottom: 12,
-          }}
-          onPress={handleSave}
-          disabled={loading}
-        >
-          <Text style={{ color: '#ffffff', fontWeight: '600' }}>
-            {loading ? 'Saving...' : 'Save Configuration'}
-          </Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#059669',
+              padding: 14,
+              borderRadius: 8,
+              alignItems: 'center',
+              flex: 1,
+            }}
+            onPress={handleSave}
+            disabled={loading}
+          >
+            <Text style={{ color: '#ffffff', fontWeight: '600' }}>
+              {loading ? 'Saving...' : 'Save Config'}
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#dc2626',
-            padding: 14,
-            borderRadius: 8,
-            alignItems: 'center',
-          }}
-          onPress={handleClear}
-          disabled={loading}
-        >
-          <Text style={{ color: '#ffffff', fontWeight: '600' }}>
-            Clear Configuration
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#dc2626',
+              padding: 14,
+              borderRadius: 8,
+              alignItems: 'center',
+              flex: 1,
+            }}
+            onPress={handleClear}
+            disabled={loading}
+          >
+            <Text style={{ color: '#ffffff', fontWeight: '600' }}>
+              Clear Config
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {isConfigured && (
+          <View style={{ marginTop: 20, borderTopWidth: 1, borderTopColor: '#e2e8f0', paddingTop: 20 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e293b', marginBottom: 12 }}>
+              Database Initialization
+            </Text>
+            <Text style={{ color: '#475569', marginBottom: 16 }}>
+              Run the setup script to initialize the database schema and prepare the application for data synchronization.
+            </Text>
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#3b82f6',
+                padding: 14,
+                borderRadius: 8,
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                opacity: initializing ? 0.7 : 1,
+              }}
+              onPress={handleInitialize}
+              disabled={initializing}
+            >
+              {initializing ? (
+                <>
+                  <ActivityIndicator color="#ffffff" style={{ marginRight: 8 }} />
+                  <Text style={{ color: '#ffffff', fontWeight: '600' }}>Initializing...</Text>
+                </>
+              ) : (
+                <Text style={{ color: '#ffffff', fontWeight: '600' }}>Run Setup Script</Text>
+              )}
+            </TouchableOpacity>
+
+            {(logs.length > 0 || initializing) && (
+              <View style={{ marginTop: 20, backgroundColor: '#1e293b', borderRadius: 8, padding: 16, minHeight: 150 }}>
+                <Text style={{ color: '#94a3b8', fontSize: 12, marginBottom: 8, fontWeight: 'bold' }}>SETUP LOGS</Text>
+                {logs.map((log, index) => (
+                  <Text key={index} style={{ color: '#34d399', fontFamily: 'monospace', fontSize: 12, marginBottom: 4 }}>
+                    {log}
+                  </Text>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
       </View>
     </ScrollView>
   );

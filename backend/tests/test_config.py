@@ -23,7 +23,7 @@ def test_load_config_env_vars() -> None:
     }
     with mock.patch.dict(os.environ, env, clear=True):
         cfg = config.load_config()
-        assert cfg.base_url == "http://example.com"
+        assert cfg.base_url == "https://www.njleg.state.nj.us/downloads"
         assert cfg.supabase_url == "http://supabase.example.com"
         assert cfg.supabase_service_key == "secret"
         assert cfg.supabase_db_url == "postgres://user:pass@host:5432/db"

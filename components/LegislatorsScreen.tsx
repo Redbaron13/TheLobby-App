@@ -45,7 +45,7 @@ export function LegislatorsScreen() {
       // Load bios when available, but do not exclude legislators without bios.
       const { data, error } = await supabase
         .from('legislators')
-        .select('*, legbio(*)')
+        .select('*, legislator_bios(*)')
         .order('LastName');
 
       if (error) {
