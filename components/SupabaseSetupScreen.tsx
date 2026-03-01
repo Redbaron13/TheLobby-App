@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { clearSupabaseConfig, getSupabaseConfig, saveSupabaseConfig } from '@/app/lib/supabase';
+import { useSupabase } from '@/app/lib/supabase';
 
 export function SupabaseSetupScreen() {
   const [url, setUrl] = useState('');
   const [key, setKey] = useState('');
   const [loading, setLoading] = useState(false);
+  const { saveConfig, clearConfig, getConfig } = useSupabase();
 
   useEffect(() => {
-    const currentConfig = getSupabaseConfig();
+    const currentConfig = getConfig();
     if (currentConfig.url) {
       setUrl(currentConfig.url);
     }
     if (currentConfig.key) {
       setKey(currentConfig.key);
     }
-  }, []);
+  }, [getConfig]);
 
   const handleSave = async () => {
     if (!url || !key) {
@@ -25,7 +26,7 @@ export function SupabaseSetupScreen() {
 
     setLoading(true);
     try {
-      await saveSupabaseConfig(url, key);
+      await saveConfig(url, key);
       Alert.alert('Saved', 'Supabase configuration saved successfully.');
     } catch (error) {
       console.error('Supabase config error:', error);
@@ -38,7 +39,7 @@ export function SupabaseSetupScreen() {
   const handleClear = async () => {
     setLoading(true);
     try {
-      await clearSupabaseConfig();
+      await clearConfig();
       setUrl('');
       setKey('');
       Alert.alert('Cleared', 'Supabase configuration removed.');

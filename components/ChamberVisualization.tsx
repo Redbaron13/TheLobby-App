@@ -25,8 +25,8 @@ export function ChamberVisualization({
     
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols && seats.length < totalSeats; col++) {
-        const seatIndex = seats.length;
-        const isRepublican = seatIndex >= democratCount;
+        const seatIndex: number = seats.length;
+        const isRepublican: boolean = seatIndex >= democratCount;
         
         seats.push({
           row,

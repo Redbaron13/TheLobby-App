@@ -75,7 +75,7 @@ def run_sync_task(date: Optional[str]):
 async def trigger_sync(request: SyncRequest, background_tasks: BackgroundTasks):
     global pipeline_status
     if pipeline_status["status"] == "running":
-        return {"message": "Pipeline is already running", "status": pipeline_status}
+        raise HTTPException(status_code=409, detail="Pipeline is already running")
 
     background_tasks.add_task(run_sync_task, request.date)
     return {"message": "Pipeline triggered successfully", "status": "initiated"}
