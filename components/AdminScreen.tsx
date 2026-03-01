@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal, ScrollView } from 'react-native';
 import { useSupabase } from '@/app/lib/supabase';
 import { styles } from './AdminScreenStyles';
 
@@ -22,6 +22,11 @@ export function AdminScreen() {
   const [backendStatus, setBackendStatus] = useState<any>(null);
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [expandedIssues, setExpandedIssues] = useState<Set<string>>(new Set());
+
+  const [isInitModalVisible, setIsInitModalVisible] = useState(false);
+  const [initLogs, setInitLogs] = useState<string[]>([]);
+  const [initializing, setInitializing] = useState(false);
+
 
   const backendUrl = process.env.EXPO_PUBLIC_BACKEND_API_URL || 'http://localhost:8000';
 
@@ -94,31 +99,47 @@ export function AdminScreen() {
     }
   };
 
-  const triggerInit = async () => {
-    Alert.alert(
-      'Initialize Database',
-      'This will create all necessary tables in Supabase. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Initialize',
-          onPress: async () => {
-            try {
-              const response = await fetch(`${backendUrl}/init`, { method: 'POST' });
-              if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to initialize database');
-              }
-              Alert.alert('Success', 'Database schema initialized successfully.');
-            } catch (err: any) {
-              console.error('Error initializing database:', err);
-              Alert.alert('Error', err.message || 'Failed to initialize database.');
-            }
-          }
-        }
-      ]
-    );
+
+  const addInitLog = (msg: string) => {
+    setInitLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
   };
+
+  const startInit = async () => {
+    setInitializing(true);
+    setInitLogs([]);
+    addInitLog('Starting database initialization...');
+    try {
+      addInitLog(`Calling backend init endpoint at ${backendUrl}/init...`);
+      const response = await fetch(`${backendUrl}/init`, { method: 'POST' });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to initialize database');
+      }
+
+      addInitLog('Database schema initialized successfully.');
+      Alert.alert('Success', 'Database initialized successfully.');
+
+    } catch (err: any) {
+      console.error('Error initializing database:', err);
+      if (err.message === 'Failed to fetch' || err.message.includes('Network Error')) {
+        const errorMsg = `Network Error: Could not reach backend at ${backendUrl}. Ensure the Python backend is running (e.g., uvicorn backend.api:app --reload) and EXPO_PUBLIC_BACKEND_API_URL is set correctly (use your local IP instead of localhost on physical devices).`;
+        addInitLog(errorMsg);
+        Alert.alert('Backend Unreachable', errorMsg);
+      } else {
+        addInitLog(`Error: ${err.message || 'Failed to initialize database.'}`);
+        Alert.alert('Error', 'Failed to initialize database. Check logs.');
+      }
+    } finally {
+
+      setInitializing(false);
+    }
+  };
+
+  const triggerInit = () => {
+    setIsInitModalVisible(true);
+  };
+
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIssues);

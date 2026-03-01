@@ -4,7 +4,7 @@ import urllib.error
 from pathlib import Path
 from typing import Iterable
 
-from backend.downloader import download_files, download_file
+from backend.downloader import download_files, download_text_file
 
 
 def download_legdb_session(
@@ -23,6 +23,6 @@ def download_legdb_session(
 def _download_optional_readme(session_url: str, destination: Path) -> None:
     readme_url = f"{session_url}/Readme.txt"
     try:
-        download_file(readme_url, destination)
+        download_text_file(readme_url, destination)
     except urllib.error.HTTPError:
         return

@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'expo-router';
-import { SupabaseProvider } from '@/app/lib/supabase';
+import { SupabaseProvider, useSupabase } from '@/app/lib/supabase';
 
 function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,23 +66,40 @@ function TopNavigation() {
   );
 }
 
+
+function InnerLayout() {
+  const { isConfigured } = useSupabase();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!isConfigured && pathname !== '/setup') {
+      router.replace('/setup');
+    }
+  }, [isConfigured, pathname, router]);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <TopNavigation />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="bills" />
+        <Stack.Screen name="legislators" />
+        <Stack.Screen name="find-legislator" />
+        <Stack.Screen name="senate" />
+        <Stack.Screen name="assembly" />
+        <Stack.Screen name="profile" />
+        <Stack.Screen name="admin" />
+        <Stack.Screen name="setup" />
+      </Stack>
+    </View>
+  );
+}
+
 export default function RootLayout() {
   return (
     <SupabaseProvider>
-      <View style={{ flex: 1 }}>
-        <TopNavigation />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="bills" />
-          <Stack.Screen name="legislators" />
-          <Stack.Screen name="find-legislator" />
-          <Stack.Screen name="senate" />
-          <Stack.Screen name="assembly" />
-          <Stack.Screen name="profile" />
-          <Stack.Screen name="admin" />
-          <Stack.Screen name="setup" />
-        </Stack>
-      </View>
+      <InnerLayout />
     </SupabaseProvider>
   );
 }
