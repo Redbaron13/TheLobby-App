@@ -181,11 +181,26 @@ export function SupabaseSetupScreen() {
           </TouchableOpacity>
         </View>
 
+
         {isConfigured && (
           <View style={{ marginTop: 20, borderTopWidth: 1, borderTopColor: '#e2e8f0', paddingTop: 20 }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e293b', marginBottom: 12 }}>
+              Run a Local Instance
+            </Text>
+            <Text style={{ color: '#475569', marginBottom: 16 }}>
+              If you don't have a backend running, you can launch a local Docker container to fulfill the necessary backend requirements. Run the following command in your terminal from the project root:
+            </Text>
+
+            <View style={{ backgroundColor: '#1e293b', borderRadius: 8, padding: 16, marginBottom: 20 }}>
+              <Text style={{ color: '#34d399', fontFamily: 'monospace', fontSize: 12 }}>
+                docker-compose -f docker-compose.local.yml up -d --build
+              </Text>
+            </View>
+
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1e293b', marginBottom: 12 }}>
               Database Initialization
             </Text>
+
             <Text style={{ color: '#475569', marginBottom: 16 }}>
               Run the setup script to initialize the database schema and prepare the application for data synchronization.
             </Text>
