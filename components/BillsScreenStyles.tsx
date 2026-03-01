@@ -170,4 +170,21 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     fontStyle: 'italic',
   },
+  saveButton: {
+    marginTop: 10,
+    backgroundColor: '#e2e8f0',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#1e293b',
+    fontWeight: '600',
+  },
+  actionMessage: {
+    textAlign: 'center',
+    color: '#059669',
+    marginBottom: 10,
+    fontWeight: '600',
+  },
 });
