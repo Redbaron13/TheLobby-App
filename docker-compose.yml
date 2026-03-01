@@ -14,14 +14,14 @@ services:
     restart: always
 
   frontend:
-    image: node:20
-    working_dir: /app
-    volumes:
-      - .:/app
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+      args:
+        EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL}
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY}
     ports:
-      - "8081:8081"
-    environment:
-      - EXPO_PUBLIC_BACKEND_API_URL=http://localhost:8000
-    command: sh -c "if [ ! -d node_modules ]; then npm install; fi && npx expo start --web --port 8081"
+      - "80:80"
     depends_on:
       - backend
+    restart: always
