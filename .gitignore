@@ -8,9 +8,6 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
-.env
-.env.local
-supabase-admin/.env
 *.env
 *.env.local
 *.env.*.local

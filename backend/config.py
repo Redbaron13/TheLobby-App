@@ -30,23 +30,16 @@ class PipelineConfig:
 
 
 def load_config() -> PipelineConfig:
-    base_url = os.getenv("NJLEG_DOWNLOAD_BASE_URL", "https://www.njleg.state.nj.us/downloads")
-    votes_base_url = os.getenv("NJLEG_VOTES_BASE_URL", "https://pub.njleg.state.nj.us/votes")
+    base_url = "https://www.njleg.state.nj.us/downloads"
+    votes_base_url = "https://pub.njleg.state.nj.us/votes"
     votes_readme_urls = (
-        os.getenv("NJLEG_VOTES_README_URL", "https://pub.njleg.state.nj.us/votes/_Readme.txt"),
-        os.getenv("NJLEG_VOTES_COMM_README_URL", "https://pub.njleg.state.nj.us/votes/_CommRdme.txt"),
+        "https://pub.njleg.state.nj.us/votes/_Readme.txt",
+        "https://pub.njleg.state.nj.us/votes/_CommRdme.txt",
     )
-    gis_service_url = os.getenv(
-        "NJLEG_GIS_SERVICE_URL",
-        "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/ArcGIS/rest/services/"
-        "Legislative_Districts_of_NJ_Hosted_3424/FeatureServer/0",
-    )
-    legdb_readme_url = os.getenv(
-        "NJLEG_LEGDB_README_URL",
-        "https://pub.njleg.state.nj.us/leg-databases/2024data/Readme.txt",
-    )
-    legdb_base_url = os.getenv("NJLEG_LEGDB_BASE_URL", "https://pub.njleg.state.nj.us/leg-databases")
-    download_type = os.getenv("NJLEG_DOWNLOAD_TYPE", "Bill_Tracking")
+    gis_service_url = "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/ArcGIS/rest/services/Legislative_Districts_of_NJ_Hosted_3424/FeatureServer/0"
+    legdb_readme_url = "https://pub.njleg.state.nj.us/leg-databases/2024data/Readme.txt"
+    legdb_base_url = "https://pub.njleg.state.nj.us/leg-databases"
+    download_type = "Bill_Tracking"
     bill_tracking_years = _parse_years(os.getenv("NJLEG_BILL_TRACKING_YEARS", "2024"))
     data_dir = Path(os.getenv("NJLEG_DATA_DIR", "backend/data")).resolve()
 

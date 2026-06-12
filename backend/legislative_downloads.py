@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-from backend.downloader import download_file
+from backend.downloader import download_binary_file
 
 
 @dataclass(frozen=True)
@@ -112,7 +112,7 @@ def download_bill_tracking_session(
         f"{pub_base_url.rstrip('/')}/{download_path.strip('/')}/"
         f"{session_dir}/{zip_name}"
     )
-    zip_path = download_file(zip_url, destination)
+    zip_path = download_binary_file(zip_url, destination)
     extracted_paths: list[Path] = []
     with zipfile.ZipFile(zip_path) as archive:
         archive.extractall(destination)

@@ -7,7 +7,7 @@ from typing import Iterable
 import urllib.error
 
 from backend.config import PRIMARY_KEYS, PipelineConfig, draft_table_name
-from backend.downloader import download_files, download_file
+from backend.downloader import download_files, download_text_file
 from backend.data_merge import merge_rows_by_key
 from backend.legdb_readme import ensure_required_tables
 from backend.legdb_downloader import download_legdb_session
@@ -118,7 +118,7 @@ def run_pipeline(config: PipelineConfig, date_str: str | None = None) -> Pipelin
     run_date = date_str or datetime.utcnow().strftime("%Y-%m-%d")
     raw_dir = config.data_dir / "raw" / run_date
     downloads_dir = raw_dir / "downloads"
-    readme_path = download_file(config.legdb_readme_url, downloads_dir)
+    readme_path = download_text_file(config.legdb_readme_url, downloads_dir)
     readme_text = readme_path.read_text(encoding="latin1", errors="ignore")
     ensure_required_tables(
         readme_text,
